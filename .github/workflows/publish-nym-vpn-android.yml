@@ -70,9 +70,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            nym-vpn-android
 
       - name: Install system dependencies
         run: |
