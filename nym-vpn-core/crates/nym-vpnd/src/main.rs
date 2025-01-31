@@ -39,7 +39,8 @@ fn run() -> anyhow::Result<()> {
         enable_file_log: args.command.run_as_service,
         enable_stdout_log: true,
     };
-    let _guard = logging::setup_logging(options);
+    console_subscriber::init();
+    // let _guard = logging::setup_logging(options);
 
     let network_env = environment::setup_environment(&global_config_file, &args)?;
 
