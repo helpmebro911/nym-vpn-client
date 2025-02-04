@@ -1,7 +1,7 @@
 // Copyright 2023 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use std::path::PathBuf;
+use std::{path::PathBuf, sync::Arc};
 
 use tokio::task::JoinHandle;
 
@@ -28,14 +28,14 @@ pub struct ConnectionData {
 }
 
 pub struct Connector {
-    task_manager: TaskManager,
+    task_manager: Arc<tokio::sync::Mutex<TaskManager>>,
     mixnet_client: SharedMixnetClient,
     gateway_directory_client: GatewayClient,
 }
 
 impl Connector {
     pub fn new(
-        task_manager: TaskManager,
+        task_manager: Arc<tokio::sync::Mutex<TaskManager>>,
         mixnet_client: SharedMixnetClient,
         gateway_directory_client: GatewayClient,
     ) -> Self {
@@ -54,7 +54,7 @@ impl Connector {
         cancel_token: CancellationToken,
     ) -> Result<ConnectedTunnel, ConnectorError> {
         let result = Self::connect_inner(
-            &self.task_manager,
+            &*self.task_manager.lock().await,
             self.mixnet_client.clone(),
             &self.gateway_directory_client,
             enable_credentials_mode,
@@ -227,7 +227,8 @@ impl Connector {
 
     /// Gracefully shutdown task manager and consume the struct.
     pub async fn dispose(self) {
-        tunnel::shutdown_task_manager(self.task_manager).await;
+        tracing::info!("JON: disposing connector");
+        tunnel::shutdown_task_manager2(self.task_manager).await;
     }
 }
 

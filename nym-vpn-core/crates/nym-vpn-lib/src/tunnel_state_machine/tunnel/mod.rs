@@ -37,6 +37,7 @@ pub(crate) const TASK_MANAGER_SHUTDOWN_TIMER_SECS: u64 = 10;
 
 pub struct ConnectedMixnet {
     task_manager: TaskManager,
+    task_manager2: Arc<tokio::sync::Mutex<TaskManager>>,
     gateway_directory_client: GatewayClient,
     selected_gateways: SelectedGateways,
     data_path: Option<PathBuf>,
@@ -62,7 +63,8 @@ impl ConnectedMixnet {
     ) -> JoinHandle<()> {
         let (status_tx, status_rx) = futures::channel::mpsc::channel(10);
 
-        self.task_manager
+        // self.task_manager
+        self.task_manager2.lock().await
             .start_status_listener(status_tx, TaskStatus::Ready)
             .await;
 
@@ -99,12 +101,12 @@ impl ConnectedMixnet {
         cancel_token: CancellationToken,
     ) -> Result<wireguard::connected_tunnel::ConnectedTunnel> {
         let connector = wireguard::connector::Connector::new(
-            self.task_manager,
+            self.task_manager2,
             self.mixnet_client,
             self.gateway_directory_client,
         );
 
-        let tm = self.reconnect_mixnet_client_data.bw_controller_task_manager.clone();
+        // let tm = self.reconnect_mixnet_client_data.bw_controller_task_manager.clone();
 
         match connector
             .connect(
@@ -119,21 +121,21 @@ impl ConnectedMixnet {
             Ok(connected_tunnel) => Ok(connected_tunnel),
             Err(connector_error) => {
                 connector_error.connector.dispose().await;
-                let mut guard = tm.lock().await;
-                if guard.signal_shutdown().is_err() {
-                    tracing::error!("Failed to signal bandwidth controller task manager shutdown");
-                }
-                guard.wait_for_graceful_shutdown().await;
+                //let mut guard = tm.lock().await;
+                //if guard.signal_shutdown().is_err() {
+                //    tracing::error!("Failed to signal bandwidth controller task manager shutdown");
+                //}
+                //guard.wait_for_graceful_shutdown().await;
 
                 Err(connector_error.error)
             }
         }
     }
 
-    /// Gracefully shutdown the mixnet client and consume the struct.
-    pub async fn dispose(self) {
-        shutdown_task_manager(self.task_manager).await;
-    }
+    // Gracefully shutdown the mixnet client and consume the struct.
+    //pub async fn dispose(self) {
+    //    shutdown_task_manager(self.task_manager).await;
+    //}
 }
 
 #[derive(Debug, Clone)]
@@ -241,6 +243,7 @@ pub async fn connect_mixnet(
     match res {
         Ok(mixnet_client) => Ok(ConnectedMixnet {
             task_manager,
+            task_manager2: bw_controller_task_manager,
             selected_gateways: options.selected_gateways,
             data_path: options.data_path,
             gateway_directory_client,
@@ -248,11 +251,15 @@ pub async fn connect_mixnet(
             reconnect_mixnet_client_data,
         }),
         Err(e) => {
+            tracing::info!("Shutting down task manager");
             shutdown_task_manager(task_manager).await;
+            tracing::info!("Shutting down bandwidth controller task manager");
             let mut guard = bw_controller_task_manager.lock().await;
+            tracing::info!("Signalling bandwidth controller task manager shutdown");
             if guard.signal_shutdown().is_err() {
                 tracing::error!("Failed to signal bandwidth controller task manager shutdown");
             }
+            tracing::info!("Waiting for bandwidth controller task manager to finish");
             guard.wait_for_graceful_shutdown().await;
             Err(e)
         }
@@ -267,6 +274,17 @@ async fn shutdown_task_manager(mut task_manager: TaskManager) {
 
     task_manager.wait_for_graceful_shutdown().await;
     tracing::debug!("Task manager finished");
+}
+
+async fn shutdown_task_manager2(task_manager: Arc<tokio::sync::Mutex<TaskManager>>) {
+    tracing::info!("Shutting down task manager");
+    if task_manager.lock().await.signal_shutdown().is_err() {
+        tracing::error!("Failed to signal task manager shutdown");
+    }
+
+    tracing::info!("Waiting for task manager to finish");
+    task_manager.lock().await.wait_for_graceful_shutdown().await;
+    tracing::info!("Task manager finished");
 }
 
 #[derive(Debug, thiserror::Error)]

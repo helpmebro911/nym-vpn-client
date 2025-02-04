@@ -1,7 +1,7 @@
 // Copyright 2023 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use std::{error::Error as StdError, net::IpAddr};
+use std::{error::Error as StdError, net::IpAddr, sync::Arc};
 
 #[cfg(windows)]
 use tokio::sync::mpsc;
@@ -33,7 +33,7 @@ use crate::{
 };
 
 pub struct ConnectedTunnel {
-    task_manager: TaskManager,
+    task_manager: Arc<tokio::sync::Mutex<TaskManager>>,
     entry_gateway_client: WgGatewayClient,
     exit_gateway_client: WgGatewayClient,
     connection_data: ConnectionData,
@@ -42,7 +42,7 @@ pub struct ConnectedTunnel {
 
 impl ConnectedTunnel {
     pub fn new(
-        task_manager: TaskManager,
+        task_manager: Arc<tokio::sync::Mutex<TaskManager>>,
         entry_gateway_client: WgGatewayClient,
         exit_gateway_client: WgGatewayClient,
         connection_data: ConnectionData,
@@ -424,7 +424,7 @@ pub struct NetstackTunnelOptions {
 }
 
 pub struct TunnelHandle {
-    task_manager: TaskManager,
+    task_manager: Arc<tokio::sync::Mutex<TaskManager>>,
     shutdown_token: CancellationToken,
     event_handler_task: JoinHandle<Tombstone>,
     bandwidth_controller_handle: JoinHandle<()>,
@@ -436,10 +436,10 @@ pub struct TunnelHandle {
 
 impl TunnelHandle {
     /// Close entry and exit WireGuard tunnels and signal mixnet facilities shutdown.
-    pub fn cancel(&mut self) {
+    pub async fn cancel(&mut self) {
         self.shutdown_token.cancel();
 
-        if let Err(e) = self.task_manager.signal_shutdown() {
+        if let Err(e) = self.task_manager.lock().await.signal_shutdown() {
             tracing::error!("Failed to signal task manager shutdown: {}", e);
         }
     }
@@ -449,7 +449,7 @@ impl TunnelHandle {
     /// This method is cancel safe.
     /// Returns `None` if the underlying channel has been closed.
     pub async fn recv_error(&mut self) -> Option<Box<dyn StdError + 'static + Send + Sync>> {
-        self.task_manager.wait_for_error().await
+        self.task_manager.lock().await.wait_for_error().await
     }
 
     /// Wait until the tunnel finished execution.
