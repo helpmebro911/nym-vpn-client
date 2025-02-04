@@ -379,6 +379,7 @@ impl<St: Storage> BandwidthController<St> {
     }
 
     pub(crate) async fn try_reconnect(&mut self, mixnet_error_tx: mpsc::Sender<()>) -> bool {
+        tracing::warn!("Trying to reconnect");
         #[cfg(unix)]
         let connection_fd_callback = self
             .wg_entry_gateway_client
@@ -394,6 +395,7 @@ impl<St: Storage> BandwidthController<St> {
             .await
         else {
             self.connected_mixnet = false;
+            tracing::warn!("Finishing to reconnect without success");
             return false;
         };
 
@@ -402,6 +404,7 @@ impl<St: Storage> BandwidthController<St> {
         self.wg_exit_gateway_client.set_auth_client(auth_client);
         self.connected_mixnet = true;
         self.spawn_wait_for_mixnet_error(mixnet_error_tx);
+        tracing::warn!("Finishing to reconnect with success");
         true
     }
 
@@ -445,6 +448,7 @@ impl<St: Storage> BandwidthController<St> {
                     if !self.connected_mixnet && !self.try_reconnect(mixnet_error_tx.clone()).await {
                         continue;
                     }
+                    tracing::warn!("Checking bandwidth");
                     let current_period = self.timeout_check_interval.as_ref().period();
                     let entry_duration = self.check_bandwidth(true, current_period).await;
                     let exit_duration = self.check_bandwidth(false, current_period).await;
@@ -464,6 +468,7 @@ impl<St: Storage> BandwidthController<St> {
                         // Skip the first, immediate tick
                         self.timeout_check_interval.next().await;
                     }
+                    tracing::warn!("Finished checking bandwidth");
                 }
             }
         }
