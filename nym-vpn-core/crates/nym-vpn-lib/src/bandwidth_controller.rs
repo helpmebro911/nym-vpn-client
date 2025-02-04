@@ -68,6 +68,9 @@ pub enum Error {
 
     #[error("internal error: {reason}")]
     Internal { reason: String },
+
+    #[error("cancelled")]
+    Cancelled,
 }
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
@@ -161,14 +164,14 @@ impl DepletionRate {
 
 pub struct ReconnectMixnetClientData {
     options: MixnetConnectOptions,
-    bw_controller_task_manager: TaskManager,
+    pub bw_controller_task_manager: Arc<tokio::sync::Mutex<TaskManager>>,
     mixnet_client_config: MixnetClientConfig,
 }
 
 impl ReconnectMixnetClientData {
     pub fn new(
         options: MixnetConnectOptions,
-        bw_controller_task_manager: TaskManager,
+        bw_controller_task_manager: Arc<tokio::sync::Mutex<TaskManager>>,
         mixnet_client_config: MixnetClientConfig,
     ) -> Self {
         Self {
@@ -189,6 +192,8 @@ impl ReconnectMixnetClientData {
                 entry_gateway,
                 &self.options.data_path,
                 self.bw_controller_task_manager
+                    .lock()
+                    .await
                     .subscribe_named("mixnet_client_main"),
                 self.mixnet_client_config.clone(),
                 self.options.enable_credentials_mode,
@@ -212,6 +217,25 @@ impl ReconnectMixnetClientData {
         };
         Some(AuthClient::new(mixnet_client).await)
     }
+
+    //pub async fn cleanup(&mut self) {
+    //    if let Err(err) = self
+    //        .bw_controller_task_manager
+    //        .lock()
+    //        .await
+    //        .signal_shutdown()
+    //    {
+    //        tracing::error!("Error signalling shutdown to task manager: {err:?}");
+    //    }
+    //    let wait = self
+    //        .bw_controller_task_manager
+    //        .lock()
+    //        .await
+    //        .wait_for_graceful_shutdown();
+    //    if timeout(Duration::from_secs(10), wait).await.is_err() {
+    //        tracing::error!("Timeout waiting for task manager");
+    //    }
+    //}
 }
 
 pub(crate) struct BandwidthController<St> {
@@ -255,7 +279,63 @@ impl<St: Storage> BandwidthController<St> {
         })
     }
 
-    pub(crate) async fn get_initial_bandwidth(
+    // Get initial bandwidth for both entry and exit gateways, and use a cancel token to watch for
+    // shutdown signals. And if we have a failure, call cleanup on the reconnect mixnet client
+    // data.
+    pub(crate) async fn get_initial_bandwidth_both(
+        &mut self,
+        enable_credentials_mode: bool,
+        gateway_client: &GatewayClient,
+        wg_entry_gateway_client: &mut WgGatewayClient,
+        wg_exit_gateway_client: &mut WgGatewayClient,
+        cancel_token: CancellationToken,
+    ) -> Result<(GatewayData, GatewayData)>
+    where
+        <St as Storage>::StorageError: Send + Sync + 'static,
+    {
+        let entry_fut = self.get_initial_bandwidth(
+            enable_credentials_mode,
+            TicketType::V1WireguardEntry,
+            gateway_client,
+            wg_entry_gateway_client,
+        );
+        let exit_fut = self.get_initial_bandwidth(
+            enable_credentials_mode,
+            TicketType::V1WireguardExit,
+            gateway_client,
+            wg_exit_gateway_client,
+        );
+
+        let result = tokio::try_join!(
+            async {
+                cancel_token
+                    .run_until_cancelled(entry_fut)
+                    .await
+                    .ok_or(Error::Cancelled)
+            },
+            async {
+                cancel_token
+                    .run_until_cancelled(exit_fut)
+                    .await
+                    .ok_or(Error::Cancelled)
+            }
+        );
+
+        match result {
+            Ok((Ok(entry), Ok(exit))) => Ok((entry, exit)),
+            Ok((Err(e), _)) | Ok((_, Err(e))) | Err(e) => {
+                // Here we should return the task manager
+                // self.reconnect_mixnet_client_data.cleanup().await;
+                Err(e)
+            }
+        }
+    }
+
+    //pub async fn dispose(mut self) {
+    //    self.reconnect_mixnet_client_data.cleanup().await;
+    //}
+
+    async fn get_initial_bandwidth(
         &self,
         enable_credentials_mode: bool,
         ticketbook_type: TicketType,
@@ -407,24 +487,26 @@ impl<St: Storage> BandwidthController<St> {
 
     fn spawn_wait_for_mixnet_error(&mut self, mixnet_error_tx: mpsc::Sender<()>) {
         let cancel_token = self.cancel_token.clone();
-        let mut task_manager = std::mem::replace(
+        let task_manager = std::mem::replace(
             &mut self.reconnect_mixnet_client_data.bw_controller_task_manager,
-            TaskManager::new(TASK_MANAGER_SHUTDOWN_TIMER_SECS),
+            Arc::new(tokio::sync::Mutex::new(TaskManager::new(
+                TASK_MANAGER_SHUTDOWN_TIMER_SECS,
+            ))),
         );
         tokio::task::spawn(async move {
             cancel_token
-                .run_until_cancelled(task_manager.wait_for_error())
+                .run_until_cancelled(task_manager.lock().await.wait_for_error())
                 .await;
 
             // Signal all tasks to finish
-            task_manager.signal_shutdown().ok();
+            task_manager.lock().await.signal_shutdown().ok();
             mixnet_error_tx.send(()).await.ok();
 
             // Wait for all tasks to exit, since the tasks polls the status of the shutdown channel
             // during its execution
             if timeout(
                 Duration::from_secs(10),
-                task_manager.wait_for_graceful_shutdown(),
+                task_manager.lock().await.wait_for_graceful_shutdown(),
             )
             .await
             .is_err()
@@ -434,26 +516,6 @@ impl<St: Storage> BandwidthController<St> {
                 );
             }
         });
-    }
-
-    async fn cleanup(mut self) {
-        self.reconnect_mixnet_client_data
-            .bw_controller_task_manager
-            .signal_shutdown()
-            .ok();
-        if timeout(
-            Duration::from_secs(10),
-            self.reconnect_mixnet_client_data
-                .bw_controller_task_manager
-                .wait_for_graceful_shutdown(),
-        )
-        .await
-        .is_err()
-        {
-            tracing::error!(
-                "Timeout waiting for task manager controlled by bandwidth controller to finish waiting for its tasks to all exit"
-            );
-        }
     }
 
     pub(crate) async fn run(mut self)
@@ -504,7 +566,7 @@ impl<St: Storage> BandwidthController<St> {
             }
         }
 
-        self.cleanup().await;
+        // self.reconnect_mixnet_client_data.cleanup().await;
         tracing::debug!("BandwidthController: Exiting");
     }
 }

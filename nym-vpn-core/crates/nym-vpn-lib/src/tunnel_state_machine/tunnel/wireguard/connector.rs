@@ -84,6 +84,7 @@ impl Connector {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     async fn connect_inner(
         task_manager: &TaskManager,
         mixnet_client: SharedMixnetClient,
@@ -145,60 +146,50 @@ impl Connector {
                 .persistent_credential_storage()
                 .await
                 .map_err(Error::SetupStoragePaths)?;
-            let bw = BandwidthController::new(
+            let mut bw = BandwidthController::new(
                 storage,
                 wg_entry_gateway_client.light_client(),
                 wg_exit_gateway_client.light_client(),
                 shutdown,
                 reconnect_mixnet_client_data,
             )?;
-            let entry_fut = bw.get_initial_bandwidth(
-                enable_credentials_mode,
-                TicketType::V1WireguardEntry,
-                gateway_directory_client,
-                &mut wg_entry_gateway_client,
-            );
-            let exit_fut = bw.get_initial_bandwidth(
-                enable_credentials_mode,
-                TicketType::V1WireguardExit,
-                gateway_directory_client,
-                &mut wg_exit_gateway_client,
-            );
-            let entry = cancel_token
-                .run_until_cancelled(entry_fut)
+
+            let (entry, exit) = match bw
+                .get_initial_bandwidth_both(
+                    enable_credentials_mode,
+                    gateway_directory_client,
+                    &mut wg_entry_gateway_client,
+                    &mut wg_exit_gateway_client,
+                    cancel_token,
+                )
                 .await
-                .ok_or(tunnel::Error::Cancelled)??;
-            let exit = cancel_token
-                .run_until_cancelled(exit_fut)
-                .await
-                .ok_or(tunnel::Error::Cancelled)??;
+            {
+                Err(err) => {
+                    // tokio::spawn(bw.dispose());
+                    return Err(err.into());
+                }
+                Ok(data) => data,
+            };
 
             let bandwidth_controller_handle = tokio::spawn(bw.run());
 
             (ConnectionData { entry, exit }, bandwidth_controller_handle)
         } else {
             let storage = EphemeralCredentialStorage::default();
-            let bw = BandwidthController::new(
+            let mut bw = BandwidthController::new(
                 storage,
                 wg_entry_gateway_client.light_client(),
                 wg_exit_gateway_client.light_client(),
                 shutdown,
                 reconnect_mixnet_client_data,
             )?;
-            let entry = bw
-                .get_initial_bandwidth(
+            let (entry, exit) = bw
+                .get_initial_bandwidth_both(
                     enable_credentials_mode,
-                    TicketType::V1WireguardEntry,
                     gateway_directory_client,
                     &mut wg_entry_gateway_client,
-                )
-                .await?;
-            let exit = bw
-                .get_initial_bandwidth(
-                    enable_credentials_mode,
-                    TicketType::V1WireguardExit,
-                    gateway_directory_client,
                     &mut wg_exit_gateway_client,
+                    cancel_token,
                 )
                 .await?;
 

@@ -104,6 +104,8 @@ impl ConnectedMixnet {
             self.gateway_directory_client,
         );
 
+        let tm = self.reconnect_mixnet_client_data.bw_controller_task_manager.clone();
+
         match connector
             .connect(
                 enable_credentials_mode,
@@ -117,6 +119,12 @@ impl ConnectedMixnet {
             Ok(connected_tunnel) => Ok(connected_tunnel),
             Err(connector_error) => {
                 connector_error.connector.dispose().await;
+                let mut guard = tm.lock().await;
+                if guard.signal_shutdown().is_err() {
+                    tracing::error!("Failed to signal bandwidth controller task manager shutdown");
+                }
+                guard.wait_for_graceful_shutdown().await;
+
                 Err(connector_error.error)
             }
         }
@@ -172,17 +180,22 @@ pub async fn connect_mixnet(
     #[cfg(unix)] connection_fd_callback: Arc<dyn Fn(RawFd) + Send + Sync>,
 ) -> Result<ConnectedMixnet> {
     let task_manager = TaskManager::new(TASK_MANAGER_SHUTDOWN_TIMER_SECS);
-    let bw_controller_task_manager = TaskManager::new(TASK_MANAGER_SHUTDOWN_TIMER_SECS);
+    let bw_controller_task_manager = Arc::new(tokio::sync::Mutex::new(TaskManager::new(
+        TASK_MANAGER_SHUTDOWN_TIMER_SECS,
+    )));
 
     let task_client = match options.tunnel_type {
         TunnelType::Mixnet => task_manager.subscribe_named("mixnet_client_main"),
-        TunnelType::Wireguard => bw_controller_task_manager.subscribe_named("mixnet_client_main"),
+        TunnelType::Wireguard => bw_controller_task_manager
+            .lock()
+            .await
+            .subscribe_named("mixnet_client_main"),
     };
 
     let mut mixnet_client_config = options.mixnet_client_config.clone().unwrap_or_default();
     let reconnect_mixnet_client_data = ReconnectMixnetClientData::new(
         options.clone(),
-        bw_controller_task_manager,
+        bw_controller_task_manager.clone(),
         mixnet_client_config.clone(),
     );
     let user_agent = options
@@ -236,6 +249,11 @@ pub async fn connect_mixnet(
         }),
         Err(e) => {
             shutdown_task_manager(task_manager).await;
+            let mut guard = bw_controller_task_manager.lock().await;
+            if guard.signal_shutdown().is_err() {
+                tracing::error!("Failed to signal bandwidth controller task manager shutdown");
+            }
+            guard.wait_for_graceful_shutdown().await;
             Err(e)
         }
     }
