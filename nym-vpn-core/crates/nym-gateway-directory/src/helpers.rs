@@ -35,14 +35,14 @@ pub(crate) async fn try_resolve_hostname(hostname: &str) -> Result<Vec<IpAddr>> 
 pub async fn allowed_ips(config: &Config) -> Result<Vec<SocketAddr>> {
     let mut ips = vec![];
 
-    let mut nyxd_ips = config.nyxd_socket_addrs()?;
-    ips.append(&mut nyxd_ips);
+    let nyxd_ips = config.nyxd_socket_addrs()?;
+    ips.extend(nyxd_ips);
 
-    let mut api_ips = config.api_socket_addrs()?;
-    ips.append(&mut api_ips);
+    let api_ips = config.api_socket_addrs()?;
+    ips.extend(api_ips);
 
-    if let Some(mut nym_vpn_api_ips) = config.nym_vpn_api_socket_addrs()? {
-        ips.append(&mut nym_vpn_api_ips);
+    if let Some(nym_vpn_api_ips) = config.nym_vpn_api_socket_addrs()? {
+        ips.extend(nym_vpn_api_ips);
     }
 
     Ok(ips)
