@@ -22,7 +22,7 @@ extension GRPCManager {
             request.disableRouting = false
             request.enableTwoHop = isTwoHopEnabled
             request.disableBackgroundCoverTraffic = false
-            request.enableCredentialsMode = isZknymEnabled ?? false
+            request.enableCredentialsMode = true
 
             let call = client.vpnConnect(request, callOptions: nil)
 

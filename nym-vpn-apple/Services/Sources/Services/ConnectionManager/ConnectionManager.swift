@@ -186,7 +186,7 @@ public final class ConnectionManager: ObservableObject {
                     entryGateway: config.entryGateway,
                     exitRouter: config.exitRouter,
                     isTwoHopEnabled: config.isTwoHopEnabled,
-                    isZknymEnabled: appSettings.isZknymEnabled
+                    isZknymEnabled: true
                 )
             }
         }
@@ -314,7 +314,7 @@ private extension ConnectionManager {
                 entryGateway: entryGateway,
                 exitRouter: exitRouter,
                 credentialsDataPath: credentialURL.path(),
-                isZknymEnabled: appSettings.isZknymEnabled
+                isZknymEnabled: true
             )
 
             switch connectionType {
@@ -324,7 +324,7 @@ private extension ConnectionManager {
                     exitRouter: exitRouter,
                     credentialsDataPath: credentialURL.path(),
                     isTwoHopEnabled: false,
-                    isZknymEnabled: appSettings.isZknymEnabled
+                    isZknymEnabled: true
                 )
             case .wireguard:
                     config = MixnetConfig(
@@ -332,7 +332,7 @@ private extension ConnectionManager {
                         exitRouter: exitRouter,
                         credentialsDataPath: credentialURL.path(),
                         isTwoHopEnabled: true,
-                        isZknymEnabled: appSettings.isZknymEnabled
+                        isZknymEnabled: true
                     )
             }
             isReconnecting = isReconnecting(newConfig: config)
@@ -348,7 +348,7 @@ extension ConnectionManager {
         var config = MixnetConfig(
             entryGateway: entryGateway,
             exitRouter: exitRouter,
-            isZknymEnabled: appSettings.isZknymEnabled
+            isZknymEnabled: true
         )
 
         switch connectionType {
@@ -357,14 +357,14 @@ extension ConnectionManager {
                 entryGateway: entryGateway,
                 exitRouter: exitRouter,
                 isTwoHopEnabled: false,
-                isZknymEnabled: appSettings.isZknymEnabled
+                isZknymEnabled: true
             )
         case .wireguard:
                 config = MixnetConfig(
                     entryGateway: entryGateway,
                     exitRouter: exitRouter,
                     isTwoHopEnabled: true,
-                    isZknymEnabled: appSettings.isZknymEnabled
+                    isZknymEnabled: true
                 )
         }
         isReconnecting = isReconnecting(newConfig: config)

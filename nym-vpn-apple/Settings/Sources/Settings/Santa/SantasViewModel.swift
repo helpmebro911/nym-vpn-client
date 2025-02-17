@@ -173,7 +173,7 @@ private extension SantasViewModel {
         $isZknymEnabled
             .sink { [weak self] newValue in
                 Task { @MainActor in
-                    self?.appSettings.isZknymEnabled = newValue == true ? true : nil
+//                    self?.appSettings.isZknymEnabled = newValue == true ? true : nil
                 }
             }
             .store(in: &cancellables)

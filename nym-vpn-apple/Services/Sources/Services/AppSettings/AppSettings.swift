@@ -67,7 +67,7 @@ public final class AppSettings: ObservableObject {
     public var santaExitGatewaysData = Data()
 
     @AppStorage(AppSettingKey.isZknymEnabled.rawValue)
-    public var isZknymEnabled: Bool?
+    public var isZknymEnabled: Bool = true
 
     // Observed values for view models
     @Published public var isErrorReportingOnPublisher = false
