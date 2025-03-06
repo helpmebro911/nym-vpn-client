@@ -1,7 +1,7 @@
 // Copyright 2023 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use std::result::Result;
+use std::{result::Result, time::Duration};
 
 use bytes::Bytes;
 use futures::{channel::mpsc, StreamExt};
@@ -9,9 +9,9 @@ use nym_connection_monitor::{ConnectionMonitorTask, ConnectionStatusEvent};
 use nym_gateway_directory::IpPacketRouterAddress;
 use nym_ip_packet_requests::{codec::MultiIpPacketCodec, v8::request::IpPacketRequest, IpPair};
 use nym_mixnet_client::SharedMixnetClient;
-use nym_sdk::mixnet::{InputMessage, MixnetMessageSender, Recipient};
+use nym_sdk::mixnet::{InputMessage, LaneQueueLengths, MixnetMessageSender, Recipient};
 use nym_task::{connections::TransmissionLane, TaskClient, TaskManager};
-use tokio::{sync::oneshot, task::JoinHandle};
+use tokio::{sync::oneshot, task::JoinHandle, time::sleep};
 use tokio_util::sync::CancellationToken;
 use tun::{AsyncDevice, Device};
 
@@ -133,6 +133,9 @@ impl MixnetProcessor {
         tracing::debug!("Split mixnet sender");
         let sender = self.mixnet_client.split_sender().await;
 
+        let lane_queue_lengths = self.mixnet_client.lane_queue_lengths().await;
+        // lane_queue_lengths.lock().await.get(&TransmissionLane::General);
+
         let mut multi_ip_packet_encoder =
             MultiIpPacketCodec::new(nym_ip_packet_requests::codec::BUFFER_TIMEOUT);
 
@@ -195,8 +198,11 @@ impl MixnetProcessor {
                 }
                 // To make sure we don't wait too long before filling up the buffer, which destroys
                 // latency, cap the time waiting for the buffer to fill
-                Some(bundled_packets) = multi_ip_packet_encoder.buffer_timeout() => {
+                Some(bundled_packets) = multi_ip_packet_encoder.buffer_timeout2(lane_queue_lengths.clone()) => {
                     assert!(!bundled_packets.is_empty());
+
+                    print_all_transmission_lanes(lane_queue_lengths.clone()).await;
+                    // wait_for_total_transmission_lanes_empty(lane_queue_lengths.clone()).await;
 
                     match message_creator.create_data_message(bundled_packets) {
                         Ok(input_message) => {
@@ -222,6 +228,8 @@ impl MixnetProcessor {
                     if let Some(input_message) = multi_ip_packet_encoder
                         .append_packet(packet.into_bytes())
                     {
+                        print_all_transmission_lanes(lane_queue_lengths.clone()).await;
+                        wait_for_total_transmission_lanes_empty(lane_queue_lengths.clone()).await;
                         match message_creator.create_data_message(input_message) {
                             Ok(input_message) => {
                                 tokio::select! {
@@ -272,6 +280,46 @@ impl MixnetProcessor {
             .expect("reunite should work because of same device split")
             .into_inner())
     }
+}
+
+async fn print_all_transmission_lanes(lane_queue_lengths: LaneQueueLengths) {
+    let lane_queue_lengths = lane_queue_lengths.lock();
+    if let Ok(inner) = lane_queue_lengths {
+        // count all
+        // let total_queue = inner.values().sum::<usize>();
+        let total_queue = inner.total();
+        tracing::info!("Total queue length: {}", total_queue);
+        for (lane, length) in inner.map.iter() {
+            tracing::info!("Lane {:?} has {} packets", lane, length);
+        }
+    }
+}
+
+async fn wait_for_total_transmission_lanes_empty(lane_queue_lengths: LaneQueueLengths) {
+    let now = std::time::Instant::now();
+    loop {
+        if now.elapsed() > Duration::from_millis(500) {
+            break;
+        }
+        let lane_queue_lengths = lane_queue_lengths.lock().unwrap().total();
+        if lane_queue_lengths < 10 {
+            break;
+        }
+        sleep(Duration::from_millis(100)).await;
+    }
+    let elapsed = now.elapsed();
+    tracing::info!(
+        "waited for {}ms for all lanes to be empty",
+        elapsed.as_millis()
+    );
+}
+
+async fn is_total_transmission_lanes_larger_than(
+    lane_queue_lengths: LaneQueueLengths,
+    size: usize,
+) -> bool {
+    let lane_queue_lengths = lane_queue_lengths.lock().unwrap().total();
+    lane_queue_lengths > size
 }
 
 pub(crate) async fn start_processor(

@@ -174,7 +174,7 @@ impl IcmpConnectionBeacon {
 
 fn wrap_in_mixnet_message(recipient: Recipient, bundled_packets: Bytes) -> Result<InputMessage> {
     let packet = IpPacketRequest::new_data_request(bundled_packets).to_bytes()?;
-    let surbs = 0;
+    let surbs = 10;
     Ok(create_input_message(recipient, packet, surbs))
 }
 
