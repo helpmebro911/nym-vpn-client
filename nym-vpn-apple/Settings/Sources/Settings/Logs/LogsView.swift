@@ -43,8 +43,12 @@ public struct LogsView: View {
                     viewModel: LogsDeleteConfirmationDialogViewModel(
                         isDisplayed: $viewModel.isDeleteDialogDisplayed,
                         action: {
-                            viewModel.deleteLogs()
-                            viewModel.isDeleteDialogDisplayed = false
+                            Task {
+                                await viewModel.deleteLogs()
+                                Task { @MainActor in
+                                    viewModel.isDeleteDialogDisplayed = false
+                                }
+                            }
                         }
                     )
                 )

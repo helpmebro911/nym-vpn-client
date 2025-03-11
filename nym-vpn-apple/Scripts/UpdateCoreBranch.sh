@@ -78,11 +78,13 @@ else
     exit 1
 fi
 
-SOURCE_PATH="proto/nym/vpn.proto"
-DESTINATION_PATH="nym-vpn-apple/ServicesMacOS/Sources/GRPCManager/proto/nym/vpn.proto"
+SOURCE_PATH="proto"
+DESTINATION_PATH="nym-vpn-apple/ServicesMacOS/Sources/GRPCManager"
+
+rm -rf "../ServicesMacOS/Sources/GRPCManager/proto"
 
 if [ -e "$SOURCE_PATH" ]; then    
-    cp "$SOURCE_PATH" "$DESTINATION_PATH"
+    cp -a "$SOURCE_PATH" "$DESTINATION_PATH"
     echo "✅ vpn.proto has been successfully copied to $DESTINATION_PATH"
 else
     echo "❌ Error: $SOURCE_PATH does not exist. Copy operation failed." >&2
@@ -90,8 +92,8 @@ else
 fi
 
 cd nym-vpn-apple/ServicesMacOS/Sources/GRPCManager/proto/nym
-protoc --swift_out=. vpn.proto
-protoc --grpc-swift_out=. vpn.proto
+protoc --swift_out=. vpn.proto account.proto
+protoc --grpc-swift_out=. vpn.proto account.proto
 echo "✅ vpn.proto swift grpc files generated"
 
 END_TIME=$(date +%s)

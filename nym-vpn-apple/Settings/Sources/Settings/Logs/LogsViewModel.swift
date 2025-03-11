@@ -1,6 +1,8 @@
 import SwiftUI
 #if os(iOS)
 import ImpactGenerator
+#elseif os(macOS)
+import GRPCManager
 #endif
 import NymLogger
 import Theme
@@ -10,6 +12,8 @@ public final class LogsViewModel: ObservableObject {
 
 #if os(iOS)
     let impactGenerator: ImpactGenerator
+#elseif os(macOS)
+    let grpcManager: GRPCManager
 #endif
     let title = "logs".localizedString
     let exportLocalizedString = "logs.export".localizedString
@@ -47,11 +51,11 @@ public final class LogsViewModel: ObservableObject {
         self.impactGenerator = impactGenerator
         readLogs()
     }
-#endif
-#if os(macOS)
-    init(path: Binding<NavigationPath>, logFileManager: LogFileManager) {
+#elseif os(macOS)
+    init(path: Binding<NavigationPath>, logFileManager: LogFileManager, grpcManager: GRPCManager = .shared) {
         _path = path
         self.logFileManager = logFileManager
+        self.grpcManager = grpcManager
         readLogs()
     }
 #endif
@@ -60,8 +64,15 @@ public final class LogsViewModel: ObservableObject {
         if !path.isEmpty { path.removeLast() }
     }
 
-    func deleteLogs() {
+    @MainActor func deleteLogs() async {
         logFileManager.deleteLogs()
+#if os(macOS)
+        do {
+            try await grpcManager.deleteLogs()
+        } catch {
+            print(error)
+        }
+#endif
         logLines = []
     }
 
