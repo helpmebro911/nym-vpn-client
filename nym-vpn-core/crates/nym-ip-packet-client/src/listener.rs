@@ -33,7 +33,8 @@ pub enum IprListenerError {
 
 impl IprListener {
     pub fn new() -> Self {
-        let decoder = MultiIpPacketCodec::new(nym_ip_packet_requests::codec::BUFFER_TIMEOUT);
+        // let decoder = MultiIpPacketCodec::new(nym_ip_packet_requests::codec::BUFFER_TIMEOUT);
+        let decoder = MultiIpPacketCodec::new();
         Self { decoder }
     }
 
