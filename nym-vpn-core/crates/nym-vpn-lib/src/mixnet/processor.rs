@@ -1,7 +1,7 @@
 // Copyright 2023 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use std::result::Result;
+use std::{result::Result, time::Duration};
 
 use bytes::Bytes;
 use futures::{channel::mpsc, StreamExt};
@@ -12,7 +12,7 @@ use nym_mixnet_client::SharedMixnetClient;
 use nym_sdk::mixnet::{InputMessage, MixnetMessageSender, Recipient};
 use nym_task::{connections::TransmissionLane, TaskClient, TaskManager};
 use tokio::{sync::oneshot, task::JoinHandle};
-use tokio_util::sync::CancellationToken;
+use tokio_util::{codec::FramedWrite, sync::CancellationToken};
 use tun::{AsyncDevice, Device};
 
 use super::MixnetError;
@@ -128,13 +128,16 @@ impl MixnetProcessor {
         );
 
         tracing::debug!("Splitting tun device into sink and stream");
-        let (tun_device_sink, mut tun_device_stream) = self.device.into_framed().split();
+        // let (tun_device_sink, mut tun_device_stream) = self.device.into_framed().split();
 
         tracing::debug!("Split mixnet sender");
         let sender = self.mixnet_client.split_sender().await;
 
-        let mut multi_ip_packet_encoder =
-            MultiIpPacketCodec::new(nym_ip_packet_requests::codec::BUFFER_TIMEOUT);
+        let mut multi_ip_packet_encoder = MultiIpPacketCodec::new();
+        // MultiIpPacketCodec::new(nym_ip_packet_requests::codec::BUFFER_TIMEOUT);
+
+        // Using that multi_ip_packet_encoder implements tokio_util Codec, create a framed writer
+        let framed_writer = FramedWrite::new(tun_device_stream, multi_ip_packet_encoder);
 
         let message_creator = MessageCreator::new(self.ip_packet_router_address.into());
 
@@ -158,6 +161,8 @@ impl MixnetProcessor {
         // Keep track of whether we've sent the disconnect message, so we don't send it multiple
         // times
         let mut has_sent_ipr_disconnect = false;
+
+        let mut payload_topup_internal = tokio::time::interval(Duration::from_millis(100));
 
         tracing::info!("Mixnet processor is running");
         while !task_client_mix_processor.is_shutdown() {
@@ -195,27 +200,30 @@ impl MixnetProcessor {
                 }
                 // To make sure we don't wait too long before filling up the buffer, which destroys
                 // latency, cap the time waiting for the buffer to fill
-                Some(bundled_packets) = multi_ip_packet_encoder.buffer_timeout() => {
-                    assert!(!bundled_packets.is_empty());
-
-                    match message_creator.create_data_message(bundled_packets) {
-                        Ok(input_message) => {
-                            tokio::select! {
-                                ret = sender.send(input_message) => {
-                                    if ret.is_err() && !task_client_mix_processor.is_shutdown_poll() {
-                                        tracing::error!("Could not forward IP packet to the mixnet. The packet will be dropped.");
-                                    }
-                                }
-                                _ = task_client_mix_processor.recv_with_delay() => {
-                                    tracing::debug!("MixnetProcessor: Received shutdown while sending.");
-                                    break;
-                                }
-                            }
-                        }
-                        Err(err) => {
-                            tracing::error!("Failed to create input message: {err}");
-                        }
-                    };
+                //Some(bundled_packets) = multi_ip_packet_encoder.buffer_timeout() => {
+                //    assert!(!bundled_packets.is_empty());
+                //
+                //    match message_creator.create_data_message(bundled_packets) {
+                //        Ok(input_message) => {
+                //            tokio::select! {
+                //                ret = sender.send(input_message) => {
+                //                    if ret.is_err() && !task_client_mix_processor.is_shutdown_poll() {
+                //                        tracing::error!("Could not forward IP packet to the mixnet. The packet will be dropped.");
+                //                    }
+                //                }
+                //                _ = task_client_mix_processor.recv_with_delay() => {
+                //                    tracing::debug!("MixnetProcessor: Received shutdown while sending.");
+                //                    break;
+                //                }
+                //            }
+                //        }
+                //        Err(err) => {
+                //            tracing::error!("Failed to create input message: {err}");
+                //        }
+                //    };
+                //}
+                _ = payload_topup_internal.tick() => {
+                    // feed the codec a zero length packet to trigger the buffer timeout
                 }
                 Some(Ok(packet)) = tun_device_stream.next() => {
                     // Bundle up IP packets into a single mixnet message
