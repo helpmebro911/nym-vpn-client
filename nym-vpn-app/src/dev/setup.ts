@@ -8,8 +8,6 @@ import {
   GatewayType,
   GatewaysByCountry,
   NetworkCompat,
-  Tunnel,
-  TunnelData,
   VpndStatus,
 } from '../types';
 import { TunnelStateEvent } from '../constants';
@@ -18,9 +16,16 @@ import { TunnelStateEvent } from '../constants';
 import wgGwJson from './wg-gw.json';
 import mxEntryGwJson from './mx-entry-gw.json';
 import mxExitGwJson from './mx-exit-gw.json';
+import wgTunnel from './wg-tunnel.json';
+
+// some fake state
+const isLoggedIn = true;
+let autostart = false;
+let zknymMode = false;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type MockIpcFn = (cmd: string, payload?: InvokeArgs) => Promise<any>;
+type ArgsObj<T> = Record<string, T>;
 
 export function mockTauriIPC() {
   mockWindows('main');
@@ -54,15 +59,9 @@ export function mockTauriIPC() {
       await emit(TunnelStateEvent, { state: { connecting: null } });
       return new Promise<null>((resolve) =>
         setTimeout(async () => {
-          const tunnel: Tunnel = {
-            entryGwId: '1234',
-            exitGwId: '5678',
-            connectedAt: Date.now(),
-            data: {} as unknown as TunnelData,
-          };
-          await emit(TunnelStateEvent, { state: { connected: tunnel } });
+          await emit(TunnelStateEvent, { state: { connected: wgTunnel } });
           resolve(null);
-        }, 1),
+        }, 2000),
       );
     }
     if (cmd === 'disconnect') {
@@ -75,12 +74,13 @@ export function mockTauriIPC() {
       );
     }
     if (cmd === 'get_tunnel_state') {
-      return { state: 'disconnected' };
+      return { connected: wgTunnel };
+      // return 'disconnected';
     }
 
     if (cmd === 'get_gateways') {
       return new Promise<GatewaysByCountry[]>((resolve) => {
-        switch ((args as Record<string, unknown>).nodeType as GatewayType) {
+        switch ((args as ArgsObj<GatewayType>).nodeType) {
           case 'mx-entry':
             resolve(mxEntryGwJson as GatewaysByCountry[]);
             return;
@@ -99,7 +99,7 @@ export function mockTauriIPC() {
       if (!args) {
         return;
       }
-      switch ((args as Record<string, unknown>).key as DbKey) {
+      switch ((args as ArgsObj<DbKey>).key) {
         case 'ui-root-font-size':
           res = 12;
           break;
@@ -145,7 +145,7 @@ export function mockTauriIPC() {
     }
 
     if (cmd === 'is_account_stored') {
-      return new Promise<boolean>((resolve) => resolve(false));
+      return new Promise<boolean>((resolve) => resolve(isLoggedIn));
     }
 
     if (cmd === 'get_account_id') {
@@ -197,6 +197,29 @@ export function mockTauriIPC() {
           DEV_MODE: true,
         }),
       );
+    }
+
+    if (cmd === 'get_credentials_mode') {
+      return new Promise((resolve) => resolve(zknymMode));
+    }
+    if (cmd === 'set_credentials_mode') {
+      zknymMode = (args as ArgsObj<boolean>).enabled;
+      return new Promise((resolve) => resolve(1));
+    }
+
+    if (cmd === 'plugin:app|version') {
+      return new Promise((resolve) => resolve('0.0.0-browser'));
+    }
+    if (cmd === 'plugin:autostart|is_enabled') {
+      return new Promise((resolve) => resolve(autostart));
+    }
+    if (cmd === 'plugin:autostart|enable') {
+      autostart = true;
+      return new Promise((resolve) => resolve(true));
+    }
+    if (cmd === 'plugin:autostart|disable') {
+      autostart = false;
+      return new Promise((resolve) => resolve(false));
     }
   }) as MockIpcFn);
 }
