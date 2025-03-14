@@ -133,8 +133,7 @@ impl MixnetProcessor {
         tracing::debug!("Split mixnet sender");
         let sender = self.mixnet_client.split_sender().await;
 
-        let mut multi_ip_packet_encoder =
-            MultiIpPacketCodec::new(nym_ip_packet_requests::codec::BUFFER_TIMEOUT);
+        let mut multi_ip_packet_encoder = MultiIpPacketCodec::new();
 
         let message_creator = MessageCreator::new(self.ip_packet_router_address.into());
 
@@ -158,6 +157,13 @@ impl MixnetProcessor {
         // Keep track of whether we've sent the disconnect message, so we don't send it multiple
         // times
         let mut has_sent_ipr_disconnect = false;
+
+        let payload_topup_interval =
+            tokio::time::interval(nym_ip_packet_requests::codec::BUFFER_TIMEOUT);
+
+        let mixnet_client_sender_writer = MixnetClientIpPacketSender::new(
+
+        );
 
         tracing::info!("Mixnet processor is running");
         while !task_client_mix_processor.is_shutdown() {
@@ -195,28 +201,32 @@ impl MixnetProcessor {
                 }
                 // To make sure we don't wait too long before filling up the buffer, which destroys
                 // latency, cap the time waiting for the buffer to fill
-                Some(bundled_packets) = multi_ip_packet_encoder.buffer_timeout() => {
-                    assert!(!bundled_packets.is_empty());
-
-                    match message_creator.create_data_message(bundled_packets) {
-                        Ok(input_message) => {
-                            tokio::select! {
-                                ret = sender.send(input_message) => {
-                                    if ret.is_err() && !task_client_mix_processor.is_shutdown_poll() {
-                                        tracing::error!("Could not forward IP packet to the mixnet. The packet will be dropped.");
-                                    }
-                                }
-                                _ = task_client_mix_processor.recv_with_delay() => {
-                                    tracing::debug!("MixnetProcessor: Received shutdown while sending.");
-                                    break;
-                                }
-                            }
-                        }
-                        Err(err) => {
-                            tracing::error!("Failed to create input message: {err}");
-                        }
-                    };
+                _ = payload_topup_interval.tick() => {
+                    tracing::debug!("MixnetProcessor: Buffer timeout");
+                    // Send an empty message to trigger codec buffer flush
                 }
+                //Some(bundled_packets) = multi_ip_packet_encoder.buffer_timeout() => {
+                //    assert!(!bundled_packets.is_empty());
+                //
+                //    match message_creator.create_data_message(bundled_packets) {
+                //        Ok(input_message) => {
+                //            tokio::select! {
+                //                ret = sender.send(input_message) => {
+                //                    if ret.is_err() && !task_client_mix_processor.is_shutdown_poll() {
+                //                        tracing::error!("Could not forward IP packet to the mixnet. The packet will be dropped.");
+                //                    }
+                //                }
+                //                _ = task_client_mix_processor.recv_with_delay() => {
+                //                    tracing::debug!("MixnetProcessor: Received shutdown while sending.");
+                //                    break;
+                //                }
+                //            }
+                //        }
+                //        Err(err) => {
+                //            tracing::error!("Failed to create input message: {err}");
+                //        }
+                //    };
+                //}
                 Some(Ok(packet)) = tun_device_stream.next() => {
                     // Bundle up IP packets into a single mixnet message
                     if let Some(input_message) = multi_ip_packet_encoder
