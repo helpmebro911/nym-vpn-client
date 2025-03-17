@@ -123,7 +123,7 @@ impl MixnetProcessor {
         let (tun_device_sink, mut tun_device_stream) = self.device.into_framed().split();
 
         tracing::debug!("Split mixnet sender");
-        let sender = self.mixnet_client.split_sender().await;
+        let mixnet_sender = self.mixnet_client.split_sender().await;
 
         // let mut multi_ip_packet_encoder = MultiIpPacketCodec::new();
 
@@ -154,10 +154,8 @@ impl MixnetProcessor {
             tokio::time::interval(nym_ip_packet_requests::codec::BUFFER_TIMEOUT);
 
         let mixnet_client_sink = MixnetMessageSink::new_with_custom_translator(
-            sender.clone(),
-            MapBytesToInputMessage {
-                recipient: self.ip_packet_router_address.into(),
-            },
+            mixnet_sender.clone(),
+            ToIprDataRequest::new(self.ip_packet_router_address),
         );
 
         let mut mixnet_ip_packet_sink =
@@ -178,7 +176,7 @@ impl MixnetProcessor {
                             continue;
                         }
                     };
-                    if let Err(err) = sender.send(input_message).await {
+                    if let Err(err) = mixnet_sender.send(input_message).await {
                         tracing::error!("Failed to send disconnect message: {err}");
                         continue;
                     }
@@ -260,11 +258,19 @@ impl MixnetProcessor {
     }
 }
 
-struct MapBytesToInputMessage {
+struct ToIprDataRequest {
     recipient: Recipient,
 }
 
-impl MixnetMessageSinkTranslator for MapBytesToInputMessage {
+impl ToIprDataRequest {
+    fn new(recipient: IpPacketRouterAddress) -> Self {
+        Self {
+            recipient: recipient.into(),
+        }
+    }
+}
+
+impl MixnetMessageSinkTranslator for ToIprDataRequest {
     fn to_input_message(&self, bundled_ip_packets: &[u8]) -> Result<InputMessage, nym_sdk::Error> {
         let packets = BytesMut::from(bundled_ip_packets).freeze();
         let packet = IpPacketRequest::new_data_request(packets).to_bytes()?;
