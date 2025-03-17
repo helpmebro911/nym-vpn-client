@@ -6,7 +6,8 @@ use std::os::fd::RawFd;
 use std::sync::Arc;
 
 use nym_sdk::mixnet::{
-    ed25519, ClientStatsEvents, MixnetClient, MixnetClientSender, MixnetMessageSender, Recipient,
+    ed25519, ClientStatsEvents, LaneQueueLengths, MixnetClient, MixnetClientSender,
+    MixnetMessageSender, Recipient,
 };
 
 #[derive(Clone)]
@@ -47,6 +48,14 @@ impl SharedMixnetClient {
 
     pub async fn split_sender(&self) -> MixnetClientSender {
         self.lock().await.as_ref().unwrap().split_sender()
+    }
+
+    pub async fn shared_lane_queue_lengths(&self) -> LaneQueueLengths {
+        self.lock()
+            .await
+            .as_ref()
+            .unwrap()
+            .shared_lane_queue_lengths()
     }
 
     pub async fn send_stats_event(&self, event: ClientStatsEvents) {

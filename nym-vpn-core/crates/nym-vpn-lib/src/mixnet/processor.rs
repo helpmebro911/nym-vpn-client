@@ -125,7 +125,7 @@ impl MixnetProcessor {
         tracing::debug!("Split mixnet sender");
         let mixnet_sender = self.mixnet_client.split_sender().await;
 
-        // let mut multi_ip_packet_encoder = MultiIpPacketCodec::new();
+        let lane_queue_lengths = self.mixnet_client.shared_lane_queue_lengths().await;
 
         let message_creator = MessageCreator::new(self.ip_packet_router_address.into());
 
@@ -161,9 +161,19 @@ impl MixnetProcessor {
         let mut mixnet_ip_packet_sink =
             FramedWrite::new(mixnet_client_sink, MultiIpPacketCodec::new());
 
+        let paced_tun_device_stream = tun_device_stream.by_ref().then(|result| {
+            let cloned_lane_queue_lengths = lane_queue_lengths.clone();
+            async move {
+                cloned_lane_queue_lengths.wait_to_clear().await;
+                result
+            }
+        });
+        futures::pin_mut!(paced_tun_device_stream);
+
         tracing::info!("Mixnet processor is running");
         while !task_client_mix_processor.is_shutdown() {
             tokio::select! {
+                biased;
                 // When we get the cancel token, send a disconnect message to the IPR. We keep
                 // running until the mixnet listener receives the disconnect response, so we can
                 // make sure we've fully disconnected before we return.
@@ -199,6 +209,17 @@ impl MixnetProcessor {
                 // latency, cap the time waiting for the buffer to fill
                 _ = payload_topup_interval.tick() => {
                     tracing::debug!("MixnetProcessor: Buffer timeout");
+
+                    // Check the lane queue lengths, which are the pending packets idling in the
+                    // Poisson process in the mixnet client. If the queue lengths are too long, we
+                    // should stop sending packets to the mixnet until the queues are cleared.
+                    // if lane_queue_lengths.get(&TransmissionLane::General).unwrap_or_default() > 0 {
+                    let total_queue = lane_queue_lengths.total();
+                    if total_queue > 0 {
+                        tracing::info!("Skipping payload topup timeout (queue: {total_queue})");
+                        continue;
+                    }
+
                     tokio::select! {
                         ret = mixnet_ip_packet_sink.send(IprPacket::Flush) => {
                             if ret.is_err() && !task_client_mix_processor.is_shutdown_poll() {
@@ -212,7 +233,7 @@ impl MixnetProcessor {
                     }
                 }
                 // Read from the tun device and send the IP packet to the mixnet
-                Some(Ok(packet)) = tun_device_stream.next() => {
+                Some(Ok(packet)) = paced_tun_device_stream.next() => {
                     payload_topup_interval.reset();
                     tokio::select! {
                         ret = mixnet_ip_packet_sink.send(IprPacket::from(packet.into_bytes())) => {
