@@ -1,7 +1,7 @@
 // Copyright 2023 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use std::{result::Result, sync::Arc};
+use std::{result::Result, sync::Arc, time::Duration};
 
 use bytes::BytesMut;
 use futures::{channel::mpsc, SinkExt, StreamExt};
@@ -227,6 +227,12 @@ impl MixnetProcessor {
                 }
                 // Read from the tun device and send the IP packet to the mixnet
                 Some(Ok(tun_packet)) = tun_device_stream.next() => {
+                    let packet_queue = lane_queue_lengths.get(&TransmissionLane::General).unwrap_or_default() as u64;
+                    // tracing::info!("Before sleep: {packet_queue}");
+                    tokio::time::sleep(Duration::from_millis(packet_queue * 20)).await;
+                    // let packet_queue = lane_queue_lengths.get(&TransmissionLane::General).unwrap_or_default();
+                    // tracing::info!("After sleep: {packet_queue}");
+
                     payload_topup_interval.reset();
                     tokio::select! {
                         ret = mixnet_ip_packet_sink.send(IprPacket::from(tun_packet.into_bytes())) => {
