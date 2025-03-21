@@ -1,7 +1,7 @@
 // Copyright 2023 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use std::result::Result;
+use std::{result::Result, sync::Arc};
 
 use bytes::BytesMut;
 use futures::{channel::mpsc, SinkExt, StreamExt};
@@ -278,18 +278,26 @@ impl MixnetProcessor {
 
 struct ToIprDataRequest {
     recipient: Recipient,
+    counter: Arc<std::sync::Mutex<u64>>,
 }
 
 impl ToIprDataRequest {
     fn new(recipient: IpPacketRouterAddress) -> Self {
         Self {
             recipient: recipient.into(),
+            counter: Arc::new(std::sync::Mutex::new(0)),
         }
     }
 }
 
 impl MixnetMessageSinkTranslator for ToIprDataRequest {
     fn to_input_message(&self, bundled_ip_packets: &[u8]) -> Result<InputMessage, nym_sdk::Error> {
+        {
+            let mut g = self.counter.lock().unwrap();
+            *g += 1;
+            println!("sink counter: {}", g);
+        }
+
         let packets = BytesMut::from(bundled_ip_packets).freeze();
         let packet = IpPacketRequest::new_data_request(packets).to_bytes()?;
         let lane = TransmissionLane::General;
