@@ -160,6 +160,7 @@ impl MixnetProcessor {
 
         let mut mixnet_ip_packet_sink =
             FramedWrite::new(mixnet_client_sink, MultiIpPacketCodec::new());
+        mixnet_ip_packet_sink.set_backpressure_boundary(1);
 
         tracing::info!("Mixnet processor is running");
         while !task_client_mix_processor.is_shutdown() {
