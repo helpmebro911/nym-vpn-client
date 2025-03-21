@@ -199,14 +199,16 @@ impl MixnetProcessor {
                 // To make sure we don't wait too long before filling up the buffer, which destroys
                 // latency, cap the time waiting for the buffer to fill
                 _ = payload_topup_interval.tick() => {
-                    tracing::info!("MixnetProcessor: Buffer timeout");
+                    tracing::trace!("MixnetProcessor: Buffer timeout");
 
                     // Check the lane queue lengths, which are the pending packets idling in the
-                    // Poisson process in the mixnet client. If the queue lengths are too long, we
-                    // should stop sending packets to the mixnet until the queues are cleared.
-                    let total_queue = lane_queue_lengths.total();
-                    if total_queue > 0 {
-                        tracing::info!("Skipping payload topup timeout (queue: {total_queue})");
+                    // Poisson process in the mixnet client. If we already have pending packets
+                    // that we are waiting to send to the mixnet, there is no point in flushing the
+                    // current buffer. Instead keep filling up so we can fit more IP packets in the
+                    // mixnet packet payload.
+                    let packet_queue = lane_queue_lengths.get(&TransmissionLane::General).unwrap_or_default();
+                    if packet_queue > 0 {
+                        tracing::trace!("Skipping payload topup timeout (queue: {packet_queue})");
                         continue;
                     }
 
