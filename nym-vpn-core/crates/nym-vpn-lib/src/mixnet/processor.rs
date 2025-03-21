@@ -161,15 +161,6 @@ impl MixnetProcessor {
         let mut mixnet_ip_packet_sink =
             FramedWrite::new(mixnet_client_sink, MultiIpPacketCodec::new());
 
-        let paced_tun_device_stream = tun_device_stream.by_ref().then(|result| {
-            let cloned_lane_queue_lengths = lane_queue_lengths.clone();
-            async move {
-                cloned_lane_queue_lengths.wait_to_clear().await;
-                result
-            }
-        });
-        futures::pin_mut!(paced_tun_device_stream);
-
         tracing::info!("Mixnet processor is running");
         while !task_client_mix_processor.is_shutdown() {
             tokio::select! {
@@ -208,12 +199,11 @@ impl MixnetProcessor {
                 // To make sure we don't wait too long before filling up the buffer, which destroys
                 // latency, cap the time waiting for the buffer to fill
                 _ = payload_topup_interval.tick() => {
-                    tracing::debug!("MixnetProcessor: Buffer timeout");
+                    tracing::info!("MixnetProcessor: Buffer timeout");
 
                     // Check the lane queue lengths, which are the pending packets idling in the
                     // Poisson process in the mixnet client. If the queue lengths are too long, we
                     // should stop sending packets to the mixnet until the queues are cleared.
-                    // if lane_queue_lengths.get(&TransmissionLane::General).unwrap_or_default() > 0 {
                     let total_queue = lane_queue_lengths.total();
                     if total_queue > 0 {
                         tracing::info!("Skipping payload topup timeout (queue: {total_queue})");
@@ -233,10 +223,10 @@ impl MixnetProcessor {
                     }
                 }
                 // Read from the tun device and send the IP packet to the mixnet
-                Some(Ok(packet)) = paced_tun_device_stream.next() => {
+                Some(Ok(tun_packet)) = tun_device_stream.next() => {
                     payload_topup_interval.reset();
                     tokio::select! {
-                        ret = mixnet_ip_packet_sink.send(IprPacket::from(packet.into_bytes())) => {
+                        ret = mixnet_ip_packet_sink.send(IprPacket::from(tun_packet.into_bytes())) => {
                             if ret.is_err() && !task_client_mix_processor.is_shutdown_poll() {
                                 tracing::error!("Failed to send IP packet to the mixnet");
                             }
@@ -247,6 +237,11 @@ impl MixnetProcessor {
                         }
                     }
                 }
+                // NOTE: this will basically never fire. If the tun device stream ends, the select
+                // will still wait for the other branches to complete before this branch is taken.
+                //
+                // TODO: consider changing this so that a if tun_device_stream.next() returns None,
+                // break out of the loop directly
                 else => {
                     tracing::error!("Mixnet processor: tun device stream ended");
                     break;
