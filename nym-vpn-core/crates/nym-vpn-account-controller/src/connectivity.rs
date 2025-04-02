@@ -103,18 +103,8 @@ impl OfflineWatchTask {
     }
 
     fn signal_went_online_to_controller(&self) {
-        self.commander
-            .background_sync_account_state()
-            .inspect_err(|e| {
-                tracing::error!("{e}");
-            })
-            .ok();
-        self.commander
-            .background_sync_device_state()
-            .inspect_err(|e| {
-                tracing::error!("{e}");
-            })
-            .ok();
+        self.commander.background_sync_account_state();
+        self.commander.background_sync_device_state();
     }
 
     fn update_state(&self, new_state: Connectivity) {
