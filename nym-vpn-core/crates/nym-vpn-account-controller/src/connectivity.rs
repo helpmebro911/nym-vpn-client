@@ -6,7 +6,7 @@ use std::{sync::Arc, time::Duration};
 use nym_offline_monitor::Connectivity;
 use tokio::sync::watch;
 
-use crate::{commands::AccountCommand, AccountControllerCommander};
+use crate::AccountControllerCommander;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OfflineMonitorError {
