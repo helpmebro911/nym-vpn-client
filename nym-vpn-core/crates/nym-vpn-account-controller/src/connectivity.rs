@@ -6,7 +6,7 @@ use std::{sync::Arc, time::Duration};
 use nym_offline_monitor::Connectivity;
 use tokio::sync::watch;
 
-use crate::{AccountCommand, AccountControllerCommander};
+use crate::{commands::AccountCommand, AccountControllerCommander};
 
 #[derive(Debug, thiserror::Error)]
 pub enum OfflineMonitorError {
@@ -104,12 +104,16 @@ impl OfflineWatchTask {
 
     fn signal_went_online_to_controller(&self) {
         self.commander
-            .send(AccountCommand::SyncAccountState(None))
-            .inspect_err(|e| tracing::error!("{e}"))
+            .background_sync_account_state()
+            .inspect_err(|e| {
+                tracing::error!("{e}");
+            })
             .ok();
         self.commander
-            .send(AccountCommand::SyncDeviceState(None))
-            .inspect_err(|e| tracing::error!("{e}"))
+            .background_sync_device_state()
+            .inspect_err(|e| {
+                tracing::error!("{e}");
+            })
             .ok();
     }
 
