@@ -6,7 +6,7 @@ use std::{sync::Arc, time::Duration};
 use nym_offline_monitor::Connectivity;
 use tokio::sync::watch;
 
-use crate::AccountControllerCommander;
+use crate::AccountCommandSender;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OfflineMonitorError {
@@ -20,14 +20,14 @@ pub(super) struct OfflineWatch {
 
     // The account controller commander, used for sending commands to the account controller that
     // are triggered by connectivity changes.
-    commander: AccountControllerCommander,
+    commander: AccountCommandSender,
 
     // The task that monitors the connectivity state and updates the `connectivity` field.
     task: Option<tokio::task::JoinHandle<()>>,
 }
 
 impl OfflineWatch {
-    pub(super) fn new(commander: AccountControllerCommander, initial_state: Connectivity) -> Self {
+    pub(super) fn new(commander: AccountCommandSender, initial_state: Connectivity) -> Self {
         let connectivity = Arc::new(std::sync::Mutex::new(initial_state));
         let task = None;
 
@@ -86,14 +86,14 @@ impl OfflineWatch {
 struct OfflineWatchTask {
     connectivity: Arc<std::sync::Mutex<Connectivity>>,
     offline_watch: watch::Receiver<Connectivity>,
-    commander: AccountControllerCommander,
+    commander: AccountCommandSender,
 }
 
 impl OfflineWatchTask {
     fn new(
         connectivity: Arc<std::sync::Mutex<Connectivity>>,
         offline_watch: watch::Receiver<Connectivity>,
-        commander: AccountControllerCommander,
+        commander: AccountCommandSender,
     ) -> Self {
         Self {
             connectivity,
