@@ -164,7 +164,7 @@ tokio = "1.42"
 tokio-stream = "0.1.17"
 tokio-util = { version = "0.7.13", features = ["codec"] }
 toml = "0.8"
-tonic = "0.12.3"
+tonic = { version = "0.12.3", default-features = false }
 tonic-build = "0.12.3"
 tower = "0.5.2"
 tracing = "0.1"
