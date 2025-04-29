@@ -4,12 +4,12 @@
 use std::{error::Error as StdError, time::Duration};
 
 use nym_task::TaskManager;
+use nym_tun::AsyncDevice;
 use tokio::{
     sync::oneshot,
     task::{JoinError, JoinHandle},
 };
 use tokio_util::sync::CancellationToken;
-use tun::AsyncDevice;
 
 use nym_connection_monitor::ConnectionMonitorTask;
 

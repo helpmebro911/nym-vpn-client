@@ -16,9 +16,9 @@ use nym_sdk::mixnet::{
     InputMessage, MixnetClientSender, MixnetMessageSender, MixnetMessageSinkTranslator, Recipient,
 };
 use nym_task::{TaskClient, TaskManager, connections::TransmissionLane};
+use nym_tun::AsyncDevice;
 use tokio::{sync::oneshot, task::JoinHandle};
 use tokio_util::{codec::Encoder, sync::CancellationToken};
-use tun::{AsyncDevice, Device};
 
 use super::{MixnetError, SharedMixnetClient, backpressure::MixnetBackpressureMonitor};
 
@@ -115,11 +115,11 @@ impl MixnetProcessor {
     ) -> Result<AsyncDevice, MixnetError> {
         tracing::info!(
             "Opened mixnet processor on tun device {}",
-            self.device.get_ref().name().unwrap(),
+            self.device.as_ref().name(),
         );
 
         tracing::debug!("Splitting tun device into sink and stream");
-        let (tun_device_sink, mut tun_device_stream) = self.device.into_framed().split();
+        let (tun_device_sink, mut tun_device_stream) = self.device.into_framed().unwrap().split();
 
         tracing::debug!("Split mixnet sender");
         let (mixnet_sender, lane_queue_lengths) = {

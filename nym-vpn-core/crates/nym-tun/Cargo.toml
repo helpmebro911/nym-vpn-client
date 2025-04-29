@@ -1,0 +1,31 @@
+[package]
+name = "nym-tun"
+version.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+bytes.workspace = true
+futures.workspace = true
+tracing.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["macros", "net"] }
+tokio-util = { workspace = true, features = ["codec"] }
+
+nym-common.workspace = true
+
+[target.'cfg(unix)'.dependencies]
+nix = { workspace = true, features = ["ioctl", "socket", "net", "fs"] }
+
+[target.'cfg(windows)'.dependencies]
+wintun.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util"] }

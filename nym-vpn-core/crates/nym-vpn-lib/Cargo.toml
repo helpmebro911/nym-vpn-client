@@ -40,7 +40,7 @@ tokio-stream.workspace = true
 tokio-util = { workspace = true, features = ["codec", "rt"] }
 tracing-subscriber = { workspace = true, features = ["env-filter"] }
 tracing.workspace = true
-tun = { workspace = true, features = ["async"] }
+nym-tun.workspace = true
 uniffi.workspace = true
 url.workspace = true
 nym-bandwidth-controller.workspace = true

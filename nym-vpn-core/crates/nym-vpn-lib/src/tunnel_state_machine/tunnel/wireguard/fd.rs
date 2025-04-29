@@ -4,7 +4,6 @@ use std::{
 };
 
 use nix::fcntl::{self, FcntlArg, OFlag};
-use tun::Device;
 
 pub trait DupFd {
     /// Duplicate tunnel file descriptor pointing to the same file description as the original one.
@@ -12,7 +11,7 @@ pub trait DupFd {
     fn dup_fd(&self) -> io::Result<OwnedFd>;
 }
 
-impl<T: Device + AsRawFd> DupFd for T {
+impl<T: AsRawFd> DupFd for T {
     fn dup_fd(&self) -> io::Result<OwnedFd> {
         dup_fd(self.as_raw_fd())
     }

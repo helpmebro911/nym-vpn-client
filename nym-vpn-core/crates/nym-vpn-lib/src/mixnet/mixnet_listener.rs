@@ -7,9 +7,9 @@ use nym_connection_monitor::{ConnectionStatusEvent, IcmpBeaconReply, Icmpv6Beaco
 use nym_ip_packet_client::{IprListener, MixnetMessageOutcome};
 use nym_ip_packet_requests::IpPair;
 use nym_task::TaskClient;
+use nym_tun::{AsyncDevice, TunPacket, TunPacketCodec};
 use tokio::{sync::oneshot, task::JoinHandle};
 use tokio_util::codec::Framed;
-use tun::{AsyncDevice, TunPacket, TunPacketCodec};
 
 use super::SharedMixnetClient;
 
@@ -93,10 +93,13 @@ impl MixnetListener {
                                 for packet in packets {
                                     self.check_for_icmp_beacon_reply(&packet);
 
+                                    // Errors if the packet contains unknown version of IP
+                                    let tun_packet = TunPacket::new(packet.to_vec()).expect("empty bytes in the packet?");
+
                                     // Consider not including packets that are ICMP ping replies to our beacon
                                     // in the responses. We are defensive here just in case we incorrectly
                                     // label real packets as ping replies to our beacon.
-                                    if let Err(err) = self.tun_device_sink.send(TunPacket::new(packet.to_vec())).await {
+                                    if let Err(err) = self.tun_device_sink.send(tun_packet).await {
                                         tracing::error!("Failed to send packet to tun device: {err}");
                                     }
                                 }

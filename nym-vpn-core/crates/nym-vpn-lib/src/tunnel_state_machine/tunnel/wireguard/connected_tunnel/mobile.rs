@@ -12,13 +12,13 @@ use dispatch2::{DispatchQueue, DispatchQueueAttr};
 
 use ipnetwork::IpNetwork;
 use nym_authenticator_client::AuthClientMixnetListenerHandle;
+use nym_tun::AsyncDevice;
 #[cfg(target_os = "ios")]
 use tokio::sync::mpsc;
 use tokio::task::{JoinError, JoinHandle};
 #[cfg(target_os = "ios")]
 use tokio_stream::{StreamExt, wrappers::UnboundedReceiverStream};
 use tokio_util::sync::CancellationToken;
-use tun::AsyncDevice;
 
 #[cfg(target_os = "ios")]
 use nym_apple_network::PathMonitor;
@@ -148,7 +148,7 @@ impl ConnectedTunnel {
         #[allow(unused_mut)]
         let mut exit_tunnel = wireguard_go::Tunnel::start(
             two_hop_config.exit.into_wireguard_config(),
-            tun_device.get_ref().dup_fd().map_err(Error::DupFd)?,
+            tun_device.as_ref().dup_fd().map_err(Error::DupFd)?,
         )?;
 
         let shutdown_token = CancellationToken::new();

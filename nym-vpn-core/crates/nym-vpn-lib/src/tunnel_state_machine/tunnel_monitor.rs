@@ -1,17 +1,17 @@
 // Copyright 2024 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use futures::{FutureExt, future::Fuse};
-#[cfg(target_os = "linux")]
-use nix::sys::socket::{SetSockOpt, sockopt::Mark};
-use nym_sdk::UserAgent;
-use nym_vpn_network_config::start_background_file_refresh;
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 use std::net::Ipv4Addr;
-#[cfg(any(target_os = "linux", target_os = "ios", target_os = "android"))]
+#[cfg(any(target_os = "linux"))]
 use std::os::fd::BorrowedFd;
-#[cfg(any(target_os = "android", target_os = "ios"))]
-use std::os::fd::{AsRawFd, IntoRawFd};
+
+#[cfg(target_os = "linux")]
+use nix::sys::socket::{SetSockOpt, sockopt::Mark};
+
+use nym_sdk::UserAgent;
+use nym_vpn_network_config::start_background_file_refresh;
+
 #[cfg(target_os = "android")]
 use std::os::fd::{FromRawFd, OwnedFd};
 use std::{
@@ -25,28 +25,25 @@ use std::{os::fd::RawFd, sync::Arc};
 
 #[cfg(windows)]
 use super::wintun::{self, WintunAdapterConfig};
+use futures::{FutureExt, future::Fuse};
 #[cfg(any(target_os = "ios", target_os = "android"))]
 use ipnetwork::{IpNetwork, Ipv4Network, Ipv6Network};
 use nym_gateway_directory::{
     CachingGatewayClient, GatewayClient, GatewayMinPerformance, ResolvedConfig,
 };
+use nym_tun::AsyncDevice;
+#[cfg(windows)]
+use nym_tun::WintunConfig;
 use nym_vpn_account_controller::AccountCommandSender;
 use time::OffsetDateTime;
 use tokio::{sync::mpsc, task::JoinHandle};
 use tokio_util::sync::CancellationToken;
-use tun::AsyncDevice;
-#[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
-use tun::Device;
 
 #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
 use nym_ip_packet_requests::IpPair;
 
 #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
 use super::route_handler::{RouteHandler, RoutingConfig};
-#[cfg(any(target_os = "linux", target_os = "macos"))]
-use super::tun_ipv6;
-#[cfg(any(target_os = "ios", target_os = "android"))]
-use super::tun_name;
 use super::{
     Error, NymConfig, Result, TunnelInterface, TunnelMetadata, TunnelSettings,
     tunnel::{
@@ -93,6 +90,10 @@ const WINTUN_TUNNEL_TYPE: &str = "Nym";
 /// tunnel type and there is no way to change that.
 #[cfg(windows)]
 const MIXNET_WINTUN_NAME: &str = WINTUN_TUNNEL_TYPE;
+
+/// Mixnet adapter GUID.
+#[cfg(windows)]
+const MIXNET_WINTUN_GUID: &str = "{AFE43773-E1F8-4EBB-8536-176AB86AFE9D}";
 
 /// The user-facing name of wintun adapter used as entry tunnel.
 #[cfg(windows)]
@@ -713,24 +714,13 @@ impl TunnelMonitor {
             self.create_tun_device(packet_tunnel_settings).await?
         };
 
-        #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
-        let tun_name = tun_device
-            .get_ref()
-            .name()
-            .map_err(Error::GetTunDeviceName)?;
-
-        #[cfg(any(target_os = "ios", target_os = "android"))]
-        let tun_name = {
-            let tun_fd = unsafe { BorrowedFd::borrow_raw(tun_device.get_ref().as_raw_fd()) };
-            tun_name::get_tun_name(&tun_fd).map_err(Error::GetTunDeviceName)?
-        };
-
+        let tun_name = tun_device.as_ref().name();
         tracing::info!("Created tun device: {}", tun_name);
 
         #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
         {
             let routing_config = RoutingConfig::Mixnet {
-                tun_name: tun_name.clone(),
+                tun_name: tun_name.to_owned(),
                 tun_mtu: mtu,
                 #[cfg(not(target_os = "linux"))]
                 entry_gateway_address: assigned_addresses.entry_mixnet_gateway_ip,
@@ -749,7 +739,7 @@ impl TunnelMonitor {
         });
 
         let tunnel_metadata = TunnelMetadata {
-            interface: tun_name,
+            interface: tun_name.to_owned(),
             ips: vec![
                 IpAddr::V4(assigned_addresses.interface_addresses.ipv4),
                 IpAddr::V6(assigned_addresses.interface_addresses.ipv6),
@@ -795,7 +785,7 @@ impl TunnelMonitor {
             Some(conn_data.entry.private_ipv4),
             exit_tun_mtu,
         )?;
-        let exit_tun_name = exit_tun.get_ref().name().map_err(Error::GetTunDeviceName)?;
+        let exit_tun_name = exit_tun.as_ref().name().to_owned();
         tracing::info!("Created exit tun device: {}", exit_tun_name);
 
         let routing_config = RoutingConfig::WireguardNetstack {
@@ -964,14 +954,11 @@ impl TunnelMonitor {
             None,
             entry_mtu,
         )?;
-        let entry_tun_name = entry_tun
-            .get_ref()
-            .name()
-            .map_err(Error::GetTunDeviceName)?;
+        let entry_tun_name = entry_tun.as_ref().name();
         tracing::info!("Created entry tun device: {}", entry_tun_name);
 
         let entry_tunnel_metadata = TunnelMetadata {
-            interface: entry_tun_name,
+            interface: entry_tun_name.to_owned(),
             ips: vec![
                 IpAddr::V4(conn_data.entry.private_ipv4),
                 IpAddr::V6(conn_data.entry.private_ipv6),
@@ -990,11 +977,11 @@ impl TunnelMonitor {
             Some(conn_data.entry.private_ipv4),
             exit_mtu,
         )?;
-        let exit_tun_name = exit_tun.get_ref().name().map_err(Error::GetTunDeviceName)?;
+        let exit_tun_name = exit_tun.as_ref().name();
         tracing::info!("Created exit tun device: {}", exit_tun_name);
 
         let exit_tunnel_metadata = TunnelMetadata {
-            interface: exit_tun_name.clone(),
+            interface: exit_tun_name.to_owned(),
             ips: vec![
                 IpAddr::V4(conn_data.exit.private_ipv4),
                 IpAddr::V6(conn_data.exit.private_ipv6),
@@ -1218,10 +1205,8 @@ impl TunnelMonitor {
         };
 
         let tun_device = self.create_tun_device(packet_tunnel_settings).await?;
-        let tun_fd = unsafe { BorrowedFd::borrow_raw(tun_device.get_ref().as_raw_fd()) };
-        let interface = tun_name::get_tun_name(&tun_fd).map_err(Error::GetTunDeviceName)?;
         let tunnel_metadata = TunnelMetadata {
-            interface,
+            interface: tun_device.as_ref().name().to_owned(),
             ips: vec![
                 IpAddr::V4(conn_data.exit.private_ipv4),
                 IpAddr::V6(conn_data.exit.private_ipv6),
@@ -1273,36 +1258,37 @@ impl TunnelMonitor {
 
     #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
     fn create_mixnet_device(interface_addresses: IpPair, mtu: u16) -> Result<AsyncDevice> {
-        let mut tun_config = tun::Configuration::default();
+        let mut ipv4_octets = interface_addresses.ipv4.octets();
+        ipv4_octets[3] = 255;
+        let destination = Ipv4Addr::from(ipv4_octets);
 
-        // rust-tun uses the same name for tunnel type.
+        let mut builder = nym_tun::DeviceBuilder::default();
+        builder
+            .ipv4(nym_tun::Ipv4Config {
+                address: interface_addresses.ipv4,
+                destination,
+                netmask: Ipv4Addr::new(255, 255, 255, 0),
+            })
+            .ipv6(nym_tun::Ipv6Config {
+                address: interface_addresses.ipv6,
+                prefix_length: 64,
+            })
+            .mtu(mtu);
+
         #[cfg(windows)]
-        tun_config.name(MIXNET_WINTUN_NAME);
-
-        tun_config
-            .address(interface_addresses.ipv4)
-            .mtu(i32::from(mtu))
-            .up();
-
-        #[cfg(target_os = "linux")]
-        tun_config.platform(|platform_config| {
-            platform_config.packet_information(false);
+        builder.wintun_config(WintunConfig {
+            wintun_path: None,
+            adapter_name: MIXNET_WINTUN_NAME,
+            tunnel_type: WINTUN_TUNNEL_TYPE,
+            network_guid: Some(MIXNET_WINTUN_GUID),
         });
 
-        let tun_device = tun::create_as_async(&tun_config).map_err(Error::CreateTunDevice)?;
-
-        let tun_name = tun_device
-            .get_ref()
-            .name()
-            .map_err(Error::GetTunDeviceName)?;
-
-        #[cfg(any(target_os = "linux", target_os = "macos"))]
-        tun_ipv6::set_ipv6_addr(&tun_name, interface_addresses.ipv6)
-            .map_err(Error::SetTunDeviceIpv6Addr)?;
+        let tun_device = builder.build_as_async().map_err(Error::CreateTunDevice)?;
+        let tun_name = tun_device.as_ref().name();
 
         #[cfg(windows)]
         {
-            let interface_luid = wintun::get_interface_luid_for_alias(&tun_name)?;
+            let interface_luid = wintun::get_interface_luid_for_alias(tun_name)?;
             wintun::add_ipv6_address(interface_luid, interface_addresses.ipv6)?;
             wintun::initialize_interfaces(interface_luid, Some(mtu), Some(mtu))?;
         }
@@ -1316,34 +1302,24 @@ impl TunnelMonitor {
         destination: Option<Ipv4Addr>,
         mtu: u16,
     ) -> Result<AsyncDevice> {
-        let mut tun_config = tun::Configuration::default();
+        let mut builder = nym_tun::DeviceBuilder::default();
+        builder
+            .ipv4(nym_tun::Ipv4Config {
+                address: interface_addresses.ipv4,
+                destination: destination.unwrap_or_else(|| {
+                    let mut destination = interface_addresses.ipv4.octets();
+                    destination[3] = 255;
+                    Ipv4Addr::from(destination)
+                }),
+                netmask: Ipv4Addr::BROADCAST,
+            })
+            .ipv6(nym_tun::Ipv6Config {
+                address: interface_addresses.ipv6,
+                prefix_length: 64,
+            })
+            .mtu(mtu);
 
-        tun_config
-            .address(interface_addresses.ipv4)
-            .netmask(Ipv4Addr::BROADCAST)
-            .mtu(i32::from(mtu))
-            .up();
-
-        if let Some(destination) = destination {
-            tun_config.destination(destination);
-        }
-
-        #[cfg(target_os = "linux")]
-        tun_config.platform(|platform_config| {
-            platform_config.packet_information(false);
-        });
-
-        let tun_device = tun::create_as_async(&tun_config).map_err(Error::CreateTunDevice)?;
-
-        let tun_name = tun_device
-            .get_ref()
-            .name()
-            .map_err(Error::GetTunDeviceName)?;
-
-        tun_ipv6::set_ipv6_addr(&tun_name, interface_addresses.ipv6)
-            .map_err(Error::SetTunDeviceIpv6Addr)?;
-
-        Ok(tun_device)
+        Ok(builder.build_as_async().map_err(Error::CreateTunDevice)?)
     }
 
     #[cfg(any(target_os = "ios", target_os = "android"))]
@@ -1364,9 +1340,6 @@ impl TunnelMonitor {
             unsafe { OwnedFd::from_raw_fd(raw_tun_fd) }
         };
 
-        let mut tun_config = tun::Configuration::default();
-        tun_config.raw_fd(owned_tun_fd.as_raw_fd());
-
         #[cfg(target_os = "ios")]
         {
             self.tun_provider
@@ -1375,12 +1348,12 @@ impl TunnelMonitor {
                 .map_err(|e| Error::ConfigureTunnelProvider(e.to_string()))?
         }
 
-        let device = tun::create_as_async(&tun_config).map_err(Error::CreateTunDevice)?;
+        let mut device_builder = nym_tun::DeviceBuilder::default();
+        device_builder.tun_fd(owned_tun_fd);
 
-        // Consume the owned fd, since the device is now responsible for closing the underlying raw fd.
-        let _ = owned_tun_fd.into_raw_fd();
-
-        Ok(device)
+        device_builder
+            .build_as_async()
+            .map_err(Error::CreateTunDevice)
     }
 }
 

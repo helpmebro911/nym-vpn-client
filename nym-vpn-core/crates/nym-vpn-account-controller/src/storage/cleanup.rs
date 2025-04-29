@@ -68,7 +68,7 @@ pub async fn remove_files_for_account(data_dir: &Path) -> Result<(), Error> {
                 tracing::debug!("File not found, skipping: {}", file_path.display());
             }
             Err(err) => {
-                trace_err_chain!(err, "Failed to remove file {}", file_path.display());
+                err.trace_chain_with_msg(format!("Failed to remove file: {}", file_path.display()))
             }
         }
     }
@@ -80,7 +80,7 @@ pub async fn remove_files_for_account(data_dir: &Path) -> Result<(), Error> {
     let corrupted_files = get_list_of_corrupted_files(data_dir)
         .await
         .inspect_err(|err| {
-            tracing::error!("Failed to get list of corrupted files: {err}");
+            err.trace_chain_with_msg("Failed to get list of corrupted files");
         });
 
     if let Ok(corrupted_files) = corrupted_files {
@@ -92,7 +92,10 @@ pub async fn remove_files_for_account(data_dir: &Path) -> Result<(), Error> {
                     tracing::debug!("Corrupted file not found, skipping: {}", file.display());
                 }
                 Err(err) => {
-                    trace_err_chain!(err, "Failed to remove corrupted file {}", file.display());
+                    err.trace_chain_with_msg(format!(
+                        "Failed to remove corrupted file: {}",
+                        file.display()
+                    ));
                 }
             }
         }

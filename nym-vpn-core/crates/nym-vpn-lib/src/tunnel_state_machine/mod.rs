@@ -11,10 +11,6 @@ mod resolver;
 #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
 mod route_handler;
 mod states;
-#[cfg(any(target_os = "linux", target_os = "macos"))]
-mod tun_ipv6;
-#[cfg(any(target_os = "ios", target_os = "android"))]
-mod tun_name;
 pub mod tunnel;
 mod tunnel_monitor;
 #[cfg(windows)]
@@ -587,8 +583,8 @@ pub enum Error {
     #[error("failed to start local dns resolver")]
     StartLocalDnsResolver(#[source] resolver::Error),
 
-    #[error("failed to create tunnel device")]
-    CreateTunDevice(#[source] tun::Error),
+    #[error("failed to create tunnel device: {}", _0)]
+    CreateTunDevice(#[source] nym_tun::Error),
 
     #[cfg(windows)]
     #[error("failed to setup wintun adapter")]
@@ -605,18 +601,6 @@ pub enum Error {
     #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
     #[error("failed to obtain route handle")]
     GetRouteHandle(#[source] route_handler::Error),
-
-    #[error("failed to get tunnel device name")]
-    #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
-    GetTunDeviceName(#[source] tun::Error),
-
-    #[error("failed to get tunnel device name")]
-    #[cfg(any(target_os = "ios", target_os = "android"))]
-    GetTunDeviceName(#[source] tun_name::GetTunNameError),
-
-    #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
-    #[error("failed to set tunnel device ipv6 address")]
-    SetTunDeviceIpv6Addr(#[source] std::io::Error),
 
     #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
     #[error("failed to add routes")]
@@ -646,12 +630,6 @@ impl Error {
             #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
             Self::CreateFirewall(_) | Self::ApplyFirewallPolicy(_) => ErrorStateReason::Firewall,
             Self::CreateTunDevice(_) => ErrorStateReason::TunDevice,
-            #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
-            Self::SetTunDeviceIpv6Addr(_) => ErrorStateReason::TunDevice,
-            #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
-            Self::GetTunDeviceName(_) => ErrorStateReason::TunDevice,
-            #[cfg(any(target_os = "ios", target_os = "android"))]
-            Self::GetTunDeviceName(_) => ErrorStateReason::TunDevice,
             Self::ResolveGatewayAddrs(_) => ErrorStateReason::ResolveGatewayAddrs,
             #[cfg(target_os = "macos")]
             Self::StartLocalDnsResolver(_) => ErrorStateReason::StartLocalDnsResolver,
