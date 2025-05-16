@@ -50,9 +50,12 @@ impl VpnApiClient {
     ) -> Result<Self> {
         nym_http_api_client::Client::builder(base_url.clone())
             .map(|builder| {
+                let proxy = reqwest::ClientBuilder::default().proxy(reqwest::Proxy::all("127.0.0.1:8888").unwrap()).danger_accept_invalid_certs(true);
+
                 let mut builder = builder
                     .with_user_agent(user_agent)
-                    .with_timeout(NYM_VPN_API_TIMEOUT);
+                    .with_timeout(NYM_VPN_API_TIMEOUT)
+                    .with_reqwest_builder(proxy);
 
                 if let Some(domain) = base_url.domain() {
                     match static_addresses {
