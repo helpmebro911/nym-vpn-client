@@ -76,6 +76,11 @@ impl RouteHandler {
         }
     }
 
+    #[cfg(any(target_os = "linux", target_os = "windows"))]
+    pub async fn get_mtu_for_route(&self, ip_addr: IpAddr) -> Result<u16> {
+        Ok(self.route_manager.get_mtu_for_route(ip_addr).await?)
+    }
+
     #[cfg(target_os = "macos")]
     pub async fn refresh_routes(&mut self) {
         if let Err(e) = self.route_manager.refresh_routes() {

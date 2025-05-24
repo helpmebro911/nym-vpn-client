@@ -1036,6 +1036,15 @@ impl TunnelMonitor {
         let entry_gateway_address = conn_data.entry.endpoint.ip();
         let exit_gateway_address = conn_data.exit.endpoint.ip();
 
+        match self.route_handler.get_mtu_for_route(entry_gateway_address) {
+            Ok(route_mtu) => {
+                tracing::info!("Route MTU for {entry_gateway_address} is {route_mtu}");
+            }
+            Err(e) => {
+                e.trace_chain_with_msg("Failed to detect route mtu for {entry_gateway_address}");
+            }
+        };
+
         let entry_adapter_config = WintunAdapterConfig {
             interface_ipv4: conn_data.entry.private_ipv4,
             interface_ipv6: conn_data.entry.private_ipv6,
