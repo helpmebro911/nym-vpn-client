@@ -29,6 +29,12 @@ sudo apt install libdbus-1-dev libmnl-dev libnftnl-dev protobuf-compiler
   winget install -e --id=GnuWin32.Make
   ```
 
+- Install Libclang:
+
+  ```
+  winget install -e --id=LLVM.LLVM
+  ```
+
 ## Build on Windows
 
 ### Build all dependencies
