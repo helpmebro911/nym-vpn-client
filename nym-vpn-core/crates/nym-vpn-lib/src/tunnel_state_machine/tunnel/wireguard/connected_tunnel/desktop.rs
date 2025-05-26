@@ -121,6 +121,8 @@ impl ConnectedTunnel {
             #[cfg(target_os = "linux")]
             None,
         );
+        tracing::info!("Entry config: {wg_entry_config:?}");
+        tracing::info!("Exit config: {wg_exit_config:?}");
 
         #[allow(unused_mut)]
         let mut entry_tunnel = wireguard_go::Tunnel::start(
