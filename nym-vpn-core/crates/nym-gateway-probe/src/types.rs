@@ -8,36 +8,6 @@ pub struct ProbeResult {
     pub outcome: ProbeOutcome,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ProbeOutcome {
-    pub as_entry: Entry,
-    pub as_exit: Option<Exit>,
-    pub wg: Option<WgProbeResults>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-#[serde(rename = "wg")]
-pub struct WgProbeResults {
-    pub can_register: bool,
-
-    pub can_handshake_v4: bool,
-    pub can_resolve_dns_v4: bool,
-    pub ping_hosts_performance_v4: f32,
-    pub ping_ips_performance_v4: f32,
-
-    pub can_handshake_v6: bool,
-    pub can_resolve_dns_v6: bool,
-    pub ping_hosts_performance_v6: f32,
-    pub ping_ips_performance_v6: f32,
-
-    pub download_duration_sec_v4: u64,
-    pub downloaded_file_v4: String,
-    pub download_error_v4: String,
-
-    pub download_duration_sec_v6: u64,
-    pub downloaded_file_v6: String,
-    pub download_error_v6: String,
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
