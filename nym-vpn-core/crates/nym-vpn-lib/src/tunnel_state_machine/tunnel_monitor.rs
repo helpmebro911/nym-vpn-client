@@ -310,42 +310,12 @@ impl TunnelMonitor {
 
         self.send_event(TunnelMonitorEvent::SelectingGateways);
 
-        let gateway_performance_options = self
-            .tunnel_parameters
-            .tunnel_settings
-            .gateway_performance_options;
-        let gateway_min_performance = GatewayMinPerformance::from_percentage_values(
-            gateway_performance_options
-                .mixnet_min_performance
-                .map(u64::from),
-            gateway_performance_options
-                .vpn_min_performance
-                .map(u64::from),
-        );
+        let gateway_config = self.get_gateway_config();
+        let user_agent = self.get_user_agent();
 
-        let mut gateway_config = self.tunnel_parameters.nym_config.gateway_config.clone();
-        match gateway_min_performance {
-            Ok(gateway_min_performance) => {
-                gateway_config =
-                    gateway_config.with_min_gateway_performance(gateway_min_performance);
-            }
-            Err(e) => {
-                tracing::error!(
-                    "Invalid gateway performance values. Will carry on with initial values. Error: {}",
-                    e
-                );
-            }
-        }
-
-        let user_agent = self
-            .tunnel_parameters
-            .tunnel_settings
-            .user_agent
-            .clone()
-            .unwrap_or(UserAgent::from(nym_bin_common::bin_info_local_vergen!()));
         let gateway_directory_client = GatewayClient::new_with_resolver_overrides(
             gateway_config.clone(),
-            user_agent,
+            user_agent.clone(),
             self.tunnel_parameters
                 .resolved_gateway_config
                 .nym_vpn_api_socket_addrs
@@ -386,30 +356,11 @@ impl TunnelMonitor {
                 new_gateways
             };
 
-        let connect_options = MixnetConnectOptions {
-            data_path: self.tunnel_parameters.nym_config.data_path.clone(),
+        let connect_options = self.mixnet_connect_options(
+            selected_gateways.clone(),
             gateway_config,
-            resolved_gateway_config: self.tunnel_parameters.resolved_gateway_config.clone(),
-            mixnet_client_config: self
-                .tunnel_parameters
-                .tunnel_settings
-                .mixnet_client_config
-                .clone(),
-            tunnel_type: self.tunnel_parameters.tunnel_settings.tunnel_type,
-            enable_credentials_mode: self
-                .tunnel_parameters
-                .tunnel_settings
-                .enable_credentials_mode,
-            stats_recipient_address: self
-                .tunnel_parameters
-                .tunnel_settings
-                .statistics_recipient
-                .as_deref()
-                .copied(),
-            selected_gateways: selected_gateways.clone(),
-            user_agent: None, // todo: provide user-agent
-            custom_topology_provider: self.custom_topology_provider.clone(),
-        };
+            user_agent.clone(),
+        );
 
         #[cfg(target_os = "android")]
         let tun_provider = self.tun_provider.clone();
@@ -555,6 +506,76 @@ impl TunnelMonitor {
         tracing::info!("Tunnel monitor finished");
 
         Ok(tun_devices)
+    }
+
+    fn mixnet_connect_options(
+        &self,
+        selected_gateways: SelectedGateways,
+        gateway_config: nym_gateway_directory::Config,
+        user_agent: UserAgent,
+    ) -> MixnetConnectOptions {
+        MixnetConnectOptions {
+            data_path: self.tunnel_parameters.nym_config.data_path.clone(),
+            gateway_config,
+            resolved_gateway_config: self.tunnel_parameters.resolved_gateway_config.clone(),
+            mixnet_client_config: self
+                .tunnel_parameters
+                .tunnel_settings
+                .mixnet_client_config
+                .clone(),
+            tunnel_type: self.tunnel_parameters.tunnel_settings.tunnel_type,
+            enable_credentials_mode: self
+                .tunnel_parameters
+                .tunnel_settings
+                .enable_credentials_mode,
+            stats_recipient_address: self
+                .tunnel_parameters
+                .tunnel_settings
+                .statistics_recipient
+                .as_deref()
+                .copied(),
+            selected_gateways,
+            user_agent: Some(user_agent),
+            custom_topology_provider: self.custom_topology_provider.clone(),
+        }
+    }
+
+    fn get_gateway_config(&self) -> nym_gateway_directory::Config {
+        let gateway_performance_options = self
+            .tunnel_parameters
+            .tunnel_settings
+            .gateway_performance_options;
+        let gateway_min_performance = GatewayMinPerformance::from_percentage_values(
+            gateway_performance_options
+                .mixnet_min_performance
+                .map(u64::from),
+            gateway_performance_options
+                .vpn_min_performance
+                .map(u64::from),
+        );
+
+        let mut gateway_config = self.tunnel_parameters.nym_config.gateway_config.clone();
+        match gateway_min_performance {
+            Ok(gateway_min_performance) => {
+                gateway_config =
+                    gateway_config.with_min_gateway_performance(gateway_min_performance);
+            }
+            Err(e) => {
+                tracing::error!(
+                    "Invalid gateway performance values. Continue with initial values. Error: {}",
+                    e
+                );
+            }
+        }
+        gateway_config
+    }
+
+    fn get_user_agent(&self) -> UserAgent {
+        self.tunnel_parameters
+            .tunnel_settings
+            .user_agent
+            .clone()
+            .unwrap_or(UserAgent::from(nym_bin_common::bin_info_local_vergen!()))
     }
 
     async fn recv_error(
