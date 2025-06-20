@@ -28,6 +28,7 @@ log.workspace = true
 rand.workspace = true
 serde_json.workspace = true
 sysinfo.workspace = true
+surge-ping.workspace = true
 thiserror.workspace = true
 time.workspace = true
 tokio = { workspace = true, features = [
@@ -112,6 +113,11 @@ vergen-gitcl = { workspace = true, default-features = false, features = [
     "cargo",
     "rustc",
 ] }
+
+[dev-dependencies]
+rand.workspace = true
+proptest.workspace = true
+tokio = { workspace = true, features = ["test-util"] }
 
 [features]
 default = ["amnezia"]

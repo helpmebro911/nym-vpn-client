@@ -179,6 +179,8 @@ async fn run_inner_async(
         tracing::error!("Failed to join on command interface: {}", e);
     }
 
+    tracing::debug!("Waiting for file logging handler");
+
     let worker_guard = if let Some(file_logging_handle) = file_logging_handle {
         file_logging_handle
             .await
@@ -188,6 +190,7 @@ async fn run_inner_async(
         None
     };
 
+    tracing::debug!("Shutdown join set");
     shutdown_join_set.shutdown().await;
 
     Ok(worker_guard)

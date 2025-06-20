@@ -4,6 +4,7 @@
 mod any_tunnel_handle;
 mod gateway_selector;
 pub mod mixnet;
+pub mod mtu_detection;
 mod status_listener;
 mod tombstone;
 pub mod wireguard;

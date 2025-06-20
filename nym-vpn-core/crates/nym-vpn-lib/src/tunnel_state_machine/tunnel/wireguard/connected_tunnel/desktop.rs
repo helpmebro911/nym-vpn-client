@@ -1,7 +1,10 @@
 // Copyright 2023 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use std::{error::Error as StdError, net::IpAddr};
+use std::{
+    error::Error as StdError,
+    net::{IpAddr, Ipv4Addr},
+};
 
 use ipnetwork::IpNetwork;
 use nym_authenticator_client::AuthClientMixnetListenerHandle;
@@ -21,6 +24,7 @@ use nym_wg_go::wireguard_go::WintunInterface;
 use nym_wg_go::{netstack, wireguard_go};
 #[cfg(windows)]
 use nym_windows::net::{self as winnet, AddressFamily};
+use tun::Device;
 
 #[cfg(windows)]
 use crate::tunnel_state_machine::route_handler::RouteHandler;
@@ -106,6 +110,12 @@ impl ConnectedTunnel {
         #[cfg(windows)] route_handler: RouteHandler,
         options: TunTunTunnelOptions,
     ) -> Result<TunnelHandle> {
+        let entry_server = if let IpAddr::V4(v4addr) = self.connection_data.entry.endpoint {
+            Some(v4addr)
+        } else {
+            None
+        };
+
         let wg_entry_config = WgNodeConfig::with_gateway_data(
             self.connection_data.entry.clone(),
             self.entry_gateway_client.keypair().private_key(),
@@ -164,6 +174,25 @@ impl ConnectedTunnel {
         let wintun_exit_interface = exit_tunnel.wintun_interface().clone();
 
         let event_handler_task = tokio::spawn(async move {
+            let gateway_ipv4 = Ipv4Addr::new(10, 1, 0, 0);
+            tracing::info!("Verify MTU against: {}", gateway_ipv4);
+            if let Ok(iface_name) = options.entry_tun.get_ref().name() {
+                match crate::tunnel_state_machine::tunnel::mtu_detection::verify_mtu(
+                    gateway_ipv4,
+                    &iface_name,
+                    ENTRY_MTU,
+                )
+                .await
+                {
+                    Ok(verified_mtu) => {
+                        tracing::info!("Verified MTU: {verified_mtu}");
+                    }
+                    Err(err) => {
+                        tracing::error!("MTU verification failed: {}", err);
+                    }
+                }
+            }
+
             #[cfg(windows)]
             {
                 let (default_route_tx, mut default_route_rx) = mpsc::unbounded_channel();
