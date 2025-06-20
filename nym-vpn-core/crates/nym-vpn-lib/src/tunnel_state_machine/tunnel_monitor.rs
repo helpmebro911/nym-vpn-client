@@ -745,6 +745,7 @@ impl TunnelMonitor {
             ],
             ipv4_gateway: None,
             ipv6_gateway: None,
+            mtu,
         };
 
         let tunnel_handle = AnyTunnelHandle::from(
@@ -825,6 +826,7 @@ impl TunnelMonitor {
             ],
             ipv4_gateway: Some(conn_data.entry.private_ipv4),
             ipv6_gateway: Some(conn_data.entry.private_ipv6),
+            mtu: connected_tunnel.exit_mtu(),
         };
 
         let tunnel_handle = AnyTunnelHandle::from(
@@ -966,6 +968,7 @@ impl TunnelMonitor {
             ],
             ipv4_gateway: None,
             ipv6_gateway: None,
+            mtu: connected_tunnel.entry_mtu(),
         };
 
         let exit_tun = Self::create_wireguard_device(
@@ -988,6 +991,7 @@ impl TunnelMonitor {
             ],
             ipv4_gateway: Some(conn_data.entry.private_ipv4),
             ipv6_gateway: Some(conn_data.entry.private_ipv6),
+            mtu: connected_tunnel.exit_mtu(),
         };
 
         let routing_config = RoutingConfig::Wireguard {
@@ -996,6 +1000,8 @@ impl TunnelMonitor {
             #[cfg(not(target_os = "linux"))]
             entry_gateway_address: conn_data.entry.endpoint.ip(),
             exit_gateway_address: conn_data.exit.endpoint.ip(),
+            entry_mtu: entry_tunnel_metadata.mtu,
+            exit_mtu: exit_tunnel_metadata.mtu,
         };
         self.set_routes(routing_config).await?;
 

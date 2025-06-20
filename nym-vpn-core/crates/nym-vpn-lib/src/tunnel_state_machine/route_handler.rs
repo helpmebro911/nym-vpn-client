@@ -14,8 +14,27 @@ use nym_routing::{Node, RequiredRoute, RouteManagerHandle};
 
 #[cfg(target_os = "linux")]
 pub const TUNNEL_TABLE_ID: u32 = 0x14d;
+
 #[cfg(target_os = "linux")]
 pub const TUNNEL_FWMARK: u32 = 0x14d;
+
+/// Size of IPv4 header in bytes
+pub const IPV4_HEADER_SIZE: u16 = 20;
+
+/// Size of IPv6 header in bytes
+pub const IPV6_HEADER_SIZE: u16 = 40;
+
+/// Size of wireguard header in bytes
+pub const WIREGUARD_HEADER_SIZE: u16 = 40;
+
+/// Size of ICMP header in bytes
+pub const ICMP_HEADER_SIZE: u16 = 8;
+
+/// Smallest allowed MTU for IPv4 in bytes
+pub const MIN_IPV4_MTU: u16 = 576;
+
+/// Smallest allowed MTU for IPv6 in bytes
+pub const MIN_IPV6_MTU: u16 = 1280;
 
 pub enum RoutingConfig {
     Mixnet {
@@ -29,6 +48,8 @@ pub enum RoutingConfig {
         #[cfg(not(target_os = "linux"))]
         entry_gateway_address: IpAddr,
         exit_gateway_address: IpAddr,
+        entry_mtu: u16,
+        exit_mtu: u16,
     },
     WireguardNetstack {
         exit_tun_name: String,
@@ -117,16 +138,7 @@ impl RouteHandler {
                     IpNetwork::from(entry_gateway_address),
                     NetNode::DefaultNode,
                 ));
-
-                routes.insert(RequiredRoute::new(
-                    "0.0.0.0/0".parse().unwrap(),
-                    Node::device(tun_name.to_owned()),
-                ));
-
-                routes.insert(RequiredRoute::new(
-                    "::0/0".parse().unwrap(),
-                    Node::device(tun_name.to_owned()),
-                ));
+                routes.extend(Self::get_default_routes(&tun_name));
             }
             RoutingConfig::Wireguard {
                 entry_tun_name,
@@ -134,27 +146,41 @@ impl RouteHandler {
                 #[cfg(not(target_os = "linux"))]
                 entry_gateway_address,
                 exit_gateway_address,
+                entry_mtu,
+                exit_mtu,
             } => {
                 #[cfg(not(target_os = "linux"))]
-                routes.insert(RequiredRoute::new(
-                    IpNetwork::from(entry_gateway_address),
-                    NetNode::DefaultNode,
-                ));
+                {
+                    #[allow(unused_mut)]
+                    let mut entry_via_default_gw_route = RequiredRoute::new(
+                        IpNetwork::from(entry_gateway_address),
+                        NetNode::DefaultNode,
+                    );
 
-                routes.insert(RequiredRoute::new(
+                    #[cfg(target_os = "macos")]
+                    {
+                        entry_via_default_gw_route = entry_via_default_gw_route.mtu(entry_mtu);
+                    }
+
+                    routes.insert(entry_via_default_gw_route);
+                }
+
+                #[allow(unused_mut)]
+                let mut exit_via_entry_route = RequiredRoute::new(
                     IpNetwork::from(exit_gateway_address),
                     Node::device(entry_tun_name.to_owned()),
-                ));
+                );
 
-                routes.insert(RequiredRoute::new(
-                    "0.0.0.0/0".parse().unwrap(),
-                    Node::device(exit_tun_name.to_owned()),
-                ));
+                #[cfg(any(target_os = "linux", target_os = "macos"))]
+                {
+                    exit_via_entry_route = exit_via_entry_route.mtu(exit_mtu);
+                }
 
-                routes.insert(RequiredRoute::new(
-                    "::0/0".parse().unwrap(),
-                    Node::device(exit_tun_name.to_owned()),
-                ));
+                routes.insert(exit_via_entry_route);
+
+                for default_route in Self::get_default_routes(&exit_tun_name) {
+                    routes.insert(default_route);
+                }
             }
             RoutingConfig::WireguardNetstack {
                 exit_tun_name,
@@ -166,24 +192,47 @@ impl RouteHandler {
                     IpNetwork::from(entry_gateway_address),
                     NetNode::DefaultNode,
                 ));
-
-                routes.insert(RequiredRoute::new(
-                    "0.0.0.0/0".parse().unwrap(),
-                    Node::device(exit_tun_name.to_owned()),
-                ));
-
-                routes.insert(RequiredRoute::new(
-                    "::0/0".parse().unwrap(),
-                    Node::device(exit_tun_name.to_owned()),
-                ));
+                routes.extend(Self::get_default_routes(&exit_tun_name));
             }
         }
+
+        routes
+    }
+
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    fn apply_route_mtu(route: RequiredRoute, mtu: u16) -> RequiredRoute {
+        // Set route MTU by subtracting the WireGuard overhead from the tunnel MTU. Plus
+        // some margin to make room for padding bytes.
+        let ip_overhead = match route.prefix.is_ipv4() {
+            true => IPV4_HEADER_SIZE,
+            false => IPV6_HEADER_SIZE,
+        };
+        const PADDING_BYTES_MARGIN: u16 = 15;
+        let mtu = mtu - ip_overhead - WIREGUARD_HEADER_SIZE - PADDING_BYTES_MARGIN;
+
+        route.mtu(mtu)
+    }
+
+    /// Returns 0.0.0.0/0 and ::0/0 routes via given interface name
+    fn get_default_routes(iface_name: &str) -> Vec<RequiredRoute> {
+        let ipv4_route = RequiredRoute::new(
+            "0.0.0.0/0".parse().unwrap(),
+            Node::device(iface_name.to_owned()),
+        );
+
+        let ipv6_route = RequiredRoute::new(
+            "::0/0".parse().unwrap(),
+            Node::device(iface_name.to_owned()),
+        );
+
+        #[allow(unused_mut)]
+        let mut routes = vec![ipv4_route, ipv6_route];
 
         #[cfg(target_os = "linux")]
         {
             routes = routes
                 .into_iter()
-                .map(|r| r.use_main_table(false))
+                .map(|route| route.use_main_table(false))
                 .collect();
         }
 
