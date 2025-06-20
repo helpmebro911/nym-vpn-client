@@ -110,12 +110,6 @@ impl ConnectedTunnel {
         #[cfg(windows)] route_handler: RouteHandler,
         options: TunTunTunnelOptions,
     ) -> Result<TunnelHandle> {
-        let entry_server = if let IpAddr::V4(v4addr) = self.connection_data.entry.endpoint {
-            Some(v4addr)
-        } else {
-            None
-        };
-
         let wg_entry_config = WgNodeConfig::with_gateway_data(
             self.connection_data.entry.clone(),
             self.entry_gateway_client.keypair().private_key(),
@@ -177,7 +171,7 @@ impl ConnectedTunnel {
             let gateway_ipv4 = Ipv4Addr::new(10, 1, 0, 0);
             tracing::info!("Verify MTU against: {}", gateway_ipv4);
             if let Ok(iface_name) = options.entry_tun.get_ref().name() {
-                match crate::tunnel_state_machine::tunnel::mtu_detection::verify_mtu(
+                match crate::tunnel_state_machine::tunnel::mtu_detection::detect_mtu(
                     gateway_ipv4,
                     &iface_name,
                     ENTRY_MTU,
