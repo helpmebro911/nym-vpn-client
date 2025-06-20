@@ -104,6 +104,13 @@ impl RouteHandler {
         }
     }
 
+    #[cfg(any(target_os = "linux", target_os = "windows"))]
+    pub async fn get_mtu_for_route(&self, ip: IpAddr) -> Result<u16> {
+        self.route_manager.get_mtu_for_route(ip).inspect_err(|e| {
+            trace_err_chain!(e, "Failed to get mtu for route");
+        })
+    }
+
     #[cfg(windows)]
     pub async fn add_default_route_listener(
         &mut self,
@@ -197,20 +204,6 @@ impl RouteHandler {
         }
 
         routes
-    }
-
-    #[cfg(any(target_os = "linux", target_os = "macos"))]
-    fn apply_route_mtu(route: RequiredRoute, mtu: u16) -> RequiredRoute {
-        // Set route MTU by subtracting the WireGuard overhead from the tunnel MTU. Plus
-        // some margin to make room for padding bytes.
-        let ip_overhead = match route.prefix.is_ipv4() {
-            true => IPV4_HEADER_SIZE,
-            false => IPV6_HEADER_SIZE,
-        };
-        const PADDING_BYTES_MARGIN: u16 = 15;
-        let mtu = mtu - ip_overhead - WIREGUARD_HEADER_SIZE - PADDING_BYTES_MARGIN;
-
-        route.mtu(mtu)
     }
 
     /// Returns 0.0.0.0/0 and ::0/0 routes via given interface name

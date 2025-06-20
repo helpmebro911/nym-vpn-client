@@ -99,6 +99,7 @@ impl ConnectedMixnet {
     /// Creates a tunnel over WireGuard.
     pub async fn connect_wireguard_tunnel(
         self,
+        mtu: u16,
         network: &Network,
         enable_credentials_mode: bool,
         cancel_token: CancellationToken,
@@ -111,6 +112,7 @@ impl ConnectedMixnet {
 
         match connector
             .connect(
+                mtu,
                 network,
                 enable_credentials_mode,
                 self.selected_gateways,

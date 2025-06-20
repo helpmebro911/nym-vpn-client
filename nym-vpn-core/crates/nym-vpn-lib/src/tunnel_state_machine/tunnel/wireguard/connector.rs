@@ -48,6 +48,7 @@ impl Connector {
     }
     pub async fn connect(
         self,
+        mtu: u16,
         network: &Network,
         enable_credentials_mode: bool,
         selected_gateways: SelectedGateways,
@@ -68,6 +69,7 @@ impl Connector {
 
         match result {
             Ok(connect_result) => Ok(ConnectedTunnel::new(
+                mtu,
                 self.task_manager,
                 connect_result.entry_gateway_client,
                 connect_result.exit_gateway_client,

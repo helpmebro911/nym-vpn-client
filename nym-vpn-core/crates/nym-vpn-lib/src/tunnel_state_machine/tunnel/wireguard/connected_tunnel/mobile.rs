@@ -47,6 +47,7 @@ use crate::{
 const DEFAULT_PATH_DEBOUNCE: Duration = Duration::from_millis(250);
 
 pub struct ConnectedTunnel {
+    mtu: u16,
     task_manager: TaskManager,
     entry_gateway_client: WgGatewayClient,
     exit_gateway_client: WgGatewayClient,
@@ -57,6 +58,7 @@ pub struct ConnectedTunnel {
 
 impl ConnectedTunnel {
     pub fn new(
+        mtu: u16,
         task_manager: TaskManager,
         entry_gateway_client: WgGatewayClient,
         exit_gateway_client: WgGatewayClient,
@@ -65,6 +67,7 @@ impl ConnectedTunnel {
         auth_client_mixnet_listener_handle: AuthClientMixnetListenerHandle,
     ) -> Self {
         Self {
+            mtu: u16,
             task_manager,
             entry_gateway_client,
             exit_gateway_client,

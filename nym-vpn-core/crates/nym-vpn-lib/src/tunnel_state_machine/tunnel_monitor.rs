@@ -75,11 +75,12 @@ use crate::{
     tunnel_state_machine::{WireguardMultihopMode, account},
 };
 
-/// Default MTU for mixnet tun device.
+// Set the MTU to the lowest possible whilst still allowing for IPv6 to help with wireless
+// carriers that do a lot of encapsulation.
 const DEFAULT_TUN_MTU: u16 = if cfg!(any(target_os = "ios", target_os = "android")) {
     1280
 } else {
-    1500
+    1380
 };
 
 /// User-facing tunnel type identifier.
@@ -669,12 +670,15 @@ impl TunnelMonitor {
             .map_err(Box::new)?;
         let assigned_addresses = connected_tunnel.assigned_addresses();
 
-        let mtu: u16 = self
+        let mtu: u16 = match self
             .tunnel_parameters
             .tunnel_settings
             .mixnet_tunnel_options
             .mtu
-            .unwrap_or(DEFAULT_TUN_MTU);
+        {
+            Some(mtu) => mtu,
+            None => self.get_desired_mtu().await,
+        };
 
         #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
         let tun_device = Self::create_mixnet_device(assigned_addresses.interface_addresses, mtu)?;
@@ -767,8 +771,10 @@ impl TunnelMonitor {
         &mut self,
         connected_mixnet: ConnectedMixnet,
     ) -> Result<StartTunnelResult> {
+        let mtu = self.get_desired_mtu().await;
         let connected_tunnel = connected_mixnet
             .connect_wireguard_tunnel(
+                mtu,
                 &self.tunnel_parameters.nym_config.network_env,
                 self.tunnel_parameters
                     .tunnel_settings
@@ -929,13 +935,28 @@ impl TunnelMonitor {
         })
     }
 
+    async fn get_desired_mtu(&self) -> u16 {
+        #[cfg(any(target_os = "linux", target_os = "windows"))]
+        {
+            self.route_handler
+                .get_mtu_for_route()
+                .await
+                .unwrap_or(DEFAULT_TUN_MTU)
+        }
+
+        #[cfg(not(any(target_os = "linux", target_os = "windows")))]
+        DEFAULT_TUN_MTU
+    }
+
     #[cfg(any(target_os = "linux", target_os = "macos"))]
     async fn start_wireguard_tunnel(
         &mut self,
         connected_mixnet: ConnectedMixnet,
     ) -> Result<StartTunnelResult> {
+        let mtu: u16 = self.get_desired_mtu().await;
         let connected_tunnel = connected_mixnet
             .connect_wireguard_tunnel(
+                mtu,
                 &self.tunnel_parameters.nym_config.network_env,
                 self.tunnel_parameters
                     .tunnel_settings
