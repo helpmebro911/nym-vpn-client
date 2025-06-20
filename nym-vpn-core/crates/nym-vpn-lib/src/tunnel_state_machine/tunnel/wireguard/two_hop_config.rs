@@ -48,14 +48,6 @@ pub struct TwoHopConfig {
 }
 
 impl TwoHopConfig {
-    /// Get port dynamically to avoid binding to already bound ports
-    fn get_dynamic_port(default_port: u16) -> u16 {
-        UdpSocket::bind("0.0.0.0:0")
-            .and_then(|socket| socket.local_addr())
-            .map(|address| address.port())
-            .unwrap_or(default_port)
-    }
-
     /// Create new two-hop configuration given two individual WireGuard configurations.
     pub fn new(entry: WgNodeConfig, exit: WgNodeConfig) -> Self {
         // Ensure that exit instance of wg attached on tun interface, uses a fixed port number
@@ -113,6 +105,14 @@ impl TwoHopConfig {
             forwarder: forwarder_config,
             tun: tun_config,
         }
+    }
+
+    /// Get port dynamically to avoid binding to already bound ports
+    fn get_dynamic_port(default_port: u16) -> u16 {
+        UdpSocket::bind("0.0.0.0:0")
+            .and_then(|socket| socket.local_addr())
+            .map(|address| address.port())
+            .unwrap_or(default_port)
     }
 }
 
