@@ -19,14 +19,6 @@ use super::{
 };
 use crate::service::VpnServiceCommand;
 
-fn grpc_span(req: &http::Request<()>) -> tracing::Span {
-    let service = req.uri().path().trim_start_matches('/');
-    let method = service.split('/').next_back().unwrap_or(service);
-    let span = tracing::info_span!("grpc_vpnd", req = method);
-    tracing::info!(target: "grpc_vpnd", "← {} {:?}", method, req.body());
-    span
-}
-
 pub async fn start_command_interface(
     tunnel_event_rx: broadcast::Receiver<TunnelEvent>,
     network_env: Network,
@@ -56,9 +48,7 @@ pub async fn start_command_interface(
             let command_interface =
                 CommandInterface::new(vpn_command_tx, tunnel_event_rx, network_env);
 
-            let server = Server::builder()
-                .trace_fn(grpc_span)
-                .add_service(NymVpndServer::new(command_interface));
+            let server = Server::builder().add_service(NymVpndServer::new(command_interface));
 
             match server
                 .serve_with_incoming_shutdown(incoming, incoming_shutdown_token.cancelled_owned())
