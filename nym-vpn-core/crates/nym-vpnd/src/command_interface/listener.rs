@@ -221,7 +221,7 @@ impl NymVpnd for CommandInterface {
     type ListenToTunnelStateStream = BoxStream<'static, Result<TunnelState, tonic::Status>>;
     async fn listen_to_tunnel_state(
         &self,
-        request: tonic::Request<()>,
+        _request: tonic::Request<()>,
     ) -> Result<tonic::Response<Self::ListenToTunnelStateStream>, tonic::Status> {
         let rx = CommandInterfaceConnectionHandler::new(self.vpn_command_tx.clone())
             .handle_subscribe_to_tunnel_state()
@@ -237,7 +237,7 @@ impl NymVpnd for CommandInterface {
         BoxStream<'static, Result<nym_vpn_proto::TunnelEvent, tonic::Status>>;
     async fn listen_to_events(
         &self,
-        request: tonic::Request<()>,
+        _request: tonic::Request<()>,
     ) -> Result<tonic::Response<Self::ListenToEventsStream>, tonic::Status> {
         let rx = self.tunnel_event_rx.resubscribe();
         let stream = tokio_stream::wrappers::BroadcastStream::new(rx).map(|event| {
