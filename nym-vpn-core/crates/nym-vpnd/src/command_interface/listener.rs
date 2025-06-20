@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 use futures::{StreamExt, stream::BoxStream};
+use nym_common::trace_err_chain;
 use nym_vpn_api_client::NetworkCompatibility;
 use nym_vpn_network_config::Network;
 use tokio::sync::{broadcast, mpsc::UnboundedSender};
@@ -214,8 +215,6 @@ impl NymVpnd for CommandInterface {
             .handle_status()
             .await
             .map(TunnelState::from)?;
-
-        tracing::debug!("Returning tunnel state: {:?}", tunnel_state);
         Ok(tonic::Response::new(tunnel_state))
     }
 
@@ -224,8 +223,6 @@ impl NymVpnd for CommandInterface {
         &self,
         request: tonic::Request<()>,
     ) -> Result<tonic::Response<Self::ListenToTunnelStateStream>, tonic::Status> {
-        tracing::debug!("Got connection status stream request: {request:?}");
-
         let rx = CommandInterfaceConnectionHandler::new(self.vpn_command_tx.clone())
             .handle_subscribe_to_tunnel_state()
             .await?;
@@ -242,8 +239,6 @@ impl NymVpnd for CommandInterface {
         &self,
         request: tonic::Request<()>,
     ) -> Result<tonic::Response<Self::ListenToEventsStream>, tonic::Status> {
-        tracing::debug!("Got daemon events stream request: {request:?}");
-
         let rx = self.tunnel_event_rx.resubscribe();
         let stream = tokio_stream::wrappers::BroadcastStream::new(rx).map(|event| {
             event.map(nym_vpn_proto::TunnelEvent::from).map_err(|err| {
@@ -260,8 +255,6 @@ impl NymVpnd for CommandInterface {
         &self,
         request: tonic::Request<ListGatewaysRequest>,
     ) -> Result<tonic::Response<ListGatewaysResponse>, tonic::Status> {
-        tracing::debug!("Got list gateways request: {:?}", request);
-
         let request = request.into_inner();
 
         let gw_type = nym_vpn_proto::GatewayType::try_from(request.kind)
@@ -321,11 +314,6 @@ impl NymVpnd for CommandInterface {
                 .map(nym_vpn_proto::GatewayResponse::from)
                 .collect(),
         };
-
-        tracing::debug!(
-            "Returning list gateways response: {} entries",
-            response.gateways.len()
-        );
         Ok(tonic::Response::new(response))
     }
 
@@ -333,8 +321,6 @@ impl NymVpnd for CommandInterface {
         &self,
         request: tonic::Request<ListCountriesRequest>,
     ) -> Result<tonic::Response<ListCountriesResponse>, tonic::Status> {
-        tracing::debug!("Got list entry countries request: {request:?}");
-
         let request = request.into_inner();
 
         let gw_type = nym_vpn_proto::GatewayType::try_from(request.kind)
@@ -394,10 +380,6 @@ impl NymVpnd for CommandInterface {
                 .collect(),
         };
 
-        tracing::debug!(
-            "Returning list countries response: {} countries",
-            response.countries.len()
-        );
         Ok(tonic::Response::new(response))
     }
 
@@ -415,7 +397,6 @@ impl NymVpnd for CommandInterface {
             error: result.err().map(nym_vpn_proto::StoreAccountError::from),
         };
 
-        tracing::debug!("Returning store account response: {:?}", response);
         Ok(tonic::Response::new(response))
     }
 
@@ -427,7 +408,6 @@ impl NymVpnd for CommandInterface {
             .handle_is_account_stored()
             .await?;
 
-        tracing::debug!("Returning is account stored response");
         Ok(tonic::Response::new(IsAccountStoredResponse { is_stored }))
     }
 
@@ -443,7 +423,6 @@ impl NymVpnd for CommandInterface {
             error: result.err().map(nym_vpn_proto::ForgetAccountError::from),
         };
 
-        tracing::debug!("Returning forget account response");
         Ok(tonic::Response::new(response))
     }
 
@@ -470,7 +449,7 @@ impl NymVpnd for CommandInterface {
             .handle_get_account_links(locale)
             .await?
             .map_err(|err| {
-                tracing::error!("Failed to get account links: {:?}", err);
+                trace_err_chain!(err, "Failed to get account links");
                 tonic::Status::internal("Failed to get account links")
             })?;
 
@@ -510,7 +489,7 @@ impl NymVpnd for CommandInterface {
             .handle_get_account_usage()
             .await?
             .map_err(|err| {
-                tracing::error!("Failed to get account usage: {:?}", err);
+                trace_err_chain!(err, "Failed to get account usage");
                 tonic::Status::internal("Failed to get account usage")
             })?;
 
@@ -539,7 +518,7 @@ impl NymVpnd for CommandInterface {
             .handle_reset_device_identity(seed)
             .await?
             .map_err(|err| {
-                tracing::error!("Failed to reset device identity: {:?}", err);
+                trace_err_chain!(err, "Failed to reset device identity");
                 tonic::Status::internal("Failed to reset device identity")
             })?;
 
@@ -554,7 +533,7 @@ impl NymVpnd for CommandInterface {
             .handle_get_device_identity()
             .await?
             .map_err(|err| {
-                tracing::error!("Failed to get device identity: {:?}", err);
+                trace_err_chain!(err, "Failed to get device identity");
                 tonic::Status::internal("Failed to get device identity")
             })?;
 
@@ -600,7 +579,7 @@ impl NymVpnd for CommandInterface {
             .handle_get_active_devices()
             .await?
             .map_err(|err| {
-                tracing::error!("Failed to get active devices: {:?}", err);
+                trace_err_chain!(err, "Failed to get active devices");
                 tonic::Status::internal("Failed to get active devices")
             })?;
 
@@ -631,7 +610,7 @@ impl NymVpnd for CommandInterface {
             .handle_get_device_zk_nyms()
             .await?
             .map_err(|err| {
-                tracing::error!("Failed to get device zknyms: {:?}", err);
+                trace_err_chain!(err, "Failed to get device zknyms");
                 tonic::Status::internal("Failed to get devicezk nyms")
             })?;
 
@@ -649,7 +628,7 @@ impl NymVpnd for CommandInterface {
             .handle_get_zk_nyms_available_for_download()
             .await?
             .map_err(|err| {
-                tracing::error!("Failed to get zknyms available for download: {:?}", err);
+                trace_err_chain!(err, "Failed to get zknyms available for download");
                 tonic::Status::internal("Failed to get zknyms available for download")
             })?;
 
@@ -671,7 +650,7 @@ impl NymVpnd for CommandInterface {
             .handle_get_zk_nym_by_id(id)
             .await?
             .map_err(|err| {
-                tracing::error!("Failed to get zknym by id: {:?}", err);
+                trace_err_chain!(err, "Failed to get zknym by id");
                 tonic::Status::internal("Failed to get zknym by id")
             })?;
 
@@ -689,7 +668,7 @@ impl NymVpnd for CommandInterface {
             .handle_confirm_zk_nym_downloaded(id)
             .await?
             .map_err(|err| {
-                tracing::error!("Failed to confirm zk nym downloaded: {:?}", err);
+                trace_err_chain!(err, "Failed to confirm zk nym downloaded");
                 tonic::Status::internal("Failed to confirm zk nym downloaded")
             })?;
 
@@ -707,7 +686,7 @@ impl NymVpnd for CommandInterface {
                 .handle_get_available_tickets()
                 .await?
                 .map_err(|err| {
-                    tracing::error!("Failed to get available tickets: {err:?}");
+                    trace_err_chain!(err, "Failed to get available tickets");
                     tonic::Status::internal("Failed to get available tickets")
                 })?;
 
@@ -727,7 +706,7 @@ impl NymVpnd for CommandInterface {
             .handle_delete_log_file()
             .await
             .map_err(|err| {
-                tracing::error!("Failed to get available tickets: {:?}", err);
+                trace_err_chain!(err, "Failed to get available tickets");
                 tonic::Status::internal("Failed to get available tickets")
             })?;
 
