@@ -38,7 +38,7 @@ impl UsageHandler {
 
     pub(crate) fn handle_event(&mut self, event: UsageEvent) {
         match event {
-            UsageEvent::Connecting {
+            UsageEvent::ConnectRequest {
                 instant,
                 enable_two_hop,
             } => {
@@ -61,6 +61,7 @@ impl UsageHandler {
                     self.is_connected = false;
                 }
             }
+            UsageEvent::Connecting(_) => {}
             _ => {
                 self.connecting = None;
                 self.connection_time = None;

@@ -28,9 +28,9 @@ pub(super) async fn init_state_machine(
     let mut guard = STATE_MACHINE_HANDLE.lock().await;
 
     if guard.is_none() {
-        statistics_event_sender.report(nym_statistics::events::StatisticsEvent::new_connecting(
-            config.enable_two_hop,
-        )); // mobile "Connect" event
+        statistics_event_sender.report(
+            nym_statistics::events::StatisticsEvent::new_connect_request(config.enable_two_hop),
+        ); // mobile "Connect" event
         let state_machine_handle = start_state_machine(
             config,
             network_env,

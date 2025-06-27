@@ -690,7 +690,7 @@ where
         } = connect_args;
 
         self.statistics_event_sender
-            .report(StatisticsEvent::new_connecting(options.enable_two_hop)); // desktop "Connect" event
+            .report(StatisticsEvent::new_connect_request(options.enable_two_hop)); // desktop "Connect" event
 
         // Get feature flag
         let enable_credentials_mode = self

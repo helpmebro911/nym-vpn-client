@@ -49,11 +49,14 @@ pub enum StatisticsEvent {
 }
 
 impl StatisticsEvent {
-    pub fn new_connecting(enable_two_hop: bool) -> Self {
-        Self::Usage(UsageEvent::Connecting {
+    pub fn new_connect_request(enable_two_hop: bool) -> Self {
+        Self::Usage(UsageEvent::ConnectRequest {
             instant: Instant::now(),
             enable_two_hop,
         })
+    }
+    pub fn new_connecting() -> Self {
+        Self::Usage(UsageEvent::Connecting(Instant::now()))
     }
 
     pub fn new_connected() -> Self {
@@ -78,7 +81,7 @@ impl StatisticsEvent {
     pub fn new_from_state(state: TunnelState) -> Option<Self> {
         match state {
             TunnelState::Disconnected => Some(Self::new_disconnected()),
-            TunnelState::Connecting { .. } => None, // We don't want an event from that as it can fire multiple times when connecting.
+            TunnelState::Connecting { .. } => Some(Self::new_connecting()),
             TunnelState::Connected { .. } => Some(Self::new_connected()),
             TunnelState::Disconnecting { .. } => Some(Self::new_disconnecting()),
             TunnelState::Error(client_error_reason) => Some(Self::new_error(client_error_reason)),
@@ -97,10 +100,11 @@ impl StatisticsEvent {
 
 #[derive(Debug, Clone)]
 pub enum UsageEvent {
-    Connecting {
+    ConnectRequest {
         instant: Instant,
         enable_two_hop: bool,
     },
+    Connecting(Instant),
     Connected(Instant),
     Disconnected(Instant),
     Error {
