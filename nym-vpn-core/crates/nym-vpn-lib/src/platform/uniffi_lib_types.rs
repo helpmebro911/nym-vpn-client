@@ -241,6 +241,7 @@ pub enum ErrorStateReason {
     DeviceTimeOutOfSync,
     CreateMixnetStorage,
     Internal(Option<String>),
+    CreateGatewayClient,
 }
 
 #[derive(thiserror::Error, uniffi::Error, Debug, Clone, PartialEq, Eq)]

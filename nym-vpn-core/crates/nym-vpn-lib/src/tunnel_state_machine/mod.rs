@@ -10,15 +10,11 @@ mod dns_handler;
 mod resolver;
 #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
 mod route_handler;
+mod socket_bypass;
 mod states;
-#[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
-mod tun_ipv6;
-#[cfg(any(target_os = "ios", target_os = "android"))]
-mod tun_name;
+mod status_listener;
 pub mod tunnel;
 mod tunnel_monitor;
-#[cfg(windows)]
-mod wintun;
 
 #[cfg(any(target_os = "ios", target_os = "android"))]
 use std::sync::Arc;
@@ -52,6 +48,8 @@ use tunnel::SelectedGateways;
 #[cfg(windows)]
 use wintun::SetupWintunAdapterError;
 
+#[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
+use crate::tunnel_device;
 #[cfg(target_os = "android")]
 use crate::tunnel_provider::android::AndroidTunProvider;
 #[cfg(target_os = "ios")]
@@ -587,15 +585,19 @@ pub enum Error {
     StartLocalDnsResolver(#[source] resolver::Error),
 
     #[error("failed to create tunnel device")]
-    CreateTunDevice(#[source] tun::Error),
+    CreateTunDevice(#[source] tunnel_device::Error),
+
+    #[error("failed to get tunnel device name")]
+    #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
+    GetTunDeviceName(#[source] tunnel_device::Error),
+
+    #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
+    #[error("failed to set tunnel device ipv6 address")]
+    SetTunDeviceIpv6Addr(#[source] std::io::Error),
 
     #[cfg(windows)]
     #[error("failed to setup wintun adapter")]
     SetupWintunAdapter(#[from] SetupWintunAdapterError),
-
-    #[cfg(target_os = "ios")]
-    #[error("failed to locate tun device")]
-    LocateTunDevice(#[source] std::io::Error),
 
     #[cfg(any(target_os = "ios", target_os = "android"))]
     #[error("failed to configure tunnel provider: {}", _0)]
@@ -604,18 +606,6 @@ pub enum Error {
     #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
     #[error("failed to obtain route handle")]
     GetRouteHandle(#[source] route_handler::Error),
-
-    #[error("failed to get tunnel device name")]
-    #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
-    GetTunDeviceName(#[source] tun::Error),
-
-    #[error("failed to get tunnel device name")]
-    #[cfg(any(target_os = "ios", target_os = "android"))]
-    GetTunDeviceName(#[source] tun_name::GetTunNameError),
-
-    #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
-    #[error("failed to set tunnel device ipv6 address")]
-    SetTunDeviceIpv6Addr(#[source] std::io::Error),
 
     #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
     #[error("failed to add routes")]
@@ -659,8 +649,6 @@ impl Error {
             Self::Tunnel(e) => e.error_state_reason()?,
             #[cfg(any(target_os = "ios", target_os = "android"))]
             Self::ConfigureTunnelProvider(_) => ErrorStateReason::TunnelProvider,
-            #[cfg(target_os = "ios")]
-            Self::LocateTunDevice(_) => ErrorStateReason::TunDevice,
             #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
             Self::GetRouteHandle(e) => ErrorStateReason::Internal(e.to_string()),
             Self::Account(err) => err.error_state_reason()?,

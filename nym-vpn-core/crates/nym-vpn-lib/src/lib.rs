@@ -10,6 +10,7 @@ mod bandwidth_controller;
 mod error;
 mod mixnet;
 mod platform;
+mod tunnel_device;
 #[cfg(any(target_os = "ios", target_os = "android"))]
 pub mod tunnel_provider;
 pub mod tunnel_state_machine;

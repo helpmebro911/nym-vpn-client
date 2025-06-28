@@ -1,8 +1,10 @@
 // Copyright 2023 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use std::{error::Error as StdError, net::IpAddr};
+use std::net::IpAddr;
 
+#[cfg(target_os = "ios")]
+use dispatch2::{DispatchQueue, DispatchQueueAttr};
 use ipnetwork::IpNetwork;
 use nym_authenticator_client::AuthClientMixnetListenerHandle;
 #[cfg(windows)]
@@ -12,9 +14,10 @@ use tokio_util::sync::CancellationToken;
 #[cfg(unix)]
 use tun::AsyncDevice;
 
+#[cfg(target_os = "ios")]
+use nym_apple_network::PathMonitor;
 #[cfg(windows)]
 use nym_routing::{Callback, CallbackHandle, EventType};
-use nym_task::TaskManager;
 use nym_wg_gateway_client::WgGatewayClient;
 #[cfg(windows)]
 use nym_wg_go::wireguard_go::WintunInterface;
@@ -22,10 +25,14 @@ use nym_wg_go::{netstack, wireguard_go};
 #[cfg(windows)]
 use nym_windows::net::{self as winnet, AddressFamily};
 
+#[cfg(target_os = "android")]
+use crate::tunnel_provider::android::AndroidTunProvider;
 #[cfg(windows)]
 use crate::tunnel_state_machine::route_handler::RouteHandler;
 #[cfg(target_os = "linux")]
 use crate::tunnel_state_machine::route_handler::TUNNEL_FWMARK;
+#[cfg(target_os = "ios")]
+use crate::tunnel_state_machine::tunnel::wireguard::dns64::Dns64Resolution;
 #[cfg(unix)]
 use crate::tunnel_state_machine::tunnel::wireguard::fd::DupFd;
 use crate::{
@@ -39,8 +46,11 @@ use crate::{
     wg_config::{AllowedIps, WgNodeConfig},
 };
 
+/// Delay before acting on default route changes.
+#[cfg(target_os = "ios")]
+const DEFAULT_PATH_DEBOUNCE: Duration = Duration::from_millis(250);
+
 pub struct ConnectedTunnel {
-    task_manager: TaskManager,
     entry_gateway_client: WgGatewayClient,
     exit_gateway_client: WgGatewayClient,
     connection_data: ConnectionData,
@@ -50,7 +60,6 @@ pub struct ConnectedTunnel {
 
 impl ConnectedTunnel {
     pub fn new(
-        task_manager: TaskManager,
         entry_gateway_client: WgGatewayClient,
         exit_gateway_client: WgGatewayClient,
         connection_data: ConnectionData,
@@ -58,7 +67,6 @@ impl ConnectedTunnel {
         auth_client_mixnet_listener_handle: AuthClientMixnetListenerHandle,
     ) -> Self {
         Self {
-            task_manager,
             entry_gateway_client,
             exit_gateway_client,
             connection_data,
@@ -85,6 +93,7 @@ impl ConnectedTunnel {
         options: TunnelOptions,
     ) -> Result<TunnelHandle> {
         match options {
+            #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
             TunnelOptions::TunTun(tuntun_options) => {
                 self.run_using_tun_tun(
                     #[cfg(windows)]
@@ -101,6 +110,7 @@ impl ConnectedTunnel {
         }
     }
 
+    #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
     async fn run_using_tun_tun(
         self,
         #[cfg(windows)] route_handler: RouteHandler,
@@ -209,7 +219,6 @@ impl ConnectedTunnel {
         });
 
         Ok(TunnelHandle {
-            task_manager: self.task_manager,
             shutdown_token,
             event_handler_task,
             bandwidth_controller_handle: self.bandwidth_controller_handle,
@@ -225,6 +234,7 @@ impl ConnectedTunnel {
         self,
         #[cfg(windows)] route_handler: RouteHandler,
         options: NetstackTunnelOptions,
+        #[cfg(target_os = "android")] tun_provider: Arc<dyn AndroidTunProvider>,
     ) -> Result<TunnelHandle> {
         let wg_entry_config = WgNodeConfig::with_gateway_data(
             self.connection_data.entry.clone(),
@@ -248,10 +258,31 @@ impl ConnectedTunnel {
             None,
         );
 
+        // Save entry peer so that we can re-resolve it and update wg config on network changes.
+        #[cfg(target_os = "ios")]
+        let orig_entry_peer = wg_entry_config.peer.clone();
+
         let two_hop_config = TwoHopConfig::new(wg_entry_config, wg_exit_config);
+
+        // iOS does not perform dns64 resolution by default. Do that manually.
+        #[cfg(target_os = "ios")]
+        two_hop_config.entry.peer.resolve_in_place()?;
 
         let mut entry_tunnel =
             netstack::Tunnel::start(two_hop_config.entry.into_netstack_config())?;
+
+        // Configure tunnel sockets to bypass the tunnel interface.
+        #[cfg(target_os = "android")]
+        {
+            match entry_tunnel.get_socket_v4() {
+                Ok(fd) => tun_provider.bypass(fd),
+                Err(e) => tracing::error!("Failed to obtain bypass socket (ipv4): {}", e),
+            }
+            match entry_tunnel.get_socket_v6() {
+                Ok(fd) => tun_provider.bypass(fd),
+                Err(e) => tracing::error!("Failed to obtain bypass socket (ipv6): {}", e),
+            }
+        }
 
         // Open connection to the exit node via entry node.
         let exit_connection = entry_tunnel.open_connection(
@@ -279,6 +310,62 @@ impl ConnectedTunnel {
         let wintun_exit_interface = exit_tunnel.wintun_interface().clone();
 
         let event_handler_task = tokio::spawn(async move {
+            #[cfg(target_os = "ios")]
+            {
+                let (default_path_tx, default_path_rx) = mpsc::unbounded_channel();
+                let mut default_path_rx = debounced::debounced(
+                    UnboundedReceiverStream::new(default_path_rx),
+                    DEFAULT_PATH_DEBOUNCE,
+                );
+
+                let queue = DispatchQueue::new(
+                    "net.nymtech.vpn.wg-path-monitor",
+                    DispatchQueueAttr::SERIAL,
+                );
+                let mut path_monitor = PathMonitor::new();
+                path_monitor.set_dispatch_queue(&queue);
+                path_monitor.set_update_handler(move |network_path| {
+                    if let Err(e) = default_path_tx.send(network_path) {
+                        tracing::error!("Failed to send new default path: {}", e);
+                    }
+                });
+                path_monitor.start();
+
+                loop {
+                    tokio::select! {
+                        _ = cloned_shutdown_token.cancelled() => {
+                            tracing::debug!("Received tunnel shutdown event. Exiting event loop.");
+                            break;
+                        }
+                        Some(new_path) = default_path_rx.next() => {
+                            tracing::debug!("New default path: {}", new_path.description());
+
+                            // Depending on the network device is connected to, we may need to re-resolve the IP addresses.
+                            // For instance when device connects to IPv4-only server from IPv6-only network,
+                            // it needs to use an IPv4-mapped address, which can be received by re-resolving
+                            // the original peer IP.
+                            match orig_entry_peer.resolved() {
+                                Ok(resolved_peer) => {
+                                    let peer_update = resolved_peer.into_peer_endpoint_update();
+
+                                    // Update wireguard-go configuration with re-resolved peer endpoints.
+                                    if let Err(e) = entry_tunnel.update_peers(&[peer_update]) {
+                                       tracing::error!("Failed to update peers on network change: {}", e);
+                                    }
+                                }
+                                Err(e) => {
+                                    tracing::error!("Failed to re-resolve peer on default path update: {}", e);
+                                }
+                            }
+
+                            // Rebind wireguard-go on tun device.
+                            exit_tunnel.bump_sockets();
+                            entry_tunnel.bump_sockets();
+                        }
+                    }
+                }
+            }
+
             #[cfg(windows)]
             {
                 let (default_route_tx, mut default_route_rx) = mpsc::unbounded_channel();
@@ -294,15 +381,11 @@ impl ConnectedTunnel {
                             tracing::debug!("New default route: {} {}", interface_index, address_family);
                             entry_tunnel.rebind_tunnel_socket(address_family, interface_index);
                         }
-                        else => {
-                            tracing::error!("Default route listener has been dropped. Exiting event loop.");
-                            break;
-                        }
                     }
                 }
             }
 
-            #[cfg(not(windows))]
+            #[cfg(not(all(target_os = "windows", target_os = "ios")))]
             {
                 child_shutdown_token.cancelled().await;
                 tracing::debug!("Received tunnel shutdown event. Exiting event loop.");
@@ -326,7 +409,6 @@ impl ConnectedTunnel {
         });
 
         Ok(TunnelHandle {
-            task_manager: self.task_manager,
             shutdown_token,
             event_handler_task,
             bandwidth_controller_handle: self.bandwidth_controller_handle,
@@ -386,6 +468,7 @@ impl ConnectedTunnel {
 }
 
 pub enum TunnelOptions {
+    #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
     /// Multihop configured using two tun adapters.
     TunTun(TunTunTunnelOptions),
 
@@ -393,6 +476,7 @@ pub enum TunnelOptions {
     Netstack(NetstackTunnelOptions),
 }
 
+#[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
 /// Multihop configuration using two tun adapters.
 pub struct TunTunTunnelOptions {
     /// Entry tunnel device.
@@ -450,7 +534,6 @@ pub struct NetstackTunnelOptions {
 }
 
 pub struct TunnelHandle {
-    task_manager: TaskManager,
     shutdown_token: CancellationToken,
     event_handler_task: JoinHandle<Tombstone>,
     bandwidth_controller_handle: JoinHandle<()>,
@@ -465,18 +548,6 @@ impl TunnelHandle {
     /// Close entry and exit WireGuard tunnels and signal mixnet facilities shutdown.
     pub fn cancel(&mut self) {
         self.shutdown_token.cancel();
-
-        if let Err(e) = self.task_manager.signal_shutdown() {
-            tracing::error!("Failed to signal task manager shutdown: {}", e);
-        }
-    }
-
-    /// Wait for the next mixnet error.
-    ///
-    /// This method is cancel safe.
-    /// Returns `None` if the underlying channel has been closed.
-    pub async fn recv_error(&mut self) -> Option<Box<dyn StdError + 'static + Send + Sync>> {
-        self.task_manager.wait_for_error().await
     }
 
     /// Wait until the tunnel finished execution.
