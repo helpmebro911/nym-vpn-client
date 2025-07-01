@@ -1,7 +1,28 @@
 {
     "network_name": "canary",
     "nym_api_url": "https://canary-api.performance.nymte.ch/api/",
+    "nym_api_urls": [
+        {
+            "url": "https://canary-api.performance.nymte.ch/api/"
+        },
+        {
+            "url": "https://nym-frontdoor.vercel.app/canary/api/",
+            "fronts": [
+                "vercel.app",
+                "vercel.com"
+            ]
+        }
+    ],
     "nym_vpn_api_url": "https://nym-vpn-api-git-deploy-canary-nyx-network-staging.vercel.app/api/",
+    "nym_vpn_api_urls": [
+        {
+            "url": "https://nym-vpn-api-git-deploy-canary-nyx-network-staging.vercel.app/api/",
+            "fronts": [
+                "vercel.app",
+                "vercel.com"
+            ]
+        }
+    ],
     "feature_flags": {
         "zkNyms": {
             "credentialMode": "false"

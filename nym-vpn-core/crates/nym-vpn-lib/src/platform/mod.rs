@@ -400,9 +400,9 @@ async fn create_gateway_client(user_agent: UserAgent) -> Result<GatewayClient, V
     });
 
     let directory_config = nym_gateway_directory::Config {
-        nyxd_url,
-        api_url,
-        nym_vpn_api_url,
+        nyxd_url: nyxd_url.into(),
+        api_url: api_url.into(),
+        nym_vpn_api_url: nym_vpn_api_url.map(Into::into),
         min_gateway_performance: None,
         mix_score_thresholds,
         wg_score_thresholds,

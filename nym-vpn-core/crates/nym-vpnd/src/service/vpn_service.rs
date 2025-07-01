@@ -345,14 +345,14 @@ impl NymVpnService<nym_vpn_lib::storage::VpnClientOnDiskStorage> {
                     low: sc.wg_thresholds.low,
                 });
 
-        let gateway_config = gateway_directory::Config {
+        let gateway_config = gateway_directory::Config::new(
             nyxd_url,
             api_url,
-            nym_vpn_api_url: Some(network_env.vpn_api_url()),
-            min_gateway_performance: None,
+            Some(network_env.vpn_api_url()),
+            None,
             mix_score_thresholds,
             wg_score_thresholds,
-        };
+        );
         let nym_config = NymConfig {
             config_path: Some(config_dir),
             data_path: Some(network_data_dir.clone()),

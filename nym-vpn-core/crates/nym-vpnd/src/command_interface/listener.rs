@@ -298,14 +298,14 @@ impl NymVpnd for CommandInterface {
                     medium: sc.wg_thresholds.medium,
                     low: sc.wg_thresholds.low,
                 });
-        let directory_config = nym_vpn_lib::gateway_directory::Config {
-            nyxd_url: self.network_env.nyxd_url(),
-            api_url: self.network_env.api_url(),
-            nym_vpn_api_url: Some(self.network_env.vpn_api_url()),
-            min_gateway_performance: None,
+        let directory_config = nym_vpn_lib::gateway_directory::Config::new(
+            self.network_env.nyxd_url(),
+            self.network_env.api_url(),
+            Some(self.network_env.vpn_api_url()),
+            None,
             mix_score_thresholds,
             wg_score_thresholds,
-        };
+        );
 
         let gateways = CommandInterfaceConnectionHandler::new(self.vpn_command_tx.clone())
             .handle_list_gateways(gw_type, user_agent, directory_config)
@@ -370,14 +370,14 @@ impl NymVpnd for CommandInterface {
                     medium: sc.wg_thresholds.medium,
                     low: sc.wg_thresholds.low,
                 });
-        let directory_config = nym_vpn_lib::gateway_directory::Config {
-            nyxd_url: self.network_env.nyxd_url(),
-            api_url: self.network_env.api_url(),
-            nym_vpn_api_url: Some(self.network_env.vpn_api_url()),
-            min_gateway_performance: None,
+        let directory_config = nym_vpn_lib::gateway_directory::Config::new(
+            self.network_env.nyxd_url(),
+            self.network_env.api_url(),
+            Some(self.network_env.vpn_api_url()),
+            None,
             mix_score_thresholds,
             wg_score_thresholds,
-        };
+        );
 
         let countries = CommandInterfaceConnectionHandler::new(self.vpn_command_tx.clone())
             .handle_list_countries(gw_type, user_agent, directory_config)

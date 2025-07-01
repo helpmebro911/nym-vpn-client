@@ -203,7 +203,7 @@ mod tests {
             }
         }"#;
         let parsed: SystemMessageResponse = serde_json::from_str(json).unwrap();
-        let message = SystemMessage::try_from(parsed).unwrap();
+        let message = SystemMessage::from(parsed);
         assert_eq!(
             message,
             SystemMessage {

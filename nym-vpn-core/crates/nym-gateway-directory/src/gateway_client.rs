@@ -6,12 +6,12 @@ use std::{
     net::{IpAddr, SocketAddr},
 };
 
+use nym_http_api_client::Url;
 use nym_sdk::UserAgent;
 use nym_validator_client::{NymApiClient, models::NymNodeDescription, nym_nodes::SkimmedNode};
 use nym_vpn_api_client::types::{GatewayMinPerformance, Percent, ScoreThresholds};
 use rand::{prelude::SliceRandom, thread_rng};
 use tracing::{debug, error, warn};
-use url::Url;
 
 use crate::{
     Error, NymNode,
@@ -52,6 +52,24 @@ impl fmt::Display for Config {
 }
 
 impl Config {
+    pub fn new(
+        nyxd_url: impl Into<Url>,
+        api_url: impl Into<Url>,
+        nym_vpn_api_url: Option<impl Into<Url>>,
+        min_gateway_performance: Option<GatewayMinPerformance>,
+        mix_score_thresholds: Option<ScoreThresholds>,
+        wg_score_thresholds: Option<ScoreThresholds>,
+    ) -> Self {
+        Config {
+            nyxd_url: nyxd_url.into(),
+            api_url: api_url.into(),
+            nym_vpn_api_url: nym_vpn_api_url.map(Into::into),
+            min_gateway_performance,
+            mix_score_thresholds,
+            wg_score_thresholds,
+        }
+    }
+
     pub fn nyxd_url(&self) -> &Url {
         &self.nyxd_url
     }
@@ -127,7 +145,8 @@ impl GatewayClient {
         user_agent: UserAgent,
         static_nym_api_ip_addresses: Option<&[SocketAddr]>,
     ) -> Result<Self> {
-        let api_client = NymApiClient::new_with_user_agent(config.api_url, user_agent.clone());
+        let api_client =
+            NymApiClient::new_with_user_agent(config.api_url.into(), user_agent.clone());
         let nym_vpn_api_client = config
             .nym_vpn_api_url
             .map(|url| {
@@ -152,7 +171,7 @@ impl GatewayClient {
     /// Return the config of this instance.
     pub fn get_config(&self) -> Config {
         Config {
-            api_url: self.api_client.api_url().clone(),
+            api_url: self.api_client.api_url().clone().into(),
             nym_vpn_api_url: self
                 .nym_vpn_api_client
                 .as_ref()
@@ -478,9 +497,9 @@ mod test {
             .expect("rust sdk mainnet default nym-vpn-api url not parseable");
 
         Config {
-            nyxd_url: default_nyxd_url,
-            api_url: default_api_url,
-            nym_vpn_api_url: Some(default_nym_vpn_api_url),
+            nyxd_url: default_nyxd_url.into(),
+            api_url: default_api_url.into(),
+            nym_vpn_api_url: Some(default_nym_vpn_api_url.into()),
             min_gateway_performance: None,
             mix_score_thresholds: None,
             wg_score_thresholds: None,

@@ -5,10 +5,11 @@ use std::{fmt, net::SocketAddr, time::Duration};
 
 use backon::Retryable;
 use nym_credential_proxy_requests::api::v1::ticketbook::models::PartialVerificationKeysResponse;
-use nym_http_api_client::{ApiClient, HttpClientError, NO_PARAMS, Params, PathSegments, UserAgent};
+use nym_http_api_client::{
+    ApiClient, HttpClientError, NO_PARAMS, Params, PathSegments, Url, UserAgent,
+};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use time::OffsetDateTime;
-use url::Url;
 
 use crate::{
     error::{Result, VpnApiClientError},

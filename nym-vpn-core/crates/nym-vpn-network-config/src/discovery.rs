@@ -296,7 +296,7 @@ pub(crate) async fn fetch_nym_vpn_network_details(
     nym_vpn_api_url: Url,
 ) -> Result<NymWellknownDiscoveryItem> {
     tracing::debug!("Fetching nym vpn network details");
-    VpnApiClient::new(nym_vpn_api_url, empty_user_agent())
+    VpnApiClient::new(nym_vpn_api_url.into(), empty_user_agent())
         .map_err(Error::CreateVpnApiClient)?
         .get_wellknown_current_env()
         .await
@@ -332,10 +332,9 @@ mod tests {
         ] {
             let fetched = Discovery::fetch(&discovery.network_name)
                 .await
-                .expect(&format!(
-                    "failed to fetch discovery for {}",
-                    discovery.network_name
-                ));
+                .unwrap_or_else(|_| {
+                    panic!("failed to fetch discovery for {}", discovery.network_name)
+                });
 
             // Only compare the base fields
             assert_eq!(discovery.network_name, fetched.network_name);

@@ -48,10 +48,10 @@ async fn url_to_socket_addr(unresolved_url: &url::Url) -> Result<Vec<SocketAddr>
 }
 
 pub async fn resolve_config(config: &Config) -> Result<ResolvedConfig> {
-    let nyxd_socket_addrs = url_to_socket_addr(config.nyxd_url()).await?;
-    let api_socket_addrs = url_to_socket_addr(config.api_url()).await?;
+    let nyxd_socket_addrs = url_to_socket_addr(config.nyxd_url().as_ref()).await?;
+    let api_socket_addrs = url_to_socket_addr(config.api_url().as_ref()).await?;
     let nym_vpn_api_socket_addrs = if let Some(vpn_api_url) = config.nym_vpn_api_url() {
-        Some(url_to_socket_addr(vpn_api_url).await?)
+        Some(url_to_socket_addr(vpn_api_url.as_ref()).await?)
     } else {
         None
     };

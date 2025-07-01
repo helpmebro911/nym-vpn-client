@@ -104,14 +104,14 @@ pub(crate) async fn run() -> anyhow::Result<ProbeResult> {
         .first()
         .and_then(|ep| ep.api_url())
         .ok_or(anyhow::anyhow!("missing nyxd url"))?;
-    let gateway_config = nym_gateway_directory::Config {
+    let gateway_config = nym_gateway_directory::Config::new(
         nyxd_url,
         api_url,
-        nym_vpn_api_url: network.nym_vpn_api_url(),
-        min_gateway_performance: Some(min_gateway_performance),
-        mix_score_thresholds: None,
-        wg_score_thresholds: None,
-    };
+        network.nym_vpn_api_url(),
+        Some(min_gateway_performance),
+        None,
+        None,
+    );
 
     let entry = if let Some(gateway) = args.entry_gateway {
         EntryPoint::from_base58_string(&gateway)?

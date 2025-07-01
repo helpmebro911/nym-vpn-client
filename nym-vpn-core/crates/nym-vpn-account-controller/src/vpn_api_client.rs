@@ -19,7 +19,7 @@ pub(crate) struct AccountControllerVpnApiClient {
 impl AccountControllerVpnApiClient {
     pub(crate) fn new(config: &AccountControllerConfig) -> Result<Self, Error> {
         nym_vpn_api_client::VpnApiClient::new(
-            config.network_env.vpn_api_url(),
+            config.network_env.vpn_api_url().into(),
             config.user_agent.clone(),
         )
         .map_err(Error::SetupVpnApiClient)
