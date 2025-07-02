@@ -51,11 +51,20 @@ impl StatisticsApiClient {
         nym_http_api_client::parse_response(response, false).await
     }
 
-    pub async fn post_stats_report<B>(&self, body: B) -> Result<()>
+    pub async fn post_basic_report<B>(&self, body: B) -> Result<()>
     where
         B: Serialize,
     {
-        self.post_query(routes::REPORT_ROUTE, &body)
+        self.post_query(routes::BASIC_REPORT_ROUTE, &body)
+            .await
+            .map_err(StatisticsApiClientError::ReportSending)
+    }
+
+    pub async fn post_session_report<B>(&self, body: B) -> Result<()>
+    where
+        B: Serialize,
+    {
+        self.post_query(routes::SESSION_REPORT_ROUTE, &body)
             .await
             .map_err(StatisticsApiClientError::ReportSending)
     }

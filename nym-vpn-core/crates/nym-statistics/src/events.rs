@@ -55,12 +55,18 @@ impl StatisticsEvent {
             enable_two_hop,
         })
     }
+    pub fn new_disconnect_request() -> Self {
+        Self::Usage(UsageEvent::DisconnectRequest(Instant::now()))
+    }
     pub fn new_connecting() -> Self {
         Self::Usage(UsageEvent::Connecting(Instant::now()))
     }
 
-    pub fn new_connected() -> Self {
-        Self::Usage(UsageEvent::Connected(Instant::now()))
+    pub fn new_connected(exit_id: String) -> Self {
+        Self::Usage(UsageEvent::Connected {
+            instant: Instant::now(),
+            exit_id,
+        })
     }
 
     pub fn new_disconnecting() -> Self {
@@ -82,7 +88,9 @@ impl StatisticsEvent {
         match state {
             TunnelState::Disconnected => Some(Self::new_disconnected()),
             TunnelState::Connecting { .. } => Some(Self::new_connecting()),
-            TunnelState::Connected { .. } => Some(Self::new_connected()),
+            TunnelState::Connected { connection_data } => {
+                Some(Self::new_connected(connection_data.exit_gateway.id))
+            }
             TunnelState::Disconnecting { .. } => Some(Self::new_disconnecting()),
             TunnelState::Error(client_error_reason) => Some(Self::new_error(client_error_reason)),
             TunnelState::Offline { .. } => None,
@@ -96,22 +104,33 @@ impl StatisticsEvent {
     pub fn remove_seed() -> Self {
         Self::Controller(ControllerEvent::RemoveSeed)
     }
+
+    pub fn send_report() -> Self {
+        Self::Controller(ControllerEvent::SendReport)
+    }
 }
 
 #[derive(Debug, Clone)]
 pub enum UsageEvent {
+    // User action
     ConnectRequest {
         instant: Instant,
         enable_two_hop: bool,
     },
+    DisconnectRequest(Instant),
+
+    // State machine state events
     Connecting(Instant),
-    Connected(Instant),
+    Connected {
+        instant: Instant,
+        exit_id: String,
+    },
     Disconnected(Instant),
+    Disconnecting(Instant),
     Error {
         instant: Instant,
         error: String,
     },
-    Disconnecting(Instant),
 }
 
 // Not a stat event per se, but used to instruct the controller to do stuff
@@ -119,4 +138,5 @@ pub enum UsageEvent {
 pub enum ControllerEvent {
     ResetSeed,
     RemoveSeed,
+    SendReport,
 }

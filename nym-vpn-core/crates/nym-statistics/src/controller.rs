@@ -22,9 +22,6 @@ pub struct StatisticsController {
     /// Keep store the different types of metrics collectors
     handler: Option<StatisticsHandler>,
 
-    /// Api client to send statistics
-    stats_api_client: Option<StatisticsControllerApiClient>,
-
     /// Incoming packet stats events from other tasks
     stats_rx: StatisticsReceiver,
 
@@ -45,9 +42,16 @@ impl StatisticsController {
         let stats_storage = StatsStorage::init(base_storage_path).await.inspect_err(|e| tracing::error!("Failed to initialize stats storage. Statistics collection will be disabled : {e}")).ok();
         let stats_api_client = StatisticsControllerApiClient::new(&config).inspect_err(|e| tracing::error!(" Failed to build Statistics API client. Statistics collection will be disabled : {e}")).ok().flatten();
 
+        let statistics_handler = if let Some(storage) = stats_storage
+            && let Some(api_client) = stats_api_client
+        {
+            Some(StatisticsHandler::new(storage, api_client, config.clone()))
+        } else {
+            None
+        };
+
         StatisticsController {
-            handler: stats_storage.map(|s| StatisticsHandler::new(s, config.clone())),
-            stats_api_client,
+            handler: statistics_handler,
             stats_rx,
             stats_tx,
             config,
@@ -68,7 +72,7 @@ impl StatisticsController {
 
     pub async fn run(self) {
         tracing::debug!("StatisticsController initialized successfully");
-        if self.config.enabled && self.stats_api_client.is_some() && self.handler.is_some() {
+        if self.config.enabled && self.handler.is_some() {
             tracing::debug!("Statistics reporting is enabled");
             self.enabled_loop().await
         } else {
@@ -98,17 +102,13 @@ impl StatisticsController {
         self.cleanup().await
     }
     async fn enabled_loop(mut self) {
-        if !self.config.enabled || self.stats_api_client.is_none() || self.handler.is_none() {
+        if !self.config.enabled || self.handler.is_none() {
             tracing::error!(
                 "StatisticsController : Enabled loop with disabled collection, missing api client or missing handler. This should never happen."
             );
             self.cleanup().await;
             return;
         }
-
-        // Safety : We just checked that self.stats_api_client wasn't None
-        #[allow(clippy::unwrap_used)]
-        let stats_api_client = self.stats_api_client.unwrap();
 
         // Safety : We just checked that self.handler wasn't None
         #[allow(clippy::unwrap_used)]
@@ -126,8 +126,8 @@ impl StatisticsController {
                 },
                 stats_event = self.stats_rx.recv() => match stats_event {
                     Some(stats_event) => {
-                        tracing::trace!("Received stats event : {stats_event:?}");
-                        if matches!(stats_event, StatisticsEvent::Usage(UsageEvent::Connected(_))) {
+                        tracing::error!("Received stats event : {stats_event:?}");
+                        if matches!(stats_event, StatisticsEvent::Usage(UsageEvent::Connected{..})) {
                             let random_delay_secs = Uniform::new_inclusive(0, self.config.max_reporting_delay).sample(&mut rand::thread_rng());
                             tracing::debug!("StatisticsController : Trying to send report in {random_delay_secs} secs");
                             send_timer.set(tokio::time::sleep(Duration::from_secs(random_delay_secs)).fuse());
@@ -139,25 +139,8 @@ impl StatisticsController {
                         break;
                     }
                 },
-
-                // Initial sending strategy, send after a random amount of time, if we're still connected
                 _ = &mut send_timer => {
-                    if stats_handler.is_connected() {
-                        tracing::debug!("Send timer fired and connected, sending report");
-                        match stats_handler.get_report().await {
-                            Ok(report) => {
-                                if let Err(e) = stats_api_client.post_report(report).await {
-                                    tracing::warn!("Failed to send statistics report : {e}");
-                                } else {
-                                    tracing::debug!("Stats sent successfull");
-                                }
-
-                            },
-                            Err(e) => tracing::warn!("Failed to generate statistics report : {e}"),
-                        }
-                    } else {
-                        tracing::debug!("Not connected, not sending anything")
-                    }
+                    stats_handler.handle_event(StatisticsEvent::send_report()).await;
                 }
             }
         }

@@ -1,7 +1,11 @@
 // Copyright 2025 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use crate::storage::{error::StatsStorageError, sqlite::SqliteStatsStorageManager};
+use crate::storage::{
+    error::StatsStorageError,
+    models::{SessionReport, SessionReportWithId},
+    sqlite::SqliteStatsStorageManager,
+};
 use rand::Rng;
 use sqlx::ConnectOptions;
 use sqlx_pool_guard::SqlitePoolGuard;
@@ -9,7 +13,10 @@ use std::path::Path;
 use tracing::log::LevelFilter;
 
 pub mod error;
+pub(crate) mod models;
 mod sqlite;
+#[cfg(test)]
+pub(crate) mod test;
 
 const STATS_DB_FILE_NAME: &str = "stats.db";
 
@@ -88,6 +95,30 @@ impl StatsStorage {
     }
     pub(crate) async fn remove_seed(&self) -> Result<(), StatsStorageError> {
         self.storage_manager.remove_seed().await
+    }
+
+    pub(crate) async fn insert_pending_session_report(
+        &self,
+        report: &SessionReport,
+    ) -> Result<(), StatsStorageError> {
+        self.storage_manager
+            .insert_pending_session_report(report)
+            .await
+    }
+
+    pub(crate) async fn get_pending_session_report_with_id(
+        &self,
+    ) -> Result<Vec<SessionReportWithId>, StatsStorageError> {
+        self.storage_manager
+            .get_pending_session_report_with_id()
+            .await
+    }
+
+    pub(crate) async fn delete_pending_session_report(
+        &self,
+        id: i32,
+    ) -> Result<(), StatsStorageError> {
+        self.storage_manager.delete_pending_session_report(id).await
     }
 }
 

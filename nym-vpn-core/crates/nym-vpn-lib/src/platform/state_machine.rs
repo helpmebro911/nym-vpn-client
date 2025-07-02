@@ -139,7 +139,7 @@ pub(super) async fn start_state_machine(
         nym_config,
         tunnel_settings,
         account_controller_tx,
-        statistics_event_sender,
+        statistics_event_sender.clone(),
         gateway_directory_client,
         topology_provider,
         connectivity_handle,
@@ -155,6 +155,7 @@ pub(super) async fn start_state_machine(
         state_machine_handle,
         event_broadcaster_handler,
         command_sender,
+        statistics_event_sender,
         shutdown_token,
     })
 }
@@ -163,6 +164,7 @@ pub(super) struct StateMachineHandle {
     state_machine_handle: JoinHandle<()>,
     event_broadcaster_handler: JoinHandle<()>,
     command_sender: mpsc::UnboundedSender<TunnelCommand>,
+    statistics_event_sender: StatisticsSender,
     shutdown_token: CancellationToken,
 }
 
@@ -174,6 +176,9 @@ impl StateMachineHandle {
     }
 
     pub(super) async fn shutdown_and_wait(self) {
+        self.statistics_event_sender
+            .report(nym_statistics::events::StatisticsEvent::new_disconnect_request()); // mobile "Disconnect" event
+
         self.shutdown_token.cancel();
 
         if let Err(e) = self.state_machine_handle.await {

@@ -795,6 +795,8 @@ where
     }
 
     async fn handle_disconnect(&mut self) -> Result<(), VpnServiceDisconnectError> {
+        self.statistics_event_sender
+            .report(StatisticsEvent::new_disconnect_request()); // desktop "Disonnect" event
         self.command_sender
             .send(TunnelCommand::Disconnect)
             .map_err(|e| {

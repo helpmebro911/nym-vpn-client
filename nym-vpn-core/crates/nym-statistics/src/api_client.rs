@@ -1,7 +1,7 @@
 // Copyright 2025 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use serde::Serialize;
+use nym_statistics_common::report::vpn_client::{VpnClientStatsReport, VpnSessionReport};
 
 use crate::config::StatisticsControllerConfig;
 use crate::error::Error;
@@ -23,8 +23,13 @@ impl StatisticsControllerApiClient {
             Ok(None)
         }
     }
-    pub async fn post_report(&self, report: impl Serialize) -> Result<(), Error> {
-        self.inner.post_stats_report(report).await?;
+    pub async fn post_basic_report(&self, report: VpnClientStatsReport) -> Result<(), Error> {
+        self.inner.post_basic_report(report).await?;
+        Ok(())
+    }
+
+    pub async fn post_session_report(&self, report: VpnSessionReport) -> Result<(), Error> {
+        self.inner.post_session_report(report).await?;
         Ok(())
     }
 }
