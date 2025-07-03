@@ -93,7 +93,6 @@ impl TryFrom<crate::NymNetworkDetails> for nym_config::defaults::NymNetworkDetai
             chain_details,
             endpoints,
             contracts,
-            explorer_api: None,
             nym_vpn_api_url: None,
             nym_api_urls: None,
             nym_vpn_api_urls: None,

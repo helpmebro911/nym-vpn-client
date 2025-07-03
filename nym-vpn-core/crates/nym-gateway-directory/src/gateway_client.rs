@@ -25,11 +25,16 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct Config {
     pub nyxd_url: Url,
+    #[deprecated(note = "Use `api_urls` instead, as it allows for multiple API URLs.")]
     pub api_url: Url,
+    #[deprecated(note = "Use `nym_vpn_api_urls` instead, as it allows for multiple API URLs.")]
     pub nym_vpn_api_url: Option<Url>,
     pub min_gateway_performance: Option<GatewayMinPerformance>,
     pub mix_score_thresholds: Option<ScoreThresholds>,
     pub wg_score_thresholds: Option<ScoreThresholds>,
+
+    pub api_urls: Vec<Url>,
+    pub nym_vpn_api_urls: Option<Vec<Url>>,
 }
 
 fn to_string<T: fmt::Display>(value: &Option<T>) -> String {
@@ -55,18 +60,22 @@ impl Config {
     pub fn new(
         nyxd_url: impl Into<Url>,
         api_url: impl Into<Url>,
-        nym_vpn_api_url: Option<impl Into<Url>>,
+        vpn_api_url: Option<impl Into<Url>>,
         min_gateway_performance: Option<GatewayMinPerformance>,
         mix_score_thresholds: Option<ScoreThresholds>,
         wg_score_thresholds: Option<ScoreThresholds>,
     ) -> Self {
+        let nym_api_url = api_url.into();
+        let nym_vpn_api_url: Option<Url> = vpn_api_url.map(Into::into);
         Config {
             nyxd_url: nyxd_url.into(),
-            api_url: api_url.into(),
-            nym_vpn_api_url: nym_vpn_api_url.map(Into::into),
+            api_url: nym_api_url.clone(),
+            nym_vpn_api_url: nym_vpn_api_url.clone(),
             min_gateway_performance,
             mix_score_thresholds,
             wg_score_thresholds,
+            api_urls: vec![nym_api_url],
+            nym_vpn_api_urls: nym_vpn_api_url.map(|url| vec![url.into()]),
         }
     }
 
@@ -170,17 +179,16 @@ impl GatewayClient {
 
     /// Return the config of this instance.
     pub fn get_config(&self) -> Config {
-        Config {
-            api_url: self.api_client.api_url().clone().into(),
-            nym_vpn_api_url: self
-                .nym_vpn_api_client
+        Config::new(
+            self.nyxd_url.clone(),
+            self.api_client.api_url().clone(),
+            self.nym_vpn_api_client
                 .as_ref()
                 .map(|client| client.current_url().clone()),
-            nyxd_url: self.nyxd_url.clone(),
-            min_gateway_performance: self.min_gateway_performance,
-            mix_score_thresholds: self.mix_score_thresholds,
-            wg_score_thresholds: self.wg_score_thresholds,
-        }
+            self.min_gateway_performance,
+            self.mix_score_thresholds,
+            self.wg_score_thresholds,
+        )
     }
 
     pub fn mixnet_min_performance(&self) -> Option<Percent> {
@@ -496,14 +504,14 @@ mod test {
             .nym_vpn_api_url()
             .expect("rust sdk mainnet default nym-vpn-api url not parseable");
 
-        Config {
-            nyxd_url: default_nyxd_url.into(),
-            api_url: default_api_url.into(),
-            nym_vpn_api_url: Some(default_nym_vpn_api_url.into()),
-            min_gateway_performance: None,
-            mix_score_thresholds: None,
-            wg_score_thresholds: None,
-        }
+        Config::new(
+            default_nyxd_url,
+            default_api_url,
+            Some(default_nym_vpn_api_url),
+            None,
+            None,
+            None,
+        )
     }
 
     #[tokio::test]

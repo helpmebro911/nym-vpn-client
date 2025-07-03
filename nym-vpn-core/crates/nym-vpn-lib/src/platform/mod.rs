@@ -399,14 +399,14 @@ async fn create_gateway_client(user_agent: UserAgent) -> Result<GatewayClient, V
         low: sc.wg_thresholds.low,
     });
 
-    let directory_config = nym_gateway_directory::Config {
-        nyxd_url: nyxd_url.into(),
-        api_url: api_url.into(),
-        nym_vpn_api_url: nym_vpn_api_url.map(Into::into),
-        min_gateway_performance: None,
+    let directory_config = nym_gateway_directory::Config::new(
+        nyxd_url,
+        api_url,
+        nym_vpn_api_url,
+        None,
         mix_score_thresholds,
         wg_score_thresholds,
-    };
+    );
     GatewayClient::new(directory_config, user_agent.into()).map_err(VpnError::internal)
 }
 

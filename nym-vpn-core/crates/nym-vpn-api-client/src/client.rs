@@ -55,7 +55,7 @@ impl VpnApiClient {
         nym_http_api_client::Client::builder(base_url.clone())
             .map(|builder| {
                 let mut builder = builder
-                    .with_user_agent(user_agent)
+                    .with_user_agent(Some(user_agent))
                     .with_timeout(NYM_VPN_API_TIMEOUT);
 
                 if let Some(domain) = base_url.domain() {
