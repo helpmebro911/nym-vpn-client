@@ -5,7 +5,7 @@ use std::{sync::Arc, time::Duration};
 
 use nym_gateway_directory::IpPacketRouterAddress;
 use nym_ip_packet_requests::IpPair;
-use nym_sdk::mixnet::{
+pub use nym_sdk::mixnet::{
     InputMessage, MixnetClient, MixnetClientSender, MixnetMessageSender, Recipient,
     TransmissionLane,
 };

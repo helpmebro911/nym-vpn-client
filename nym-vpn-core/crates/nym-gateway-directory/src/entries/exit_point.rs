@@ -3,7 +3,7 @@
 
 use std::fmt::{Display, Formatter};
 
-use nym_sdk::mixnet::{NodeIdentity, Recipient};
+pub use nym_sdk::mixnet::{NodeIdentity, Recipient};
 use serde::{Deserialize, Serialize};
 
 use super::gateway::{Gateway, GatewayList};

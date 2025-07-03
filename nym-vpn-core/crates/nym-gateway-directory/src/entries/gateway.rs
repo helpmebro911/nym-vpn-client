@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 use itertools::Itertools;
-use nym_sdk::mixnet::NodeIdentity;
+pub use nym_sdk::mixnet::NodeIdentity;
 use nym_topology::{NodeId, RoutingNode};
 use nym_vpn_api_client::types::{NaiveFloat, Percent, ScoreThresholds};
 use rand::seq::IteratorRandom;

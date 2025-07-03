@@ -1,7 +1,7 @@
 // Copyright 2023 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use nym_sdk::mixnet::{NodeIdentity, Recipient};
+pub use nym_sdk::mixnet::{NodeIdentity, Recipient};
 use nym_validator_client::models::NymNodeData;
 
 use crate::{Error, error::Result};

@@ -10,7 +10,7 @@ use std::{
 
 use futures::{FutureExt, StreamExt, stream::FuturesUnordered};
 use nym_offline_monitor::ConnectivityHandle;
-use nym_sdk::mixnet::NodeIdentity;
+pub use nym_sdk::mixnet::NodeIdentity;
 use strum::IntoEnumIterator;
 use tokio::sync::Mutex;
 

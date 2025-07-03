@@ -3,7 +3,7 @@
 
 use std::cmp::Ordering;
 
-use nym_sdk::mixnet::ReconstructedMessage;
+pub use nym_sdk::mixnet::ReconstructedMessage;
 
 use crate::{Error, current::VERSION as CURRENT_VERSION, error::Result};
 

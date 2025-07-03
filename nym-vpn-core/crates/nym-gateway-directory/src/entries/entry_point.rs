@@ -3,7 +3,7 @@
 
 use std::fmt::{Display, Formatter};
 
-use nym_sdk::mixnet::NodeIdentity;
+pub use nym_sdk::mixnet::NodeIdentity;
 use serde::{Deserialize, Serialize};
 use tracing::debug;
 

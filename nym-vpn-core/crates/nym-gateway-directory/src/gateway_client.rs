@@ -6,7 +6,7 @@ use std::{
     net::{IpAddr, SocketAddr},
 };
 
-use nym_sdk::UserAgent;
+pub use nym_sdk::UserAgent;
 use nym_validator_client::{NymApiClient, models::NymNodeDescription, nym_nodes::SkimmedNode};
 use nym_vpn_api_client::types::{GatewayMinPerformance, Percent, ScoreThresholds};
 use rand::{prelude::SliceRandom, thread_rng};

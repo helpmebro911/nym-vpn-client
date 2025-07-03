@@ -3,7 +3,7 @@
 
 use std::fmt::Display;
 
-use nym_sdk::mixnet::Recipient;
+pub use nym_sdk::mixnet::Recipient;
 
 use crate::{Error, error::Result};
 
