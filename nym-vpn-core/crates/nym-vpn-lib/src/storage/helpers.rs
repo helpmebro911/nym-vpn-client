@@ -5,28 +5,9 @@ use std::path::{Path, PathBuf};
 
 use nym_vpn_store::keys::device::{DeviceKeyStore as _, DeviceKeys, OnDiskKeysError};
 
+use crate::storage::error::KeyStoreError;
+
 use super::VpnClientOnDiskStorage;
-
-#[derive(Debug, thiserror::Error)]
-pub enum KeyStoreError {
-    #[error("failed to load device keys")]
-    Load {
-        path: PathBuf,
-        error: OnDiskKeysError,
-    },
-
-    #[error("failed to create device keys")]
-    Create {
-        path: PathBuf,
-        error: OnDiskKeysError,
-    },
-
-    #[error("failed to store device keys")]
-    Store {
-        path: PathBuf,
-        error: OnDiskKeysError,
-    },
-}
 
 // Set of helpers to load, create and store device keys for situations where you don't have a long
 // running store instance.
@@ -35,10 +16,10 @@ pub enum KeyStoreError {
 pub async fn load_device_keys<P: AsRef<Path> + Clone>(
     path: P,
 ) -> Result<DeviceKeys, KeyStoreError> {
-    VpnClientOnDiskStorage::new(path.clone())
+    VpnClientOnDiskStorage::init(path.clone())
         .load_keys()
         .await
-        .map_err(|error| KeyStoreError::Load {
+        .map_err(|error| KeyStoreError::LoadDeviceKeys {
             path: path.as_ref().to_path_buf(),
             error,
         })
@@ -46,12 +27,12 @@ pub async fn load_device_keys<P: AsRef<Path> + Clone>(
 
 #[allow(unused)]
 pub async fn create_device_keys<P: AsRef<Path> + Clone>(path: P) -> Result<(), KeyStoreError> {
-    let vpn_storage = VpnClientOnDiskStorage::new(path.clone());
+    let vpn_storage = VpnClientOnDiskStorage::init(path.clone());
     let mut rng = rand::rngs::OsRng;
     DeviceKeys::generate_new(&mut rng)
         .persist_keys(&vpn_storage)
         .await
-        .map_err(|error| KeyStoreError::Create {
+        .map_err(|error| KeyStoreError::CreateDeviceKeys {
             path: path.as_ref().to_path_buf(),
             error,
         })
@@ -62,10 +43,10 @@ pub async fn store_device_keys<P: AsRef<Path> + Clone>(
     path: P,
     keys: &DeviceKeys,
 ) -> Result<(), KeyStoreError> {
-    let vpn_storage = VpnClientOnDiskStorage::new(path.clone());
+    let vpn_storage = VpnClientOnDiskStorage::init(path.clone());
     keys.persist_keys(&vpn_storage)
         .await
-        .map_err(|error| KeyStoreError::Store {
+        .map_err(|error| KeyStoreError::StoreDeviceKeys {
             path: path.as_ref().to_path_buf(),
             error,
         })

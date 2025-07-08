@@ -20,16 +20,16 @@ mod tunnel_monitor;
 #[cfg(windows)]
 mod wintun;
 
-#[cfg(any(target_os = "ios", target_os = "android"))]
-use std::sync::Arc;
 use std::{
     net::{IpAddr, Ipv4Addr, Ipv6Addr},
     path::PathBuf,
+    sync::Arc,
 };
 
 use nym_offline_monitor::ConnectivityHandle;
 use nym_vpn_account_controller::AccountCommandSender;
 use nym_vpn_network_config::Network;
+use nym_vpn_store::keys::wireguard::WireguardKeyStore;
 use tokio::{sync::mpsc, task::JoinHandle};
 use tokio_util::sync::CancellationToken;
 

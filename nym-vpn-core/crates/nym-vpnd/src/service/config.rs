@@ -134,6 +134,12 @@ pub enum ConfigSetupError {
         error: std::io::Error,
     },
 
+    #[error("failed to initialise key store")]
+    InitKeyStore {
+        #[source]
+        error: nym_vpn_store::keys::KeyStoreError,
+    },
+
     #[cfg(unix)]
     #[error("failed to set permissions for directory {dir}")]
     SetPermissions {

@@ -7,3 +7,4 @@ mod persistence;
 
 pub use key_store::WireguardKeyStore;
 pub use keys::WireguardKeys;
+pub use persistence::{OnDiskKeys, OnDiskKeysError, WireguardKeysPath};

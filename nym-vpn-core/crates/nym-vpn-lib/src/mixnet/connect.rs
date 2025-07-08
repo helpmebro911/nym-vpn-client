@@ -121,7 +121,7 @@ pub(crate) async fn setup_mixnet_client(
     let mixnet_client = if let Some(path) = mixnet_client_key_storage_path {
         tracing::debug!("Using custom key storage path: {:?}", path);
 
-        let storage = VpnClientOnDiskStorage::new(path.clone());
+        let storage = VpnClientOnDiskStorage::init(path.clone());
         match storage.is_mnemonic_stored().await {
             Ok(is_stored) if !is_stored => {
                 tracing::error!("No account stored");

@@ -6,6 +6,8 @@ use crate::keys::wireguard::WireguardKeys;
 mod ephemeral;
 mod on_disk;
 
+pub use on_disk::{OnDiskKeys, OnDiskKeysError, WireguardKeysPath};
+
 fn random_keys() -> WireguardKeys {
     let mut rng = rand::rngs::OsRng;
     WireguardKeys::generate_new(&mut rng)

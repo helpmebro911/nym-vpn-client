@@ -50,7 +50,7 @@ use super::{
         Result, SetNetworkError, VpnServiceDeleteLogFileError,
     },
 };
-use crate::{config::GlobalConfigFile, logging::LogPath};
+use crate::{config::GlobalConfigFile, logging::LogPath, service::config::ConfigSetupError};
 
 // Seed used to generate device identity keys
 type Seed = [u8; 32];
@@ -293,7 +293,10 @@ impl NymVpnService<nym_vpn_lib::storage::VpnClientOnDiskStorage> {
         let network_data_dir = data_dir.join(&network_name);
 
         let storage = Arc::new(tokio::sync::Mutex::new(
-            nym_vpn_lib::storage::VpnClientOnDiskStorage::new(network_data_dir.clone()),
+            nym_vpn_lib::storage::VpnClientOnDiskStorage::init(network_data_dir.clone())
+                .await
+                .map_err(|error| ConfigSetupError::InitKeyStore { error })
+                .map_err(|error| Error::ConfigSetup(error))??,
         ));
 
         // Make sure the data dir exists

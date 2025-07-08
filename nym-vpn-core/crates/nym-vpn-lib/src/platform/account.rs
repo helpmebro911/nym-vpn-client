@@ -62,7 +62,7 @@ async fn start_account_controller(
     network_env: Network,
 ) -> Result<AccountControllerHandle, VpnError> {
     let storage = Arc::new(tokio::sync::Mutex::new(
-        crate::storage::VpnClientOnDiskStorage::new(data_dir.clone()),
+        crate::storage::VpnClientOnDiskStorage::init(data_dir.clone()),
     ));
     // TODO: pass in as argument
     let user_agent = crate::util::construct_user_agent();
@@ -319,7 +319,7 @@ pub(crate) mod raw {
         let path = PathBuf::from_str(path).map_err(|err| VpnError::InvalidAccountStoragePath {
             details: err.to_string(),
         })?;
-        Ok(VpnClientOnDiskStorage::new(path))
+        Ok(VpnClientOnDiskStorage::init(path))
     }
 
     pub(crate) async fn login_raw(mnemonic: &str, path: &str) -> Result<(), VpnError> {

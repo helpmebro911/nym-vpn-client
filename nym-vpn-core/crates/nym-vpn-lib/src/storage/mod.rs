@@ -4,32 +4,42 @@
 use std::path::Path;
 
 use nym_vpn_store::{
-    keys::device::{
-        DeviceKeyStore, DeviceKeys, {DeviceKeysPaths, OnDiskKeysError},
+    keys::{
+        device::{DeviceKeyStore, DeviceKeys, DeviceKeysPaths, OnDiskKeysError},
+        wireguard::WireguardKeysPath,
     },
     mnemonic::{Mnemonic, MnemonicStorage, on_disk::OnDiskMnemonicStorageError},
 };
 
+pub(crate) mod error;
 mod helpers;
 
 const MNEMONIC_FILE_NAME: &str = "mnemonic.json";
 
 pub struct VpnClientOnDiskStorage {
-    key_store: nym_vpn_store::keys::device::OnDiskKeys,
+    device_key_store: nym_vpn_store::keys::device::OnDiskKeys,
+    wireguard_key_store: nym_vpn_store::keys::wireguard::OnDiskKeys,
     mnemonic_storage: nym_vpn_store::mnemonic::on_disk::OnDiskMnemonicStorage,
 }
 
 impl VpnClientOnDiskStorage {
-    pub fn new<P: AsRef<Path>>(base_data_directory: P) -> Self {
+    pub async fn init<P: AsRef<Path>>(
+        base_data_directory: P,
+    ) -> Result<Self, error::KeyStoreError> {
         let device_key_paths = DeviceKeysPaths::new(&base_data_directory);
-        let key_store = nym_vpn_store::keys::device::OnDiskKeys::new(device_key_paths);
+        let device_key_store = nym_vpn_store::keys::device::OnDiskKeys::new(device_key_paths);
+
+        let wireguard_key_path = WireguardKeysPath::new(&base_data_directory);
+        let wireguard_key_store =
+            nym_vpn_store::keys::wireguard::OnDiskKeys::init(wireguard_keys_path).await?;
 
         let mnemonic_storage_path = base_data_directory.as_ref().join(MNEMONIC_FILE_NAME);
         let mnemonic_storage =
             nym_vpn_store::mnemonic::on_disk::OnDiskMnemonicStorage::new(mnemonic_storage_path);
 
         VpnClientOnDiskStorage {
-            key_store,
+            device_key_store,
+            wireguard_key_store,
             mnemonic_storage,
         }
     }
@@ -42,23 +52,23 @@ impl DeviceKeyStore for VpnClientOnDiskStorage {
     type StorageError = OnDiskKeysError;
 
     async fn load_keys(&self) -> Result<DeviceKeys, Self::StorageError> {
-        self.key_store.load_keys().await
+        self.device_key_store.load_keys().await
     }
 
     async fn store_keys(&self, keys: &DeviceKeys) -> Result<(), Self::StorageError> {
-        self.key_store.store_keys(keys).await
+        self.device_key_store.store_keys(keys).await
     }
 
     async fn init_keys(&self, seed: Option<[u8; 32]>) -> Result<(), Self::StorageError> {
-        self.key_store.init_keys(seed).await
+        self.device_key_store.init_keys(seed).await
     }
 
     async fn reset_keys(&self, seed: Option<[u8; 32]>) -> Result<(), Self::StorageError> {
-        self.key_store.reset_keys(seed).await
+        self.device_key_store.reset_keys(seed).await
     }
 
     async fn remove_keys(&self) -> Result<(), Self::StorageError> {
-        self.key_store.remove_keys().await
+        self.device_key_store.remove_keys().await
     }
 }
 

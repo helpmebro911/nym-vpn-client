@@ -16,6 +16,21 @@ use crate::{
     types::RawWireguardKeys,
 };
 
+const DEFAULT_DB_FILENAME: &str = "wireguard_gateway_keys.sqlite";
+
+pub struct WireguardKeysPath {
+    pub db_file_path: PathBuf,
+}
+
+impl WireguardKeysPath {
+    pub fn new<P: AsRef<Path>>(base_data_directory: P) -> Self {
+        let base_dir = base_data_directory.as_ref();
+        WireguardKeysPath {
+            db_file_path: base_dir.join(DEFAULT_DB_FILENAME),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct OnDiskKeys {
     connection_pool: sqlx::SqlitePool,
@@ -71,12 +86,13 @@ impl WireguardKeyStore for OnDiskKeys {
 
 // all SQL goes here
 impl OnDiskKeys {
-    pub async fn init<P: AsRef<Path>>(database_path: P) -> Result<Self, OnDiskKeysError> {
+    pub async fn init(wireguard_keys_path: WireguardKeysPath) -> Result<Self, OnDiskKeysError> {
+        let database_path = wireguard_keys_path.db_file_path.clone();
         // ensure the whole directory structure exists
-        if let Some(parent_dir) = database_path.as_ref().parent() {
+        if let Some(parent_dir) = database_path.parent() {
             std::fs::create_dir_all(parent_dir).map_err(|source| {
                 OnDiskKeysError::DatabasePathUnableToCreateParentDirectory {
-                    provided_path: database_path.as_ref().to_path_buf(),
+                    provided_path: database_path.to_path_buf(),
                     source,
                 }
             })?;
