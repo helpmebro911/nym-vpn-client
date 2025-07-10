@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 use std::net::{IpAddr, SocketAddr};
+use std::collections::HashMap;
 
 use nym_common::trace_err_chain;
 use nym_http_api_client::HickoryDnsResolver;
@@ -47,13 +48,48 @@ async fn url_to_socket_addr(unresolved_url: &url::Url) -> Result<Vec<SocketAddr>
         .collect())
 }
 
+
+async fn url_with_fronts_to_socket_addrs(
+    unresolved_url: &nym_http_api_client::Url,
+) -> Result<HashMap<String, Vec<SocketAddr>>> {
+
+    let socket_addrs = url_to_socket_addr(unresolved_url.as_ref()).await?;
+    let mut result = HashMap::new();
+    result.insert(unresolved_url.host_str().unwrap().to_string(), socket_addrs);
+
+    if let Some(fronts) = unresolved_url.fronts() {
+        for front in fronts {
+            let front_socket_addrs = url_to_socket_addr(&front).await?;
+            result.insert(front.host_str().unwrap().to_string(), front_socket_addrs);
+        }
+    }
+
+    Ok(result)
+}
+
+async fn urls_with_fronts_to_socket_addrs(
+    unresolved_urls: &[nym_http_api_client::Url],
+) -> Result<HashMap<String, Vec<SocketAddr>>> {
+
+    let mut result = HashMap::new();
+
+    for unresolved_url in unresolved_urls {
+        let m = url_with_fronts_to_socket_addrs(unresolved_url).await?;
+        result.extend(m);
+    }
+
+    Ok(result)
+}
+
 pub async fn resolve_config(config: &Config) -> Result<ResolvedConfig> {
-    let nyxd_socket_addrs = url_to_socket_addr(config.nyxd_url().as_ref()).await?;
-    let api_socket_addrs = url_to_socket_addr(config.api_url().as_ref()).await?;
-    let nym_vpn_api_socket_addrs = if let Some(vpn_api_url) = config.nym_vpn_api_url() {
-        Some(url_to_socket_addr(vpn_api_url.as_ref()).await?)
-    } else {
-        None
+
+    let nyxd_socket_addrs = url_with_fronts_to_socket_addrs(config.nyxd_url()).await?;
+    let api_socket_addrs = urls_with_fronts_to_socket_addrs(&config.api_urls).await?;
+    let nym_vpn_api_socket_addrs = match config.nym_vpn_api_urls {
+        Some(ref urls) => {
+            Some(urls_with_fronts_to_socket_addrs(urls).await?)
+        }
+        None => None,
     };
 
     Ok(ResolvedConfig {

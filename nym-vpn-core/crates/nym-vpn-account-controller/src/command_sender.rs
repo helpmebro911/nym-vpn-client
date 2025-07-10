@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 use std::net::SocketAddr;
+use std::collections::HashMap;
 
 use nym_offline_monitor::ConnectivityHandle;
 use nym_vpn_api_client::{
@@ -241,7 +242,7 @@ impl AccountCommandSender {
 
     pub async fn set_static_api_addresses(
         &self,
-        static_addresses: Option<Vec<SocketAddr>>,
+        static_addresses: Option<HashMap<String, Vec<SocketAddr>>>,
     ) -> Result<(), AccountCommandError> {
         let (tx, rx) = ReturnSender::new();
         self.command_tx

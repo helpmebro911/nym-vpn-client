@@ -4,6 +4,7 @@
 use std::{
     fmt,
     net::{IpAddr, SocketAddr},
+    collections::HashMap,
 };
 
 use nym_http_api_client::Url;
@@ -117,18 +118,18 @@ impl Config {
 
 #[derive(Debug, Clone)]
 pub struct ResolvedConfig {
-    pub nyxd_socket_addrs: Vec<SocketAddr>,
-    pub api_socket_addrs: Vec<SocketAddr>,
-    pub nym_vpn_api_socket_addrs: Option<Vec<SocketAddr>>,
+    pub nyxd_socket_addrs: HashMap<String, Vec<SocketAddr>>,
+    pub api_socket_addrs: HashMap<String, Vec<SocketAddr>>,
+    pub nym_vpn_api_socket_addrs: Option<HashMap<String, Vec<SocketAddr>>>,
 }
 
 impl ResolvedConfig {
     pub fn all_socket_addrs(&self) -> Vec<SocketAddr> {
         let mut socket_addrs = vec![];
-        socket_addrs.extend(self.nyxd_socket_addrs.iter());
-        socket_addrs.extend(self.api_socket_addrs.iter());
+        socket_addrs.extend(self.nyxd_socket_addrs.iter().flat_map(|(_, addrs)| addrs));
+        socket_addrs.extend(self.api_socket_addrs.iter().flat_map(|(_, addrs)| addrs));
         if let Some(vpn_api_socket_addrs) = &self.nym_vpn_api_socket_addrs {
-            socket_addrs.extend(vpn_api_socket_addrs.iter());
+            socket_addrs.extend(vpn_api_socket_addrs.iter().flat_map(|(_, addrs)| addrs));
         }
         socket_addrs
     }
@@ -152,20 +153,29 @@ impl GatewayClient {
     pub fn new_with_resolver_overrides(
         config: Config,
         user_agent: UserAgent,
-        static_nym_api_ip_addresses: Option<&[SocketAddr]>,
+        static_addresses: Option<HashMap<String, Vec<SocketAddr>>>,
     ) -> Result<Self> {
-        let api_client =
-            NymApiClient::new_with_user_agent(config.api_url.into(), user_agent.clone());
-        let nym_vpn_api_client = config
-            .nym_vpn_api_url
-            .map(|url| {
-                nym_vpn_api_client::VpnApiClient::new_with_resolver_overrides(
-                    url,
-                    user_agent.clone(),
-                    static_nym_api_ip_addresses,
-                )
-            })
-            .transpose()?;
+        let client = nym_http_api_client::ClientBuilder::new_with_urls(config.api_urls.clone())
+            .with_user_agent(Some(user_agent.clone()))
+            .with_resolver_overrides(static_addresses.clone())
+            .with_retries(3)
+            .build::<&str>()
+            .map_err(|e| Error::FailedToCreateApiClient(e.to_string()))?;
+
+        let api_client = NymApiClient::new_with_client(client);
+
+        // build http client for the nym api using the multiple URLs provided in the config if present
+        let nym_client = config
+            .nym_vpn_api_urls
+            .map(|urls| {
+                nym_http_api_client::ClientBuilder::new_with_urls(urls)
+                    .with_user_agent(Some(user_agent.clone()))
+                    .with_retries(3)
+                    .with_resolver_overrides(static_addresses)
+                    .build::<&str>()
+                    .map_err(|e| Error::FailedToCreateApiClient(e.to_string()))
+            }).transpose()?;
+        let nym_vpn_api_client = nym_client.map(|c| nym_vpn_api_client::VpnApiClient::new_with_client(c));
 
         Ok(GatewayClient {
             api_client,

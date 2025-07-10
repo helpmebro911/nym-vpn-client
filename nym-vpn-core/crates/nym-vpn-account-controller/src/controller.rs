@@ -1,7 +1,7 @@
 // Copyright 2024 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use std::{net::SocketAddr, sync::Arc, time::Duration};
+use std::{collections::HashMap, net::SocketAddr, sync::Arc, time::Duration};
 
 use nym_offline_monitor::{Connectivity, ConnectivityHandle};
 use nym_vpn_api_client::{
@@ -811,20 +811,31 @@ where
 
     fn handle_set_static_api_addresses(
         &mut self,
-        static_api_addresses: Option<Vec<SocketAddr>>,
+        static_api_addresses: Option<HashMap<String, Vec<SocketAddr>>>,
     ) -> Result<(), AccountCommandError> {
-        nym_vpn_api_client::VpnApiClient::new_with_resolver_overrides(
-            self.vpn_api_client.current_url().clone(),
-            self.config.user_agent.clone(),
-            static_api_addresses.as_deref(),
-        )
-        .map(|new_vpn_api_client| {
-            self.vpn_api_client
-                .swap_inner_client(new_vpn_api_client.clone());
-            self.command_handler
-                .update_vpn_api_client(new_vpn_api_client);
-        })
-        .map_err(|e| AccountCommandError::internal(format!("Failed to set static addresses: {e}")))
+        let client =
+            nym_http_api_client::ClientBuilder::new_with_urls(self.vpn_api_client.inner().base_urls().to_vec())
+                .with_user_agent(Some(self.config.user_agent.clone()))
+                .with_resolver_overrides(static_api_addresses)
+                .build::<&str>()
+                .map_err(|e| {
+                    AccountCommandError::internal(format!("Failed to create HTTP client: {e}"))
+                })?;
+
+        // nym_vpn_api_client::VpnApiClient::new_with_resolver_overrides(
+        //     self.vpn_api_client.current_url().clone(),
+        //     self.config.user_agent.clone(),
+        //     static_api_addresses.as_ref(),
+        // )
+
+        let vpn_api_client = nym_vpn_api_client::VpnApiClient::new_with_client(client);
+
+        self.vpn_api_client
+            .swap_inner_client(vpn_api_client.clone());
+        self.command_handler
+            .update_vpn_api_client(vpn_api_client);
+
+        Ok(())
     }
 
     async fn handle_register_offline_monitor(

@@ -10,6 +10,7 @@ use nym_vpn_lib_types::{
 use nym_vpn_store::mnemonic::Mnemonic;
 
 use std::net::SocketAddr;
+use std::collections::HashMap;
 
 use nym_vpn_api_client::{
     response::{NymVpnAccountSummaryResponse, NymVpnDevice, NymVpnUsage},
@@ -48,7 +49,7 @@ pub enum AccountCommand {
     GetAvailableTickets(ReturnSender<AvailableTicketbooks, AccountCommandError>),
     SetStaticApiAddresses(
         ReturnSender<(), AccountCommandError>,
-        Option<Vec<SocketAddr>>,
+        Option<HashMap<String, Vec<SocketAddr>>>,
     ),
     RegisterOfflineMonitor(ReturnSender<(), AccountCommandError>, ConnectivityHandle),
     CheckDeviceTimeSync(ReturnSender<VpnApiTimeSynced, AccountCommandError>),

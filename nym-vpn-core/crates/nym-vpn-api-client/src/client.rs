@@ -1,7 +1,7 @@
 // Copyright 2024 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use std::{fmt, net::SocketAddr, time::Duration};
+use std::{fmt,time::Duration};
 
 use backon::Retryable;
 use nym_credential_proxy_requests::api::v1::ticketbook::models::PartialVerificationKeysResponse;
@@ -44,58 +44,29 @@ pub struct VpnApiClient {
 
 impl VpnApiClient {
     pub fn new(base_url: Url, user_agent: UserAgent) -> Result<Self> {
-        Self::new_with_resolver_overrides(base_url, user_agent, None)
-    }
-
-    pub fn new_with_resolver_overrides(
-        base_url: Url,
-        user_agent: UserAgent,
-        static_addresses: Option<&[SocketAddr]>,
-    ) -> Result<Self> {
-        nym_http_api_client::Client::builder(base_url.clone())
-            .map(|builder| {
-                let mut builder = builder
-                    .with_user_agent(Some(user_agent))
-                    .with_timeout(NYM_VPN_API_TIMEOUT);
-
-                if let Some(domain) = base_url.domain() {
-                    match static_addresses {
-                        Some(static_addresses) if !static_addresses.is_empty() => {
-                            tracing::info!(
-                                "Enabling DNS resolver overrides: {:?}", static_addresses
-                            );
-                            builder = builder.resolve_to_addrs(domain, static_addresses);
-                        }
-                        Some(_) => {
-                            tracing::warn!(
-                                "Not enabling DNS resolver overrides because static addresses are empty"
-                            );
-                        }
-                        None => {
-                            tracing::info!(
-                                "Not enabling DNS resolver overrides because static addresses are not set"
-                            );
-                        }
-                    }
-                } else {
-                    tracing::info!(
-                        "Not enabling DNS resolver overrides because domain is not present in base URL"
-                    );
-                }
-
-                builder
-            })
-            .and_then(|builder| builder.build())
+        nym_http_api_client::ClientBuilder::new(base_url.clone())
+            .map_err(VpnApiClientError::CreateVpnApiClient)?
+            .with_user_agent(Some(user_agent))
+            .with_timeout(NYM_VPN_API_TIMEOUT)
+            .build()
             .map(|c| Self { inner: c })
             .map_err(VpnApiClientError::CreateVpnApiClient)
     }
 
-    pub fn swap_inner_client(&mut self, client: VpnApiClient) {
-        self.inner = client.inner;
+    pub fn new_with_client(inner: nym_http_api_client::Client) -> Self {
+        Self { inner }
     }
+
+     pub fn swap_inner_client(&mut self, client: VpnApiClient) {
+        self.inner = client.inner;
+     }
 
     pub fn current_url(&self) -> &Url {
         self.inner.current_url()
+    }
+
+    pub fn base_urls(&self) -> &[Url] {
+        self.inner.base_urls()
     }
 
     pub async fn get_remote_time(&self) -> Result<VpnApiTime> {
