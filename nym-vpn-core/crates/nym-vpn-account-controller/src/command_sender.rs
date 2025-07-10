@@ -1,8 +1,8 @@
 // Copyright 2024 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use std::net::SocketAddr;
 use std::collections::HashMap;
+use std::net::SocketAddr;
 
 use nym_offline_monitor::ConnectivityHandle;
 use nym_vpn_api_client::{

@@ -95,6 +95,7 @@ impl Discovery {
     pub async fn fetch(network_name: &str) -> Result<Self> {
         // allow panic because a broken bootstrap url means everything will fail anyways.
         let default_url = DEFAULT_VPN_API_URL.clone();
+        // TODO: construct a client that supports multiple API URLs with fronting
         let client =
             BootstrapVpnApiClient::new(default_url).map_err(Error::CreateBootstrapApiClient)?;
 
@@ -172,6 +173,7 @@ impl Discovery {
 
     pub async fn fetch_nym_network_details(&self) -> Result<NymNetwork> {
         tracing::debug!("Fetching nym network details");
+        // TODO: construct a client that supports multiple API URLs with fronting
         let client = NymApiClient::new(self.nym_api_url.clone(), None);
         let network_details = client
             .get_network_details()
@@ -284,6 +286,7 @@ pub(crate) async fn fetch_nym_network_details(
     nym_api_url: Url,
 ) -> Result<NymNetworkDetailsResponse> {
     tracing::debug!("Fetching nym network details");
+    // TODO: construct a client that supports multiple API URLs with fronting
     let client = NymApiClient::new(nym_api_url, None);
 
     client
@@ -296,6 +299,7 @@ pub(crate) async fn fetch_nym_vpn_network_details(
     nym_vpn_api_url: Url,
 ) -> Result<NymWellknownDiscoveryItem> {
     tracing::debug!("Fetching nym vpn network details");
+    // TODO: construct a client that supports multiple API URLs with fronting
     VpnApiClient::new(nym_vpn_api_url.into(), empty_user_agent())
         .map_err(Error::CreateVpnApiClient)?
         .get_wellknown_current_env()

@@ -65,6 +65,7 @@ impl RegisteredNetworks {
 
         // Spawn the root task
         let default_url = Discovery::defaul_vpn_api_url();
+        // TODO: construct a client that supports multiple API URLs with fronting
         let inner = BootstrapVpnApiClient::new(default_url)
             .map_err(Error::CreateBootstrapApiClient)?
             .get_wellknown_envs()

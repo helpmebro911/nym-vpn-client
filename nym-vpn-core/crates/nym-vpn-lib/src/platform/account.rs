@@ -413,6 +413,7 @@ pub(crate) mod raw {
     async fn create_vpn_api_client() -> Result<VpnApiClient, VpnError> {
         let network_env = environment::current_environment_details().await?;
         let user_agent = crate::util::construct_user_agent();
+        // TODO: construct a client that supports multiple API URLs with fronting
         let vpn_api_client = VpnApiClient::new(network_env.vpn_api_url().into(), user_agent)
             .map_err(VpnError::internal)?;
         Ok(vpn_api_client)

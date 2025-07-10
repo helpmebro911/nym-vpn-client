@@ -1,12 +1,12 @@
 // Copyright 2024 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use std::{fmt,time::Duration};
+use std::{fmt, time::Duration};
 
 use backon::Retryable;
 use nym_credential_proxy_requests::api::v1::ticketbook::models::PartialVerificationKeysResponse;
 use nym_http_api_client::{
-    ApiClient, HttpClientError, NO_PARAMS, Params, PathSegments, Url, UserAgent,
+    ApiClient, FrontPolicy, HttpClientError, NO_PARAMS, Params, PathSegments, Url, UserAgent,
 };
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use time::OffsetDateTime;
@@ -46,6 +46,7 @@ impl VpnApiClient {
     pub fn new(base_url: Url, user_agent: UserAgent) -> Result<Self> {
         nym_http_api_client::ClientBuilder::new(base_url.clone())
             .map_err(VpnApiClientError::CreateVpnApiClient)?
+            .with_fronting(FrontPolicy::Always)
             .with_user_agent(Some(user_agent))
             .with_timeout(NYM_VPN_API_TIMEOUT)
             .build()
@@ -57,9 +58,9 @@ impl VpnApiClient {
         Self { inner }
     }
 
-     pub fn swap_inner_client(&mut self, client: VpnApiClient) {
+    pub fn swap_inner_client(&mut self, client: VpnApiClient) {
         self.inner = client.inner;
-     }
+    }
 
     pub fn current_url(&self) -> &Url {
         self.inner.current_url()

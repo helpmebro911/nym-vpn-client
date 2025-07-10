@@ -9,8 +9,8 @@ use nym_vpn_lib_types::{
 };
 use nym_vpn_store::mnemonic::Mnemonic;
 
-use std::net::SocketAddr;
 use std::collections::HashMap;
+use std::net::SocketAddr;
 
 use nym_vpn_api_client::{
     response::{NymVpnAccountSummaryResponse, NymVpnDevice, NymVpnUsage},

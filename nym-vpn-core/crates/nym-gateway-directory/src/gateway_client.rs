@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 use std::{
+    collections::HashMap,
     fmt,
     net::{IpAddr, SocketAddr},
-    collections::HashMap,
 };
 
-use nym_http_api_client::Url;
+use nym_http_api_client::{FrontPolicy, Url};
 use nym_sdk::UserAgent;
 use nym_validator_client::{NymApiClient, models::NymNodeDescription, nym_nodes::SkimmedNode};
 use nym_vpn_api_client::types::{GatewayMinPerformance, Percent, ScoreThresholds};
@@ -76,7 +76,7 @@ impl Config {
             mix_score_thresholds,
             wg_score_thresholds,
             api_urls: vec![nym_api_url],
-            nym_vpn_api_urls: nym_vpn_api_url.map(|url| vec![url.into()]),
+            nym_vpn_api_urls: nym_vpn_api_url.map(|url| vec![url]),
         }
     }
 
@@ -156,6 +156,7 @@ impl GatewayClient {
         static_addresses: Option<HashMap<String, Vec<SocketAddr>>>,
     ) -> Result<Self> {
         let client = nym_http_api_client::ClientBuilder::new_with_urls(config.api_urls.clone())
+            .with_fronting(FrontPolicy::Always)
             .with_user_agent(Some(user_agent.clone()))
             .with_resolver_overrides(static_addresses.clone())
             .with_retries(3)
@@ -169,13 +170,15 @@ impl GatewayClient {
             .nym_vpn_api_urls
             .map(|urls| {
                 nym_http_api_client::ClientBuilder::new_with_urls(urls)
+                    .with_fronting(FrontPolicy::Always)
                     .with_user_agent(Some(user_agent.clone()))
                     .with_retries(3)
                     .with_resolver_overrides(static_addresses)
                     .build::<&str>()
                     .map_err(|e| Error::FailedToCreateApiClient(e.to_string()))
-            }).transpose()?;
-        let nym_vpn_api_client = nym_client.map(|c| nym_vpn_api_client::VpnApiClient::new_with_client(c));
+            })
+            .transpose()?;
+        let nym_vpn_api_client = nym_client.map(nym_vpn_api_client::VpnApiClient::new_with_client);
 
         Ok(GatewayClient {
             api_client,

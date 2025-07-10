@@ -3,6 +3,7 @@
 
 use std::{collections::HashMap, net::SocketAddr, sync::Arc, time::Duration};
 
+use nym_http_api_client::FrontPolicy;
 use nym_offline_monitor::{Connectivity, ConnectivityHandle};
 use nym_vpn_api_client::{
     response::{NymVpnDevice, NymVpnUsage},
@@ -813,27 +814,21 @@ where
         &mut self,
         static_api_addresses: Option<HashMap<String, Vec<SocketAddr>>>,
     ) -> Result<(), AccountCommandError> {
-        let client =
-            nym_http_api_client::ClientBuilder::new_with_urls(self.vpn_api_client.inner().base_urls().to_vec())
-                .with_user_agent(Some(self.config.user_agent.clone()))
-                .with_resolver_overrides(static_api_addresses)
-                .build::<&str>()
-                .map_err(|e| {
-                    AccountCommandError::internal(format!("Failed to create HTTP client: {e}"))
-                })?;
-
-        // nym_vpn_api_client::VpnApiClient::new_with_resolver_overrides(
-        //     self.vpn_api_client.current_url().clone(),
-        //     self.config.user_agent.clone(),
-        //     static_api_addresses.as_ref(),
-        // )
+        let urls = self.vpn_api_client.inner().base_urls().to_vec();
+        let client = nym_http_api_client::ClientBuilder::new_with_urls(urls)
+            .with_fronting(FrontPolicy::Always)
+            .with_user_agent(Some(self.config.user_agent.clone()))
+            .with_resolver_overrides(static_api_addresses)
+            .build::<&str>()
+            .map_err(|e| {
+                AccountCommandError::internal(format!("Failed to create HTTP client: {e}"))
+            })?;
 
         let vpn_api_client = nym_vpn_api_client::VpnApiClient::new_with_client(client);
 
         self.vpn_api_client
             .swap_inner_client(vpn_api_client.clone());
-        self.command_handler
-            .update_vpn_api_client(vpn_api_client);
+        self.command_handler.update_vpn_api_client(vpn_api_client);
 
         Ok(())
     }

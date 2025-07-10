@@ -348,7 +348,7 @@ impl TunnelMonitor {
             self.tunnel_parameters
                 .resolved_gateway_config
                 .nym_vpn_api_socket_addrs
-                .as_deref(),
+                .clone(),
         )
         .unwrap();
 

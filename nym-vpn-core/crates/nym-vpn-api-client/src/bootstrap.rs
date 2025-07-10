@@ -1,7 +1,7 @@
 // Copyright 2024 - Nym Technologies SA <contact@nymtech.net>
 // SPDX-License-Identifier: GPL-3.0-only
 
-use nym_http_api_client::{ApiClient, NO_PARAMS};
+use nym_http_api_client::{ApiClient, FrontPolicy, NO_PARAMS};
 
 use url::Url;
 
@@ -21,9 +21,14 @@ impl BootstrapVpnApiClient {
     /// Returns a VpnApiClient Based on locally set well known url and empty user agent.
     ///
     /// THIS SHOULD ONLY BE USED FOR BOOTSTRAPPING.
+    // TODO: transition to using the multiple configured default API URLs with fronting
     pub fn new(base_url: Url) -> Result<Self> {
         nym_http_api_client::Client::builder(base_url)
-            .map(|builder| builder.with_timeout(NYM_VPN_API_TIMEOUT))
+            .map(|builder| {
+                builder
+                    .with_timeout(NYM_VPN_API_TIMEOUT)
+                    .with_fronting(FrontPolicy::Always)
+            })
             .and_then(|builder| builder.build())
             .map(|c| Self { inner: c })
             .map_err(VpnApiClientError::CreateVpnApiClient)
