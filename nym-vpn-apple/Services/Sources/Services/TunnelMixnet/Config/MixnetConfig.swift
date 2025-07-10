@@ -66,7 +66,7 @@ extension MixnetConfig {
             configPath: nil,
             credentialDataPath: credentialsDataPath,
             tunStatusListener: tunStatusListener,
-            credentialMode: isZknymEnabled,
+//            credentialMode: isZknymEnabled,
             statisticsRecipient: nil,
             userAgent: UserAgent(
                 application: AppVersionProvider.app,
