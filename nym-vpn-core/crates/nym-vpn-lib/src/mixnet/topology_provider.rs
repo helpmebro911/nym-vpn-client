@@ -10,10 +10,10 @@ use tokio::sync::{
     oneshot,
 };
 use tokio_util::sync::CancellationToken;
-use url::Url;
 
 use nym_client_core::NymTopology;
 use nym_client_core::client::topology_control::nym_api_provider::Config;
+use nym_http_api_client::Url;
 use nym_sdk::{NymApiTopologyProvider, TopologyProvider, UserAgent};
 
 enum FetcherCommand {
@@ -128,13 +128,13 @@ pub struct VpnTopologyProvider {
 
 impl VpnTopologyProvider {
     pub fn new(
-        nym_api_url: Url,
+        nym_api_urls: Vec<Url>,
         user_agent: Option<UserAgent>,
         use_network: bool,
         cancel_token: CancellationToken,
     ) -> Self {
         let (command_tx, command_rx) = tokio::sync::mpsc::unbounded_channel();
-        let refresher = Fetcher::new(vec![nym_api_url], user_agent, command_rx, cancel_token);
+        let refresher = Fetcher::new(nym_api_urls, user_agent, command_rx, cancel_token);
         tokio::spawn(refresher.run());
 
         Self {

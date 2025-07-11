@@ -381,8 +381,15 @@ async fn get_gateways(
 async fn create_gateway_client(user_agent: UserAgent) -> Result<GatewayClient, VpnError> {
     let network_env = environment::current_environment_details().await.unwrap();
     let nyxd_url = network_env.nyxd_url();
-    let api_url = network_env.api_url();
-    let nym_vpn_api_url = Some(network_env.vpn_api_url());
+    let api_urls = network_env.api_urls();
+    let nym_vpn_api_urls = Some(
+        network_env
+            .vpn_api_urls()
+            .into_iter()
+            .map(TryInto::<nym_http_api_client::Url>::try_into)
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(VpnError::internal)?,
+    );
 
     let mix_score_thresholds =
         network_env
@@ -401,8 +408,8 @@ async fn create_gateway_client(user_agent: UserAgent) -> Result<GatewayClient, V
 
     let directory_config = nym_gateway_directory::Config::new(
         nyxd_url,
-        api_url,
-        nym_vpn_api_url,
+        api_urls,
+        nym_vpn_api_urls,
         None,
         mix_score_thresholds,
         wg_score_thresholds,

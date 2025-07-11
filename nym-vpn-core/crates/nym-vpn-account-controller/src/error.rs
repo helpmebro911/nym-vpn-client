@@ -6,6 +6,9 @@ pub enum Error {
     #[error("failed to setup nym-vpn-api client")]
     SetupVpnApiClient(nym_vpn_api_client::VpnApiClientError),
 
+    #[error("failed to setup http client for nym-vpn-api")]
+    SetupHttpClient(#[from] nym_http_api_client::HttpClientError),
+
     #[error("mnemonic store error")]
     MnemonicStore {
         source: Box<dyn std::error::Error + Send + Sync>,

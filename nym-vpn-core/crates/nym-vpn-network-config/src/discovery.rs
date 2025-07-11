@@ -7,6 +7,7 @@ use std::{
 };
 
 use nym_common::trace_err_chain;
+use nym_config::defaults::ApiUrl;
 use nym_sdk::UserAgent;
 use url::Url;
 
@@ -41,7 +42,9 @@ pub struct Discovery {
     // Base network setup
     pub(super) network_name: String,
     pub(super) nym_api_url: Url,
+    pub(super) nym_api_urls: Option<Vec<ApiUrl>>,
     pub(super) nym_vpn_api_url: Url,
+    pub(super) nym_vpn_api_urls: Option<Vec<ApiUrl>>,
 
     // Additional context
     pub(super) account_management: Option<AccountManagement>,
@@ -264,7 +267,9 @@ impl TryFrom<NymWellknownDiscoveryItemResponse> for Discovery {
         Ok(Self {
             network_name: discovery.network_name,
             nym_api_url,
+            nym_api_urls: None, // todo: why are there SO MANY sources of nym api urls?
             nym_vpn_api_url,
+            nym_vpn_api_urls: None, // todo: why are there SO MANY sources of nym vpn api urls?
             account_management,
             feature_flags,
             system_configuration,
@@ -394,7 +399,9 @@ mod tests {
         let expected_network = Discovery {
             network_name: "qa".to_owned(),
             nym_api_url: "https://foo.ch/api/".parse().unwrap(),
+            nym_api_urls: None,
             nym_vpn_api_url: "https://bar.ch/api/".parse().unwrap(),
+            nym_vpn_api_urls: None,
             account_management: Some(AccountManagement {
                 url: "https://foobar.ch/".parse().unwrap(),
                 paths: AccountManagementPaths {

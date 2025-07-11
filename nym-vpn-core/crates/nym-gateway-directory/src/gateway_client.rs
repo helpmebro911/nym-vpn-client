@@ -26,10 +26,6 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct Config {
     pub nyxd_url: Url,
-    #[deprecated(note = "Use `api_urls` instead, as it allows for multiple API URLs.")]
-    pub api_url: Url,
-    #[deprecated(note = "Use `nym_vpn_api_urls` instead, as it allows for multiple API URLs.")]
-    pub nym_vpn_api_url: Option<Url>,
     pub min_gateway_performance: Option<GatewayMinPerformance>,
     pub mix_score_thresholds: Option<ScoreThresholds>,
     pub wg_score_thresholds: Option<ScoreThresholds>,
@@ -49,10 +45,8 @@ impl fmt::Display for Config {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "nyxd_url: {}, api_url: {}, nym_vpn_api_url: {}",
-            self.nyxd_url,
-            self.api_url,
-            to_string(&self.nym_vpn_api_url),
+            "nyxd_url: {}, api_url: {:?}, nym_vpn_api_url: {:?}",
+            self.nyxd_url, self.api_urls, self.nym_vpn_api_urls,
         )
     }
 }
@@ -60,23 +54,21 @@ impl fmt::Display for Config {
 impl Config {
     pub fn new(
         nyxd_url: impl Into<Url>,
-        api_url: impl Into<Url>,
-        vpn_api_url: Option<impl Into<Url>>,
+        api_urls: Vec<impl Into<Url>>,
+        vpn_api_urls: Option<Vec<impl Into<Url>>>,
         min_gateway_performance: Option<GatewayMinPerformance>,
         mix_score_thresholds: Option<ScoreThresholds>,
         wg_score_thresholds: Option<ScoreThresholds>,
     ) -> Self {
-        let nym_api_url = api_url.into();
-        let nym_vpn_api_url: Option<Url> = vpn_api_url.map(Into::into);
+        let api_urls = api_urls.into_iter().map(Into::into).collect();
+        let nym_vpn_api_urls = vpn_api_urls.map(|urls| urls.into_iter().map(Into::into).collect());
         Config {
             nyxd_url: nyxd_url.into(),
-            api_url: nym_api_url.clone(),
-            nym_vpn_api_url: nym_vpn_api_url.clone(),
             min_gateway_performance,
             mix_score_thresholds,
             wg_score_thresholds,
-            api_urls: vec![nym_api_url],
-            nym_vpn_api_urls: nym_vpn_api_url.map(|url| vec![url]),
+            api_urls,
+            nym_vpn_api_urls,
         }
     }
 
@@ -89,21 +81,21 @@ impl Config {
         self
     }
 
-    pub fn api_url(&self) -> &Url {
-        &self.api_url
+    pub fn api_urls(&self) -> &Vec<Url> {
+        &self.api_urls
     }
 
-    pub fn with_custom_api_url(mut self, api_url: Url) -> Self {
-        self.api_url = api_url;
+    pub fn with_custom_api_urls(mut self, api_urls: Vec<Url>) -> Self {
+        self.api_urls = api_urls;
         self
     }
 
-    pub fn nym_vpn_api_url(&self) -> Option<&Url> {
-        self.nym_vpn_api_url.as_ref()
+    pub fn nym_vpn_api_urls(&self) -> Option<&[Url]> {
+        self.nym_vpn_api_urls.as_deref()
     }
 
-    pub fn with_custom_nym_vpn_api_url(mut self, nym_vpn_api_url: Url) -> Self {
-        self.nym_vpn_api_url = Some(nym_vpn_api_url);
+    pub fn with_custom_nym_vpn_api_urls(mut self, nym_vpn_api_urls: Vec<Url>) -> Self {
+        self.nym_vpn_api_urls = Some(nym_vpn_api_urls);
         self
     }
 
@@ -194,10 +186,10 @@ impl GatewayClient {
     pub fn get_config(&self) -> Config {
         Config::new(
             self.nyxd_url.clone(),
-            self.api_client.api_url().clone(),
+            self.api_client.api_urls().to_vec(),
             self.nym_vpn_api_client
                 .as_ref()
-                .map(|client| client.current_url().clone()),
+                .map(|client| client.base_urls().to_vec()),
             self.min_gateway_performance,
             self.mix_score_thresholds,
             self.wg_score_thresholds,
@@ -506,21 +498,21 @@ mod test {
             .first()
             .expect("rust sdk mainnet default incorrectly configured")
             .nyxd_url();
-        let default_api_url = mainnet_network_defaults
-            .endpoints
-            .first()
-            .expect("rust sdk mainnet default incorrectly configured")
-            .api_url()
-            .expect("rust sdk mainnet default api_url not parseable");
+        // let default_api_url = mainnet_network_defaults
+        //     .endpoints
+        //     .first()
+        //     .expect("rust sdk mainnet default incorrectly configured")
+        //     .api_url()
+        //     .expect("rust sdk mainnet default api_url not parseable");
 
-        let default_nym_vpn_api_url = mainnet_network_defaults
-            .nym_vpn_api_url()
-            .expect("rust sdk mainnet default nym-vpn-api url not parseable");
+        // let default_nym_vpn_api_url = mainnet_network_defaults
+        //     .nym_vpn_api_url()
+        //     .expect("rust sdk mainnet default nym-vpn-api url not parseable");
 
         Config::new(
             default_nyxd_url,
-            default_api_url,
-            Some(default_nym_vpn_api_url),
+            mainnet_network_defaults.nym_vpn_api_urls,
+            mainnet_network_defaults.nym_api_urls,
             None,
             None,
             None,

@@ -28,9 +28,9 @@ pub use system_messages::{SystemMessage, SystemMessages};
 
 use discovery::Discovery;
 use envs::RegisteredNetworks;
-use nym_config::defaults::NymNetworkDetails;
+use nym_config::defaults::{ApiUrl, NymNetworkDetails};
+use nym_http_api_client::Url;
 use tokio::join;
-use url::Url;
 
 use std::{
     fmt::Debug,
@@ -54,7 +54,7 @@ pub struct Network {
     pub nym_network: NymNetwork,
     // extract at least one nyxd URL and one api URL, which must exist
     pub nyxd_url: Url,
-    pub api_url: Url,
+    pub api_urls: Vec<Url>,
     pub nym_vpn_network: NymVpnNetwork,
     pub feature_flags: Option<FeatureFlags>,
     pub system_configuration: Option<SystemConfiguration>,
@@ -68,16 +68,21 @@ impl Network {
             .network
             .endpoints
             .first()
-            .map(|ep| ep.nyxd_url())?;
-        let api_url = nym_network
+            .map(|ep| ep.nyxd_url())?
+            .into();
+        let api_urls = nym_network
             .network
-            .endpoints
-            .first()
-            .and_then(|ep| ep.api_url())?;
+            .nym_api_urls
+            .clone()?
+            .into_iter()
+            .map(TryInto::<Url>::try_into)
+            .filter(|r| r.is_ok())
+            .map(|r| r.unwrap())
+            .collect();
         Some(Network {
             nym_network,
             nyxd_url,
-            api_url,
+            api_urls,
             nym_vpn_network: NymVpnNetwork::new(network_details),
             feature_flags: None,
             system_configuration: None,
@@ -124,12 +129,20 @@ impl Network {
         self.nyxd_url.clone()
     }
 
-    pub fn api_url(&self) -> Url {
-        self.api_url.clone()
+    pub fn api_urls(&self) -> Vec<Url> {
+        self.api_urls.clone()
     }
 
-    pub fn vpn_api_url(&self) -> url::Url {
-        self.nym_vpn_network.nym_vpn_api_url.clone()
+    pub fn vpn_api_url(&self) -> ApiUrl {
+        self.nym_vpn_network
+            .nym_vpn_api_urls
+            .first()
+            .cloned()
+            .unwrap()
+    }
+
+    pub fn vpn_api_urls(&self) -> Vec<ApiUrl> {
+        self.nym_vpn_network.nym_vpn_api_urls.clone()
     }
 
     pub fn get_feature_flag<T>(&self, group: &str, flag: &str) -> Option<T>
@@ -215,16 +228,24 @@ pub async fn discover_env(config_path: &Path, network_name: &str) -> Result<Netw
         .endpoints
         .first()
         .ok_or(Error::NoEndpointsFound)?;
-    let nyxd_url = endpoint.nyxd_url();
-    let api_url = endpoint.api_url().ok_or(Error::NoApiUrlFound)?;
-
+    let nyxd_url = endpoint.nyxd_url().into();
+    let api_urls = nym_network
+        .network
+        .nym_api_urls
+        .clone()
+        .ok_or(Error::NoApiUrlFound)?
+        .iter()
+        .map(TryInto::try_into)
+        .filter(|r| r.is_ok())
+        .map(|r| r.unwrap())
+        .collect();
     // Using discovery, setup nym vpn network details
     let nym_vpn_network = NymVpnNetwork::from(discovery);
 
     Ok(Network {
         nym_network,
         nyxd_url,
-        api_url,
+        api_urls,
         nym_vpn_network,
         feature_flags,
         system_configuration,
@@ -238,15 +259,24 @@ pub fn manual_env(network_details: &NymNetworkDetails) -> Result<Network> {
         .endpoints
         .first()
         .ok_or(Error::NoEndpointsFound)?;
-    let nyxd_url = endpoint.nyxd_url();
-    let api_url = endpoint.api_url().ok_or(Error::NoApiUrlFound)?;
+    let nyxd_url = endpoint.nyxd_url().into();
+    let api_urls = nym_network
+        .network
+        .nym_api_urls
+        .clone()
+        .ok_or(Error::NoApiUrlFound)?
+        .into_iter()
+        .map(TryInto::try_into)
+        .filter(|r| r.is_ok())
+        .map(|r| r.unwrap())
+        .collect();
     let nym_vpn_network =
         NymVpnNetwork::try_from(network_details).map_err(Error::ConvertNetworkDetailsToNetwork)?;
 
     Ok(Network {
         nym_network,
         nyxd_url,
-        api_url,
+        api_urls,
         nym_vpn_network,
         feature_flags: None,
         system_configuration: None,
@@ -260,6 +290,9 @@ pub enum Error {
 
     #[error("no api url found in nym network")]
     NoApiUrlFound,
+
+    #[error("failed to parse api urls: {0}")]
+    ParseApiUrls(#[source] url::ParseError),
 
     #[error("network name mismatch between requested and fetched discovery")]
     NetworkNameMismatch { expected: String, actual: String },

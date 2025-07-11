@@ -114,17 +114,14 @@ mod tests {
         let result = urls_with_fronts_to_socket_addrs(&urls).await.unwrap();
 
         let local = result.get("localhost").unwrap();
-        assert!(local.contains(&SocketAddr::new(
-            IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
-            8080
-        )));
+        assert!(local.contains(&SocketAddr::new(IpAddr::V4(Ipv4Addr::LOCALHOST), 8080)));
 
-        let local = result.get("dns.google").unwrap();
-        assert!(local.contains(&SocketAddr::new(IpAddr::V4(Ipv4Addr::new(8, 8, 8, 8)), 443)));
+        let primary = result.get("dns.google").unwrap();
+        assert!(primary.contains(&SocketAddr::new(IpAddr::V4(Ipv4Addr::new(8, 8, 8, 8)), 443)));
 
-        let local = result.get("dns.quad9.net").unwrap();
-        assert!(local.contains(&SocketAddr::new(IpAddr::V4(Ipv4Addr::new(9, 9, 9, 9)), 443)));
-        assert!(!local.contains(&SocketAddr::new(IpAddr::V4(Ipv4Addr::new(1, 1, 1, 1)), 443)));
+        let front = result.get("dns.quad9.net").unwrap();
+        assert!(front.contains(&SocketAddr::new(IpAddr::V4(Ipv4Addr::new(9, 9, 9, 9)), 443)));
+        assert!(!front.contains(&SocketAddr::new(IpAddr::V4(Ipv4Addr::new(1, 1, 1, 1)), 443)));
 
         assert!(!result.contains_key("cloudflare-dns.com"));
     }

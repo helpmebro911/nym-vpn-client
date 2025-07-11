@@ -3,7 +3,7 @@
 
 use std::env;
 
-use nym_config::defaults::{NymNetworkDetails, var_names};
+use nym_config::defaults::{ApiUrl, NymNetworkDetails, var_names};
 use url::Url;
 
 use crate::{
@@ -14,6 +14,7 @@ use crate::{
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct NymVpnNetwork {
     pub nym_vpn_api_url: Url,
+    pub nym_vpn_api_urls: Vec<ApiUrl>,
     pub account_management: Option<AccountManagement>,
     pub system_messages: SystemMessages,
 }
@@ -28,6 +29,9 @@ impl NymVpnNetwork {
                 .expect("mainnet default for nym_vpn_api_url is missing")
                 .parse()
                 .expect("mainnet default for nym_vpn_api_url is invalid"),
+            nym_vpn_api_urls: network_details
+                .nym_vpn_api_urls
+                .expect("mainnet default for nym_vpn_api_urls is missing"),
             account_management: None,
             system_messages: SystemMessages::default(),
         }
@@ -65,6 +69,7 @@ impl From<Discovery> for NymVpnNetwork {
     fn from(discovery: Discovery) -> Self {
         Self {
             nym_vpn_api_url: discovery.nym_vpn_api_url,
+            nym_vpn_api_urls: discovery.nym_vpn_api_urls.unwrap_or_default(), // todo: Is empty fine here
             account_management: discovery.account_management,
             system_messages: discovery.system_messages,
         }
@@ -93,6 +98,7 @@ impl TryFrom<&NymNetworkDetails> for NymVpnNetwork {
 
         Ok(Self {
             nym_vpn_api_url,
+            nym_vpn_api_urls: network_details.nym_vpn_api_urls.clone().unwrap_or_default(), // todo: Is empty fine here
             account_management: None,
             system_messages: SystemMessages::default(),
         })

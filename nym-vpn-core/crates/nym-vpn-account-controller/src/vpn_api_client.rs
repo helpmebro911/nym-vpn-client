@@ -3,6 +3,7 @@
 
 use std::ops::Deref;
 
+use nym_http_api_client::FrontPolicy;
 use nym_vpn_api_client::{
     response::{NymVpnAccountStatusResponse, NymVpnRegisterAccountStatusResponse},
     types::{Platform, VpnApiAccount},
@@ -19,12 +20,21 @@ pub(crate) struct AccountControllerVpnApiClient {
 impl AccountControllerVpnApiClient {
     pub(crate) fn new(config: &AccountControllerConfig) -> Result<Self, Error> {
         // TODO: construct a client that supports multiple API URLs with fronting
-        nym_vpn_api_client::VpnApiClient::new(
-            config.network_env.vpn_api_url().into(),
-            config.user_agent.clone(),
-        )
-        .map_err(Error::SetupVpnApiClient)
-        .map(AccountControllerVpnApiClient::from)
+        let urls = config.network_env.vpn_api_urls();
+        let urls = urls
+            .into_iter()
+            .map(TryInto::try_into)
+            .filter(|r| r.is_ok())
+            .map(|r| r.unwrap())
+            .collect();
+
+        let client = nym_http_api_client::ClientBuilder::new_with_urls(urls)
+            .with_user_agent(Some(config.user_agent.clone()))
+            .with_fronting(FrontPolicy::Always)
+            .build()?;
+
+        let vpn_client = nym_vpn_api_client::VpnApiClient::new_with_client(client);
+        Ok(AccountControllerVpnApiClient::from(vpn_client))
     }
 
     pub(crate) fn inner(&self) -> &nym_vpn_api_client::VpnApiClient {

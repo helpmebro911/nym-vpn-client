@@ -155,7 +155,7 @@ pub(super) async fn start_state_machine(
     let shutdown_token = CancellationToken::new();
 
     let topology_provider = VpnTopologyProvider::new(
-        network_env.api_url(),
+        network_env.api_urls(),
         Some(user_agent.clone()),
         false,
         shutdown_token.child_token(),
