@@ -194,7 +194,8 @@ pub trait UnixDevice {
 impl UnixDevice for Device {
     fn set_nonblock(&self) -> std::io::Result<()> {
         let arg = fcntl::FcntlArg::F_SETFL(fcntl::OFlag::O_RDWR | fcntl::OFlag::O_NONBLOCK);
-        fcntl::fcntl(self.as_raw_fd(), arg)?;
+        let borrowed_fd = unsafe { std::os::fd::BorrowedFd::borrow_raw(self.as_raw_fd()) };
+        fcntl::fcntl(borrowed_fd, arg)?;
         Ok(())
     }
 }
