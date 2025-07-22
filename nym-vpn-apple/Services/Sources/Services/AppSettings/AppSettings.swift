@@ -65,7 +65,7 @@ public final class AppSettings: ObservableObject {
         AppSettingKey.currentEnv.rawValue,
         store: UserDefaults(suiteName: Constants.groupID.rawValue)
     )
-    public var currentEnv: String = "mainnet"
+    public var currentEnv: String = "sandbox"
 
     @AppStorage(AppSettingKey.accountToken.rawValue)
     public var accountToken: String?
