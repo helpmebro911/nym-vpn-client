@@ -5254,6 +5254,7 @@ dependencies = [
  "nym-vpn-api-client",
  "nym-vpn-lib-types",
  "nym-vpn-network-config",
+ "nym-vpn-proto",
  "nym-vpn-store",
  "nym-wg-gateway-client",
  "nym-wg-go",

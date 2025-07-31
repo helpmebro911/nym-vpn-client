@@ -46,6 +46,8 @@
 pub mod android;
 pub(crate) mod error;
 pub mod helpers;
+#[cfg(target_os = "macos")]
+pub mod rpc_client;
 #[cfg(any(target_os = "ios", target_os = "macos"))]
 pub mod swift;
 
