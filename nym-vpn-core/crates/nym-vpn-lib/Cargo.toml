@@ -116,9 +116,6 @@ rand.workspace = true
 [target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
 tracing-oslog.workspace = true
 
-[target.'cfg(target_os = "macos")'.dependencies]
-nym-vpn-proto = { workspace = true, features = ["rpc_client"] }
-
 [target.'cfg(target_os = "ios")'.dependencies]
 debounced.workspace = true
 dispatch2.workspace = true

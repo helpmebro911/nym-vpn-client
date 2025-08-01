@@ -1,0 +1,45 @@
+[package]
+name = "nym-uniffi"
+version.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+lazy_static.workspace = true
+tokio.workspace = true
+tokio-util = { workspace = true, features = ["codec", "rt"] }
+tracing.workspace = true
+uniffi.workspace = true
+
+nym-vpn-lib.workspace = true
+nym-vpn-account-controller.workspace = true
+nym-vpn-network-config.workspace = true
+nym-vpn-store.workspace = true
+nym-vpn-api-client.workspace = true
+nym-common.workspace = true
+nym-gateway-directory.workspace = true
+
+[target.'cfg(target_os = "macos")'.dependencies]
+nym-vpn-proto = { workspace = true, features = ["rpc_client"] }
+
+[target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
+tracing-oslog.workspace = true
+
+[target.'cfg(target_os = "android")'.dependencies]
+android_logger.workspace = true
+rand.workspace = true
+
+[build-dependencies]
+uniffi = { workspace = true, features = ["build"] }
+vergen-gitcl = { workspace = true, default-features = false, features = [
+    "build",
+    "cargo",
+    "rustc",
+] }

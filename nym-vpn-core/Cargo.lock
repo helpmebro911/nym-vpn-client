@@ -5082,6 +5082,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "nym-uniffi"
+version = "1.14.0-beta"
+dependencies = [
+ "android_logger",
+ "lazy_static",
+ "nym-common",
+ "nym-gateway-directory",
+ "nym-vpn-account-controller",
+ "nym-vpn-api-client",
+ "nym-vpn-lib",
+ "nym-vpn-network-config",
+ "nym-vpn-proto",
+ "nym-vpn-store",
+ "rand 0.8.5",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "tracing-oslog",
+ "uniffi",
+ "vergen-gitcl",
+]
+
+[[package]]
 name = "nym-validator-client"
 version = "0.1.0"
 source = "git+https://github.com/nymtech/nym?branch=release%2F2025.13-emmental#578c9b0567656d86812aa21eb0b4c93b5a7235bd"
@@ -5254,7 +5277,6 @@ dependencies = [
  "nym-vpn-api-client",
  "nym-vpn-lib-types",
  "nym-vpn-network-config",
- "nym-vpn-proto",
  "nym-vpn-store",
  "nym-wg-gateway-client",
  "nym-wg-go",

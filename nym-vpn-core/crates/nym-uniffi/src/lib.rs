@@ -61,10 +61,10 @@ mod uniffi_lib_types;
 
 use std::{env, path::PathBuf, sync::Arc};
 
-use account::AccountControllerHandle;
 use lazy_static::lazy_static;
 use nym_gateway_directory::CachingGatewayClient;
 use nym_vpn_api_client::types::ScoreThresholds;
+use nym_vpn_lib::account::AccountControllerHandle;
 use sentry::ClientInitGuard;
 use tokio::{runtime::Runtime, sync::Mutex};
 
