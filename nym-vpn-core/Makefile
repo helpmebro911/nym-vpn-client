@@ -36,9 +36,13 @@ build-mac: ## Build the Rust workspace suitable for running the daemon
 build-win-cross:
 	$(ALL_IDEMPOTENT_FLAGS) cargo build --target x86_64-pc-windows-gnu --release
 
-build-vpn-lib-swift: ## Rust cargo swift
+build-vpn-lib-swift: ## Build NymVpnLib for iOS
 	cd crates/nym-vpn-lib; \
 	cargo swift package --platforms ios --name NymVpnLib --release
+
+build-vpn-lib-macos: ## Build NymVpnLib for macOS
+	cd crates/nym-vpn-lib; \
+	cargo swift package --platforms macos --name NymVpnLib --release
 
 # -----------------------------------------------------------------------------
 #  Linting targets
