@@ -7,7 +7,7 @@ use futures::StreamExt;
 use nym_vpn_proto::rpc_client::{Error as DaemonRpcError, RpcClient as DaemonRpcClient};
 use tokio_util::sync::CancellationToken;
 
-use crate::platform::uniffi_lib_types::{TunnelEvent, TunnelState};
+use crate::uniffi_lib_types::{TunnelEvent, TunnelState};
 
 #[derive(Debug, uniffi::Object)]
 pub struct RpcError {

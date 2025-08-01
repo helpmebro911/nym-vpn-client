@@ -121,7 +121,6 @@ debounced.workspace = true
 dispatch2.workspace = true
 
 [build-dependencies]
-uniffi = { workspace = true, features = ["build"] }
 vergen-gitcl = { workspace = true, default-features = false, features = [
     "build",
     "cargo",

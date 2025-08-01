@@ -11,11 +11,14 @@ use std::{
 use ipnetwork::{IpNetwork, Ipv4Network, Ipv6Network};
 use nym_gateway_directory::{EntryPoint as GwEntryPoint, ExitPoint as GwExitPoint};
 use nym_ip_packet_requests::IpPair;
-use nym_sdk::UserAgent as NymUserAgent;
+use nym_sdk::{
+    UserAgent as NymUserAgent,
+    mixnet::{NodeIdentity, Recipient},
+};
 use time::OffsetDateTime;
 use url::Url;
 
-use crate::{NodeIdentity, Recipient, platform::error::VpnError};
+use crate::error::VpnError;
 
 uniffi::custom_type!(Ipv4Addr, String, {
     remote,
@@ -125,6 +128,12 @@ uniffi::custom_type!(
         }
     }
 );
+
+#[derive(Debug, thiserror::Error, uniffi::Error)]
+pub enum UniffiConversionError {
+    #[error("Invalid byte length")]
+    InvalidByteLength,
+}
 
 /// Represents the nym network environment together with the environment specific to nym-vpn. These
 /// need to be exported to the environment (for now, until it's refactored internally in the nym

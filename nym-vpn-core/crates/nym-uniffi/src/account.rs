@@ -62,10 +62,10 @@ async fn start_account_controller(
     network_env: Network,
 ) -> Result<AccountControllerHandle, VpnError> {
     let storage = Arc::new(tokio::sync::Mutex::new(
-        crate::storage::VpnClientOnDiskStorage::new(data_dir.clone()),
+        nym_vpn_lib::storage::VpnClientOnDiskStorage::new(data_dir.clone()),
     ));
     // TODO: pass in as argument
-    let user_agent = crate::util::construct_user_agent();
+    let user_agent = crate::user_agent::construct_user_agent();
     let shutdown_token = CancellationToken::new();
 
     let account_controller_config = nym_vpn_account_controller::AccountControllerConfig {
@@ -312,7 +312,8 @@ pub(crate) mod raw {
         types::{Device, DeviceStatus},
     };
 
-    use crate::{platform::environment, storage::VpnClientOnDiskStorage};
+    use crate::environment;
+    use nym_vpn_lib::storage::VpnClientOnDiskStorage;
 
     use super::*;
 
@@ -416,7 +417,7 @@ pub(crate) mod raw {
 
     async fn create_vpn_api_client() -> Result<VpnApiClient, VpnError> {
         let network_env = environment::current_environment_details().await?;
-        let user_agent = crate::util::construct_user_agent();
+        let user_agent = crate::user_agent::construct_user_agent();
         let vpn_api_client =
             VpnApiClient::new(network_env.vpn_api_url(), user_agent).map_err(VpnError::internal)?;
         Ok(vpn_api_client)

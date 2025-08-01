@@ -35,7 +35,7 @@ pub use nym_task::{
 pub use nym_wg_gateway_client as wg_gateway_client;
 
 pub use crate::{
-    error::{Error, GatewayDirectoryError},
+    error::GatewayDirectoryError,
     mixnet::{MixnetError, VpnTopologyProvider},
 };
 

@@ -8,10 +8,10 @@ use tokio::{sync::mpsc, task::JoinHandle};
 use tokio_util::sync::CancellationToken;
 
 use super::TunnelEvent as PlatformTunnelEvent;
-use crate::{
+use nym_vpn_lib::{
     VpnTopologyProvider,
     tunnel_state_machine::{
-        DnsOptions, GatewayPerformanceOptions, MixnetTunnelOptions, NymConfig, TunnelCommand,
+        self, DnsOptions, GatewayPerformanceOptions, MixnetTunnelOptions, NymConfig, TunnelCommand,
         TunnelSettings, TunnelStateMachine, WireguardTunnelOptions,
     },
 };
@@ -106,9 +106,9 @@ pub(super) async fn start_state_machine(
     });
 
     #[cfg(not(any(target_os = "android", target_os = "ios")))]
-    let route_handler = crate::tunnel_state_machine::RouteHandler::new()
+    let route_handler = tunnel_state_machine::RouteHandler::new()
         .await
-        .map_err(crate::tunnel_state_machine::Error::CreateRouteHandler)?;
+        .map_err(tunnel_state_machine::Error::CreateRouteHandler)?;
 
     let connectivity_handle = nym_offline_monitor::spawn_monitor(
         #[cfg(not(any(target_os = "android", target_os = "ios")))]
