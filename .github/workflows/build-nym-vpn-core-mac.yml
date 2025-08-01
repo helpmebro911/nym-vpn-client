@@ -33,6 +33,11 @@ jobs:
           components: rustfmt, clippy
           targets: x86_64-apple-darwin aarch64-apple-darwin
 
+      - name: Install cargo-swift
+        uses: baptiste0928/cargo-install@v3
+        with:
+          crate: cargo-swift
+
       - name: Install Protoc
         uses: arduino/setup-protoc@v3
         with:
