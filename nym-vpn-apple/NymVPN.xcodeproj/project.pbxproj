@@ -54,6 +54,10 @@
 		D97065E12B8DD44A00C27A9B /* TunnelStatus in Frameworks */ = {isa = PBXBuildFile; productRef = D97065E02B8DD44A00C27A9B /* TunnelStatus */; };
 		D974C03B2BBED2460011924A /* ConnectionManager in Frameworks */ = {isa = PBXBuildFile; productRef = D974C03A2BBED2460011924A /* ConnectionManager */; };
 		D975F8042CE51097002D42C7 /* ErrorHandler in Frameworks */ = {isa = PBXBuildFile; productRef = D975F8032CE51097002D42C7 /* ErrorHandler */; };
+		D97A06632E3CE7D3005AA9A9 /* nym_vpn_service.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97A06612E3CE7D3005AA9A9 /* nym_vpn_service.pb.swift */; };
+		D97A06642E3CE7D3005AA9A9 /* nym_vpn_service.grpc.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97A06602E3CE7D3005AA9A9 /* nym_vpn_service.grpc.swift */; };
+		D97A06692E3CE7E0005AA9A9 /* nym_vpn_lib.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97A06652E3CE7E0005AA9A9 /* nym_vpn_lib.swift */; };
+		D97A066B2E3CE855005AA9A9 /* RustFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D97A066A2E3CE855005AA9A9 /* RustFramework.xcframework */; };
 		D9870CF32BE3A12800551A86 /* Home in Frameworks */ = {isa = PBXBuildFile; productRef = D9870CF22BE3A12800551A86 /* Home */; };
 		D9879AF72CFE166400CF1B5D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D9879AF52CFE166400CF1B5D /* LaunchScreen.storyboard */; };
 		D98B32F22C58F682005A15A3 /* Package.resolved in Resources */ = {isa = PBXBuildFile; fileRef = D98B32F12C58F682005A15A3 /* Package.resolved */; };
@@ -211,6 +215,12 @@
 		D9643C6D2CEBC53A00F6B9A7 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/UserNotifications.framework; sourceTree = DEVELOPER_DIR; };
 		D96B94DC2C2AB62D00E98B15 /* gatewaysEntryCountries.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = gatewaysEntryCountries.json; sourceTree = "<group>"; };
 		D96B94DD2C2AB62D00E98B15 /* gatewaysExitCountries.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = gatewaysExitCountries.json; sourceTree = "<group>"; };
+		D97A06602E3CE7D3005AA9A9 /* nym_vpn_service.grpc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nym_vpn_service.grpc.swift; sourceTree = "<group>"; };
+		D97A06612E3CE7D3005AA9A9 /* nym_vpn_service.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nym_vpn_service.pb.swift; sourceTree = "<group>"; };
+		D97A06652E3CE7E0005AA9A9 /* nym_vpn_lib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nym_vpn_lib.swift; sourceTree = "<group>"; };
+		D97A06662E3CE7E0005AA9A9 /* nym_vpn_libFFI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nym_vpn_libFFI.h; sourceTree = "<group>"; };
+		D97A06672E3CE7E0005AA9A9 /* nym_vpn_libFFI.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = nym_vpn_libFFI.modulemap; sourceTree = "<group>"; };
+		D97A066A2E3CE855005AA9A9 /* RustFramework.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = RustFramework.xcframework; sourceTree = "<group>"; };
 		D9879AF52CFE166400CF1B5D /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D98B32F12C58F682005A15A3 /* Package.resolved */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Package.resolved; path = NymVPN.xcworkspace/xcshareddata/swiftpm/Package.resolved; sourceTree = SOURCE_ROOT; };
 		D990950D2BC6B31900C98E3F /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.4.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
@@ -325,6 +335,7 @@
 				D9E552B42CE9E8FB008C74F6 /* SystemMessageManager in Frameworks */,
 				D9643C6E2CEBC53A00F6B9A7 /* UserNotifications.framework in Frameworks */,
 				D9FFC1F92C40F65F00A4766C /* AutoUpdates in Frameworks */,
+				D97A066B2E3CE855005AA9A9 /* RustFramework.xcframework in Frameworks */,
 				D9FB33E82BECFD1F009C3419 /* ServiceManagement.framework in Frameworks */,
 				D92FBA2B2C6B6AB300D743DF /* ConfigurationManager in Frameworks */,
 				D9E9F1A02C3807A00056EB8C /* Sparkle in Frameworks */,
@@ -401,6 +412,25 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		D97A06622E3CE7D3005AA9A9 /* nym */ = {
+			isa = PBXGroup;
+			children = (
+				D97A06602E3CE7D3005AA9A9 /* nym_vpn_service.grpc.swift */,
+				D97A06612E3CE7D3005AA9A9 /* nym_vpn_service.pb.swift */,
+			);
+			path = nym;
+			sourceTree = "<group>";
+		};
+		D97A06682E3CE7E0005AA9A9 /* uniffi */ = {
+			isa = PBXGroup;
+			children = (
+				D97A06652E3CE7E0005AA9A9 /* nym_vpn_lib.swift */,
+				D97A06662E3CE7E0005AA9A9 /* nym_vpn_libFFI.h */,
+				D97A06672E3CE7E0005AA9A9 /* nym_vpn_libFFI.modulemap */,
+			);
+			path = uniffi;
+			sourceTree = "<group>";
+		};
 		D99A146D2B357E9900F2728B = {
 			isa = PBXGroup;
 			children = (
@@ -458,6 +488,9 @@
 		D9BEF2D12BEB63310036C566 /* NymVPNDaemon */ = {
 			isa = PBXGroup;
 			children = (
+				D97A066A2E3CE855005AA9A9 /* RustFramework.xcframework */,
+				D97A06682E3CE7E0005AA9A9 /* uniffi */,
+				D97A06622E3CE7D3005AA9A9 /* nym */,
 				D9F744742D79BF5900DD9277 /* AppDelegate.swift */,
 				D9BEF2D22BEB63310036C566 /* NymVPNDaemonApp.swift */,
 				D9CA18982D9AB95C00FA8FAC /* QuitAppModal.swift */,
@@ -868,7 +901,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D97A06632E3CE7D3005AA9A9 /* nym_vpn_service.pb.swift in Sources */,
+				D97A06642E3CE7D3005AA9A9 /* nym_vpn_service.grpc.swift in Sources */,
 				D9F744752D79BF5C00DD9277 /* AppDelegate.swift in Sources */,
+				D97A06692E3CE7E0005AA9A9 /* nym_vpn_lib.swift in Sources */,
 				D9CA18992D9AB96500FA8FAC /* QuitAppModal.swift in Sources */,
 				D9BEF2D32BEB63310036C566 /* NymVPNDaemonApp.swift in Sources */,
 			);
