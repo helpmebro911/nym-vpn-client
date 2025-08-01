@@ -42,6 +42,8 @@
 //!    This will stop the account controller and clean up any resources, including make sure there
 //!    are no open DB connections.
 
+uniffi::setup_scaffolding!();
+
 #[cfg(target_os = "android")]
 pub mod android;
 pub(crate) mod error;
