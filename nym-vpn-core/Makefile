@@ -36,12 +36,12 @@ build-mac: ## Build the Rust workspace suitable for running the daemon
 build-win-cross:
 	$(ALL_IDEMPOTENT_FLAGS) cargo build --target x86_64-pc-windows-gnu --release
 
-build-vpn-lib-swift: ## Build NymVpnLib for iOS
-	cd crates/nym-vpn-lib; \
+build-vpn-lib-ios: ## Build NymVpnLib for iOS
+	cd crates/nym-uniffi; \
 	cargo swift package --platforms ios --name NymVpnLib --release
 
 build-vpn-lib-macos: ## Build NymVpnLib for macOS
-	cd crates/nym-vpn-lib; \
+	cd crates/nym-uniffi; \
 	cargo swift package --platforms macos --name NymVpnLib --release
 
 # -----------------------------------------------------------------------------
@@ -75,19 +75,19 @@ build-deb-vpnc:
 
 generate-uniffi-macos: ## Generate uniffi for macos
 	cargo run --bin uniffi-bindgen generate \
-		--library $(CURDIR)/target/aarch64-apple-darwin/release/libnym_vpn_lib.a \
-		--language swift --out-dir $(CURDIR)/crates/nym-vpn-lib/uniffi -n
+		--library $(CURDIR)/target/aarch64-apple-darwin/release/libnym_uniffi.a \
+		--language swift --out-dir $(CURDIR)/crates/nym-vpn-lib/bindings -n
 
 generate-uniffi-ios: ## Generate uniffi for ios
 	cargo run --bin uniffi-bindgen generate \
-		--library $(CURDIR)/target/aarch64-apple-ios/release/libnym_vpn_lib.a \
-		--language swift --out-dir $(CURDIR)/crates/nym-vpn-lib/uniffi -n
+		--library $(CURDIR)/target/aarch64-apple-ios/release/libnym_uniffi.a \
+		--language swift --out-dir $(CURDIR)/crates/nym-vpn-lib/bindings -n
 
 generate-uniffi-android: ## Generate uniffi for android
 	cargo run --bin uniffi-bindgen generate \
-		--library $(CURDIR)/target/aarch64-linux-android/release/libnym_vpn_lib.so \
-		--language kotlin --out-dir $(CURDIR)/crates/nym-vpn-lib/uniffi -n
-	mv $(CURDIR)/crates/nym-vpn-lib/uniffi/nym_vpn_lib/nym_vpn_lib.kt $(CURDIR)/crates/nym-vpn-lib/uniffi
+		--library $(CURDIR)/target/aarch64-linux-android/release/libnym_uniffi.so \
+		--language kotlin --out-dir $(CURDIR)/crates/nym-uniffi/bindings -n
+	mv $(CURDIR)/crates/nym-uniffi/bindings/nym_uniffi/nym_uniffi.kt $(CURDIR)/crates/nym-uniffi/bindings
 	rm -rf $(CURDIR)/crates/nym-vpn-lib/uniffi/nym_vpn_lib/
 
 

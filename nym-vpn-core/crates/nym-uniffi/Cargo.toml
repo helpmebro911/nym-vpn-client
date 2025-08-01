@@ -8,6 +8,9 @@ documentation.workspace = true
 edition.workspace = true
 license.workspace = true
 
+[lib]
+crate-type = ["cdylib", "lib", "staticlib"]
+
 [lints]
 workspace = true
 
@@ -32,7 +35,7 @@ tokio-util = { workspace = true, features = ["codec", "rt"] }
 tracing-subscriber = { workspace = true, features = ["env-filter"] }
 tracing.workspace = true
 url.workspace = true
-uniffi.workspace = true
+uniffi = { workspace = true, features = ["tokio"] }
 
 nym-bin-common.workspace = true
 nym-config.workspace = true
