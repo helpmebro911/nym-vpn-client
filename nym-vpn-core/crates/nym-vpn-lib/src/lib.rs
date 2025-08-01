@@ -4,7 +4,6 @@
 uniffi::setup_scaffolding!();
 
 pub mod storage;
-pub mod util;
 
 mod bandwidth_controller;
 mod error;
