@@ -70,7 +70,7 @@ struct RpcClient {
     inner: DaemonRpcClient,
 }
 
-#[uniffi::export]
+#[uniffi::export(async_runtime = "tokio")]
 impl RpcClient {
     #[uniffi::constructor]
     pub async fn new() -> Result<Self> {
