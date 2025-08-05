@@ -1,8 +1,7 @@
 use crate::error::{BackendError, ErrorKey};
+use nym_vpn_proto::proto::account_command_error::ErrorDetail;
 use nym_vpn_proto::proto::{
-    ForgetAccountError, StoreAccountError, VpnApiError, VpnApiErrorResponse,
-    forget_account_error::ErrorDetail as ForgetError,
-    store_account_error::ErrorDetail as StoreError,
+    AccountCommandError, VpnApiError, VpnApiErrorResponse,
     vpn_api_error::ErrorDetail as VpnApiErrorDetail,
 };
 use tracing::error;
@@ -37,86 +36,43 @@ impl From<VpnApiErrorResponse> for BackendError {
     }
 }
 
-impl From<StoreAccountError> for BackendError {
-    fn from(error: StoreAccountError) -> Self {
+impl From<AccountCommandError> for BackendError {
+    fn from(error: AccountCommandError) -> Self {
         let Some(detail) = error.error_detail else {
-            error!("missing error detail in StoreAccountError");
-            return BackendError::internal_with_detail(
-                "failed to store account",
-                "failed to store account".to_string(),
-            );
+            error!("missing error detail in AccountCommandError");
+            return BackendError::internal("AC error", None);
         };
         match detail {
-            StoreError::InvalidMnemonic(data) => BackendError::with_detail(
+            ErrorDetail::Internal(e) => BackendError::internal_with_detail("AC internal error", e),
+            ErrorDetail::StorageError(e) => BackendError::internal_with_detail(
+                "AC storage error",
+                format!("AC storage error: {e}"),
+            ),
+            ErrorDetail::VpnApi(e) => e.into(),
+            ErrorDetail::UnexpectedResponse(e) => BackendError::internal_with_detail(
+                "AC response error",
+                format!("AC response error: {e}"),
+            ),
+            ErrorDetail::NoAccountStored(v) => BackendError::internal_with_detail(
+                "AC no account stored",
+                format!("AC no account stored: {v}"),
+            ),
+            ErrorDetail::NoDeviceStored(v) => BackendError::internal_with_detail(
+                "AC no device stored",
+                format!("AC no device stored: {v}"),
+            ),
+            ErrorDetail::ExistingAccount(v) => BackendError::internal_with_detail(
+                "AC existing account",
+                format!("AC existing account: {v}"),
+            ),
+            ErrorDetail::Offline(v) => {
+                BackendError::internal_with_detail("AC offline", format!("AC offline: {v}"))
+            }
+            ErrorDetail::InvalidMnemonic(e) => BackendError::with_detail(
                 "invalid mnemonic",
                 ErrorKey::AccountInvalidMnemonic,
-                format!("invalid mnemonic: {data}"),
+                format!("invalid mnemonic: {e}"),
             ),
-            StoreError::StorageError(data) => BackendError::internal_with_detail(
-                "storage error",
-                format!("storage error: {data}"),
-            ),
-            StoreError::VpnApi(error) => error.into(),
-            StoreError::UnexpectedResponse(data) => BackendError::internal_with_detail(
-                "unexpected response",
-                format!("unexpected response: {data}"),
-            ),
-            StoreError::Internal(data) => {
-                BackendError::internal_with_detail("internal error", data)
-            }
-        }
-    }
-}
-
-impl From<ForgetAccountError> for BackendError {
-    fn from(error: ForgetAccountError) -> Self {
-        let Some(detail) = error.error_detail else {
-            error!("missing error detail in ForgetAccountError");
-            return BackendError::internal_with_detail(
-                "failed to forget account",
-                "failed to forget account".to_string(),
-            );
-        };
-        match detail {
-            ForgetError::RegistrationInProgress(v) => match v {
-                true => BackendError::internal_with_detail(
-                    "registration in progress",
-                    "registration in progress".to_string(),
-                ),
-                // is it even possible?
-                false => BackendError::internal_with_detail(
-                    "registration not in progress",
-                    "registration not in progress".to_string(),
-                ),
-            },
-            ForgetError::VpnApi(error) => error.into(),
-            ForgetError::UnexpectedResponse(data) => BackendError::internal_with_detail(
-                "unexpected response",
-                format!("unexpected response: {data}"),
-            ),
-            ForgetError::RemoveAccount(data) => BackendError::internal_with_detail(
-                "remove account",
-                format!("remove account: {data}"),
-            ),
-            ForgetError::RemoveDeviceKeys(data) => BackendError::internal_with_detail(
-                "remove device keys",
-                format!("remove device keys: {data}"),
-            ),
-            ForgetError::ResetCredentialStore(data) => BackendError::internal_with_detail(
-                "reset credential store",
-                format!("reset credential store: {data}"),
-            ),
-            ForgetError::RemoveAccountFiles(data) => BackendError::internal_with_detail(
-                "remove account files",
-                format!("remove account files: {data}"),
-            ),
-            ForgetError::InitDeviceKeys(data) => BackendError::internal_with_detail(
-                "init device keys",
-                format!("init device keys: {data}"),
-            ),
-            ForgetError::Internal(data) => {
-                BackendError::internal_with_detail("internal error", data)
-            }
         }
     }
 }
