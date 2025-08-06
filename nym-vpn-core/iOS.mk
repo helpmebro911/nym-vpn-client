@@ -30,7 +30,7 @@ LIBWG_SOURCES := $(wildcard $(WIREGUARD_DIR)/libwg/*.go) $(wildcard $(WIREGUARD_
 
 .PHONY: build swift-package uniffi clean
 
-all: $(LIBWG_BUILD_DIR)/libwg.a build swift-package uniffi
+all: $(LIBWG_BUILD_DIR)/libwg.a build swift-package
 
 build:
 	$(ALL_IDEMPOTENT_FLAGS) cargo build --package nym-vpn-lib --target $(RUST_TRIPLET) $(RELEASE_FLAG)
