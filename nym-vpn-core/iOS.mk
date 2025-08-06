@@ -51,3 +51,6 @@ clean:
 	rm -rf $(UNIFFI_OUT_DIR)
 	rm -rf $(LIBWG_BUILD_DIR)
 	cargo clean --target $(RUST_TRIPLET)
+
+$(LIBWG_BUILD_DIR)/libwg.a: $(LIBWG_SOURCES)
+	$(WIREGUARD_DIR)/build-wireguard-go.sh --ios
