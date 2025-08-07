@@ -42,7 +42,7 @@ uniffi: build
 
 swift-package:
 	cd crates/nym-vpn-lib; \
-	cargo swift package --accept-all --platforms ios --name NymVpnLib --release
+	cargo swift package --accept-all --platforms ios --name NymVPNLib --xcframework-name NymVPNFramework --release
 
 $(LIBWG_BUILD_DIR)/libwg.a: $(LIBWG_SOURCES)
 	$(WIREGUARD_DIR)/build-wireguard-go.sh --ios
