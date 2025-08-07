@@ -508,17 +508,17 @@
 /* End PBXGroup section */
 
 /* Begin PBXLegacyTarget section */
-		587A53FC2E43BF4000CBC1E3 /* TestingCustomBuildSystem */ = {
+		587A53FC2E43BF4000CBC1E3 /* NymVPNLib */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "-f iOS.mk $(ACTION)";
-			buildConfigurationList = 587A53FF2E43BF4000CBC1E3 /* Build configuration list for PBXLegacyTarget "TestingCustomBuildSystem" */;
+			buildArgumentsString = "-f NymVPNLib.mk $(ACTION)";
+			buildConfigurationList = 587A53FF2E43BF4000CBC1E3 /* Build configuration list for PBXLegacyTarget "NymVPNLib" */;
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/make;
-			buildWorkingDirectory = "$(PROJECT_DIR)/../nym-vpn-core";
+			buildWorkingDirectory = "$(PROJECT_DIR)";
 			dependencies = (
 			);
-			name = TestingCustomBuildSystem;
+			name = NymVPNLib;
 			packageProductDependencies = (
 			);
 			passBuildSettingsInEnvironment = 1;
@@ -538,6 +538,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				58BD8F232E449F7C00BF8273 /* PBXTargetDependency */,
 			);
 			name = NymMixnetTunnel;
 			packageProductDependencies = (
@@ -747,7 +748,7 @@
 				D954C0B72B51C1CA00C6BAAC /* NymMixnetTunnel */,
 				D9EACBD22BC016D60094CDDF /* NymVPNUITests */,
 				D9BEF2CF2BEB63310036C566 /* NymVPNDaemon */,
-				587A53FC2E43BF4000CBC1E3 /* TestingCustomBuildSystem */,
+				587A53FC2E43BF4000CBC1E3 /* NymVPNFramework */,
 			);
 		};
 /* End PBXProject section */
@@ -1341,7 +1342,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		587A53FF2E43BF4000CBC1E3 /* Build configuration list for PBXLegacyTarget "TestingCustomBuildSystem" */ = {
+		587A53FF2E43BF4000CBC1E3 /* Build configuration list for PBXLegacyTarget "NymVPNLib" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				587A53FD2E43BF4000CBC1E3 /* Debug */,

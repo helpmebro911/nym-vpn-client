@@ -14,6 +14,20 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "587A53FC2E43BF4000CBC1E3"
+               BuildableName = "NymVPNLib"
+               BlueprintName = "NymVPNLib"
+               ReferencedContainer = "container:NymVPN.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "D99A14752B357E9900F2728B"
                BuildableName = "NymVPN.app"
                BlueprintName = "NymVPN"
