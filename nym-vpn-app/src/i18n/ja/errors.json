@@ -10,6 +10,7 @@
   "tunnel": {
     "internal": "内部エラー",
     "api": "APIエラー",
+    "account-controller": "Account controller: internal error",
     "firewall": "ファイアウォールエラー",
     "routing": "ルーティングエラー",
     "dns": "DNS エラー",
@@ -25,7 +26,10 @@
   "account": {
     "invalid-recovery-phrase": "無効なアクセスコード",
     "storage": "ストレージバックエンドエラー",
-    "is-connected": "接続中は操作を進めることができません"
+    "is-connected": "接続中は操作を進めることができません",
+    "no-account-stored": "No account stored",
+    "no-device-stored": "No device stored",
+    "existing-account": "Account already exists"
   },
   "countries-request": {
     "entry": "利用可能なエントリーノードの国を取得できませんでした",

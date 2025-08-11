@@ -10,6 +10,7 @@
   "tunnel": {
     "internal": "خطای داخلی",
     "api": "خطای API",
+    "account-controller": "Account controller: internal error",
     "firewall": "خطای Firewall",
     "routing": "خطای مسیریابی",
     "dns": "خطای DNS",
@@ -25,7 +26,10 @@
   "account": {
     "invalid-recovery-phrase": "کد دسترسی نامعتبر است",
     "storage": "خطای ذخیره‌سازی",
-    "is-connected": "قادر به ادامه دادن در حالی که متصل هستید نیست"
+    "is-connected": "قادر به ادامه دادن در حالی که متصل هستید نیست",
+    "no-account-stored": "No account stored",
+    "no-device-stored": "No device stored",
+    "existing-account": "Account already exists"
   },
   "countries-request": {
     "entry": "دریافت کشورهای در دسترس برای گره ورودی ناموفق بود",

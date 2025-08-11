@@ -10,6 +10,7 @@
   "tunnel": {
     "internal": "Lỗi nội bộ",
     "api": "Lỗi API",
+    "account-controller": "Account controller: internal error",
     "firewall": "Lỗi tường lửa",
     "routing": "Lỗi định tuyến",
     "dns": "Lỗi DNS",
@@ -25,7 +26,10 @@
   "account": {
     "invalid-recovery-phrase": "Mã truy cập không hợp lệ",
     "storage": "Lỗi hệ thống lưu trữ",
-    "is-connected": "Không thể xử lý khi đã kết nối"
+    "is-connected": "Không thể xử lý khi đã kết nối",
+    "no-account-stored": "No account stored",
+    "no-device-stored": "No device stored",
+    "existing-account": "Account already exists"
   },
   "countries-request": {
     "entry": "Không thể tìm thấy các quốc gia có node vào khả dụng",

@@ -10,6 +10,7 @@
   "tunnel": {
     "internal": "Erreur interne",
     "api": "Erreur d'API",
+    "account-controller": "Account controller: internal error",
     "firewall": "Erreur de pare-feu",
     "routing": "Erreur de routage",
     "dns": "Erreur de DNS",
@@ -25,7 +26,10 @@
   "account": {
     "invalid-recovery-phrase": "Code d'accès invalide",
     "storage": "Erreur de stockage backend",
-    "is-connected": "Impossible d'effectuer cette action lorsque connecté au VPN"
+    "is-connected": "Impossible d'effectuer cette action lorsque connecté au VPN",
+    "no-account-stored": "No account stored",
+    "no-device-stored": "No device stored",
+    "existing-account": "Account already exists"
   },
   "countries-request": {
     "entry": "Échec de la recherche des pays de nœuds d'entrée disponibles",

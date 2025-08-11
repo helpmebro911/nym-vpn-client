@@ -10,6 +10,7 @@
   "tunnel": {
     "internal": "Dahili hata",
     "api": "API hatası",
+    "account-controller": "Account controller: internal error",
     "firewall": "Güvenlik duvarı hatası",
     "routing": "Yönlendirme hatası",
     "dns": "DNS hatası",
@@ -25,7 +26,10 @@
   "account": {
     "invalid-recovery-phrase": "Geçersiz erişim kodu",
     "storage": "Depolama arka ucu hatası",
-    "is-connected": "Bağlantı varken işlem yapılamıyor"
+    "is-connected": "Bağlantı varken işlem yapılamıyor",
+    "no-account-stored": "No account stored",
+    "no-device-stored": "No device stored",
+    "existing-account": "Account already exists"
   },
   "countries-request": {
     "entry": "Kullanılabilir giriş node ülke bilgileri alınamadı",

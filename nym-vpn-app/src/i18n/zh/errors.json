@@ -10,6 +10,7 @@
   "tunnel": {
     "internal": "内部错误",
     "api": "API 错误",
+    "account-controller": "Account controller: internal error",
     "firewall": "防火墙错误",
     "routing": "路由错误",
     "dns": "DNS 错误",
@@ -25,7 +26,10 @@
   "account": {
     "invalid-recovery-phrase": "访问代码无效",
     "storage": "存储后端错误",
-    "is-connected": "连接时无法继续"
+    "is-connected": "连接时无法继续",
+    "no-account-stored": "No account stored",
+    "no-device-stored": "No device stored",
+    "existing-account": "Account already exists"
   },
   "countries-request": {
     "entry": "获取可用的条目节点国家失败",

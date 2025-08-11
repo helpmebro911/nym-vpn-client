@@ -10,6 +10,7 @@
   "tunnel": {
     "internal": "Внутренняя ошибка",
     "api": "Ошибка API",
+    "account-controller": "Account controller: internal error",
     "firewall": "Ошибка файрвола",
     "routing": "Ошибка маршрутизации",
     "dns": "Ошибка DNS",
@@ -25,7 +26,10 @@
   "account": {
     "invalid-recovery-phrase": "Неверный код доступа",
     "storage": "Ошибка серверной части хранилища",
-    "is-connected": "Не удается продолжить работу при подключении"
+    "is-connected": "Не удается продолжить работу при подключении",
+    "no-account-stored": "No account stored",
+    "no-device-stored": "No device stored",
+    "existing-account": "Account already exists"
   },
   "countries-request": {
     "entry": "Сбой при получении списка доступных стран для входа",

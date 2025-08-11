@@ -10,6 +10,7 @@
   "tunnel": {
     "internal": "Error interno",
     "api": "Error de API",
+    "account-controller": "Account controller: internal error",
     "firewall": "Error del firewall",
     "routing": "Error al enrutar",
     "dns": "Error de DNS",
@@ -25,7 +26,10 @@
   "account": {
     "invalid-recovery-phrase": "Código de acceso inválido",
     "storage": "Error de backend de almacenamiento",
-    "is-connected": "No se puede continuar mientras está conectado"
+    "is-connected": "No se puede continuar mientras está conectado",
+    "no-account-stored": "No account stored",
+    "no-device-stored": "No device stored",
+    "existing-account": "Account already exists"
   },
   "countries-request": {
     "entry": "Fallo al obtener los países disponibles del gateway de entrada",

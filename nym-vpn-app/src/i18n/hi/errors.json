@@ -10,6 +10,7 @@
   "tunnel": {
     "internal": "अंदरूनी त्रुटि",
     "api": "एपीआई त्रुटि",
+    "account-controller": "Account controller: internal error",
     "firewall": "फायरवॉल त्रुटि",
     "routing": "रूटिंग त्रुटि",
     "dns": "डीएनएस त्रुटि",
@@ -25,7 +26,10 @@
   "account": {
     "invalid-recovery-phrase": "अमान्य रिकवरी फ्रेज़",
     "storage": "स्टोरेज बैकएंड एरर",
-    "is-connected": "कनेक्ट रहते हुए आगे बढ़ने में असमर्थ"
+    "is-connected": "कनेक्ट रहते हुए आगे बढ़ने में असमर्थ",
+    "no-account-stored": "No account stored",
+    "no-device-stored": "No device stored",
+    "existing-account": "Account already exists"
   },
   "countries-request": {
     "entry": "उपलब्ध प्रवेश नोड देशों को खोजने में विफल",
