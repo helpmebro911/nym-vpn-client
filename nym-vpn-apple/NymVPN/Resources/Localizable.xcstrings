@@ -4271,7 +4271,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vous appartient (auto-géré)"
+            "value" : "Vous appartient (autogéré)"
           }
         },
         "hi" : {
@@ -4306,8 +4306,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Belongs only to you(self-custody)"
+            "state" : "translated",
+            "value" : "Принадлежит только вам (самостоятельное хранение)"
           }
         },
         "tr" : {
@@ -4508,8 +4508,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Keeps you anonymous"
+            "state" : "translated",
+            "value" : "Сохраняет вашу анонимность"
           }
         },
         "tr" : {
@@ -5619,8 +5619,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Personal data-based logins"
+            "state" : "translated",
+            "value" : "Логины на основе персональных данных"
           }
         },
         "tr" : {
@@ -5720,8 +5720,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Works as your secure login"
+            "state" : "translated",
+            "value" : "Работает как ваш безопасный вход"
           }
         },
         "tr" : {
@@ -5857,19 +5857,19 @@
         "ar" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Instead, you’re creating an account secured  by a 24-word passphrase."
+            "value" : "Instead, you’re creating an account secured \u2028by a 24-word passphrase."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Instead, you’re creating an account secured  by a 24-word passphrase."
+            "value" : "Instead, you’re creating an account secured \u2028by a 24-word passphrase."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Instead, you’re creating an account secured  by a 24-word passphrase."
+            "value" : "Instead, you’re creating an account secured \u2028by a 24-word passphrase."
           }
         },
         "es" : {
@@ -5881,7 +5881,7 @@
         "fa" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Instead, you’re creating an account secured  by a 24-word passphrase."
+            "value" : "Instead, you’re creating an account secured \u2028by a 24-word passphrase."
           }
         },
         "fr" : {
@@ -5893,25 +5893,25 @@
         "hi" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Instead, you’re creating an account secured  by a 24-word passphrase."
+            "value" : "Instead, you’re creating an account secured \u2028by a 24-word passphrase."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Instead, you’re creating an account secured  by a 24-word passphrase."
+            "value" : "Instead, you’re creating an account secured \u2028by a 24-word passphrase."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Instead, you’re creating an account secured  by a 24-word passphrase."
+            "value" : "Instead, you’re creating an account secured \u2028by a 24-word passphrase."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Instead, you’re creating an account secured  by a 24-word passphrase."
+            "value" : "Instead, you’re creating an account secured \u2028by a 24-word passphrase."
           }
         },
         "pt-BR" : {
@@ -6326,8 +6326,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Admin-controlled access resets"
+            "state" : "translated",
+            "value" : "Сброс доступа, контролируемый администратором"
           }
         },
         "tr" : {
@@ -6730,8 +6730,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Centrally-stored accounts"
+            "state" : "translated",
+            "value" : "Централизованно хранимые аккаунты"
           }
         },
         "tr" : {
@@ -9190,13 +9190,13 @@
         "ar" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "\"Device time is out of sync. Please synchronize your device's time with the internet.\""
+            "value" : "Device time is out of sync. Please synchronize your device's time with the internet."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "\"Device time is out of sync. Please synchronize your device's time with the internet.\""
+            "value" : "Device time is out of sync. Please synchronize your device's time with the internet."
           }
         },
         "en" : {
@@ -9207,80 +9207,80 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "\"El tiempo del dispositivo no está sincronizado. Por favor, sincroniza el tiempo de tu dispositivo con el internet.\""
+            "state" : "new",
+            "value" : "Device time is out of sync. Please synchronize your device's time with the internet."
           }
         },
         "fa" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "\"Device time is out of sync. Please synchronize your device's time with the internet.\""
+            "value" : "Device time is out of sync. Please synchronize your device's time with the internet."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "L'horloge de l'appareil n'est pas synchronisée. Veuillez synchroniser l'heure sur une horloge réseau."
+            "state" : "new",
+            "value" : "Device time is out of sync. Please synchronize your device's time with the internet."
           }
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "\"डिवाइस का समय समन्वय में नहीं है। कृपया अपने डिवाइस के समय को इंटरनेट के साथ समन्वयित करें।\""
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "\"Device time is out of sync. Please synchronize your device's time with the internet.\""
+            "value" : "Device time is out of sync. Please synchronize your device's time with the internet."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "\"Device time is out of sync. Please synchronize your device's time with the internet.\""
+            "value" : "Device time is out of sync. Please synchronize your device's time with the internet."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "\"Device time is out of sync. Please synchronize your device's time with the internet.\""
+            "value" : "Device time is out of sync. Please synchronize your device's time with the internet."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "\"O tempo do dispositivo está fora de sincronia. Por favor, sincronize o horário do seu dispositivo com a internet.\""
+            "state" : "new",
+            "value" : "Device time is out of sync. Please synchronize your device's time with the internet."
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "\"Время на устройстве не синхронизировано. Пожалуйста, синхронизируйте время на вашем устройстве с интернетом.\""
+            "state" : "translated",
+            "value" : "Время устройства не синхронизировано. Пожалуйста, синхронизируйте время вашего устройства с интернетом."
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "\"Cihaz saatiniz senkronize edilmemiş. Lütfen cihazınızın saatini internet ile senkronize edin.\""
+            "state" : "new",
+            "value" : "Device time is out of sync. Please synchronize your device's time with the internet."
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "\"Час пристрою не синхронізований. Будь ласка, синхронізуйте час вашого пристрою з інтернетом.\""
+            "state" : "translated",
+            "value" : "Час пристрою не синхронізований. Будь ласка, синхронізуйте час вашого пристрою з інтернетом."
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "\"Thời gian thiết bị không đồng bộ. Vui lòng đồng bộ hóa thời gian của thiết bị với internet.\""
+            "state" : "new",
+            "value" : "Device time is out of sync. Please synchronize your device's time with the internet."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "设备时间不同步。请将您的设备时间与互联网同步。"
+            "state" : "new",
+            "value" : "Device time is out of sync. Please synchronize your device's time with the internet."
           }
         }
       }
@@ -10128,8 +10128,8 @@
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "IPv6 unavailable. Disable in the settings to use IPv4."
+            "state" : "translated",
+            "value" : "IPv6 non disponible. Désactivez-la dans les réglages pour utiliser IPv4."
           }
         },
         "hi" : {
@@ -10164,8 +10164,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "IPv6 unavailable. Disable in the settings to use IPv4."
+            "state" : "translated",
+            "value" : "IPv6 недоступен. Отключите в настройках для использования IPv4."
           }
         },
         "tr" : {
@@ -11275,8 +11275,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Kill switch protects you. Tap Stop and renew your plan."
+            "state" : "translated",
+            "value" : "Функция аварийного отключения защищает вас. Нажмите «Стоп» и обновите ваш тариф."
           }
         },
         "tr" : {
@@ -14341,19 +14341,19 @@
         "ar" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "NymVPN runs a background service (daemon)  to keep your connection secure. It handles encryption and routing, protecting your activity even when the app is closed.\n\nFollow the steps below to install the daemon."
+            "value" : "NymVPN runs a background service (daemon) \u2028to keep your connection secure. It handles encryption and routing, protecting your activity even when the app is closed.\n\nFollow the steps below to install the daemon."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "NymVPN runs a background service (daemon)  to keep your connection secure. It handles encryption and routing, protecting your activity even when the app is closed.\n\nFollow the steps below to install the daemon."
+            "value" : "NymVPN runs a background service (daemon) \u2028to keep your connection secure. It handles encryption and routing, protecting your activity even when the app is closed.\n\nFollow the steps below to install the daemon."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NymVPN runs a background service (daemon)  to keep your connection secure. It handles encryption and routing, protecting your activity even when the app is closed.\n\nFollow the steps below to install the daemon."
+            "value" : "NymVPN runs a background service (daemon) \u2028to keep your connection secure. It handles encryption and routing, protecting your activity even when the app is closed.\n\nFollow the steps below to install the daemon."
           }
         },
         "es" : {
@@ -14383,7 +14383,7 @@
         "it" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "NymVPN runs a background service (daemon)  to keep your connection secure. It handles encryption and routing, protecting your activity even when the app is closed.\n\nFollow the steps below to install the daemon."
+            "value" : "NymVPN runs a background service (daemon) \u2028to keep your connection secure. It handles encryption and routing, protecting your activity even when the app is closed.\n\nFollow the steps below to install the daemon."
           }
         },
         "ja" : {
@@ -14395,7 +14395,7 @@
         "pt" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "NymVPN runs a background service (daemon)  to keep your connection secure. It handles encryption and routing, protecting your activity even when the app is closed.\n\nFollow the steps below to install the daemon."
+            "value" : "NymVPN runs a background service (daemon) \u2028to keep your connection secure. It handles encryption and routing, protecting your activity even when the app is closed.\n\nFollow the steps below to install the daemon."
           }
         },
         "pt-BR" : {
@@ -18679,7 +18679,99 @@
       }
     },
     "Key" : {
-      "extractionState" : "manual"
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Key"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Key"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clave"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Key"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clef"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Key"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Key"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Key"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Key"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Key"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ключ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anahtar"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ключ"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Key"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Key"
+          }
+        }
+      }
     },
     "lastHopSelection" : {
       "extractionState" : "manual",
@@ -21815,9 +21907,99 @@
     "privacyData.anonymousStats" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Anonymous network stats"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Anonymous network stats"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Anonymous network stats"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Anonymous network stats"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Anonymous network stats"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Anonymous network stats"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Anonymous network stats"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Anonymous network stats"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Anonymous network stats"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Anonymous network stats"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Anonymous network stats"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Анонимная статистика сети"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Anonymous network stats"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Анонімна статистика мережі"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Anonymous network stats"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
             "value" : "Anonymous network stats"
           }
         }
@@ -21826,9 +22008,99 @@
     "privacyData.anonymousStats.subtitle1" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Помогите нам создать более быструю сеть, делясь анонимными данными о производительности из вашего региона. Мы используем эту информацию для оптимизации скорости, уменьшения разрывов соединения и улучшения покрытия серверов там, где это необходимо больше всего."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Допоможіть нам побудувати швидшу мережу, поділившись анонімними даними про продуктивність з вашого регіону. Ми використовуємо це для оптимізації швидкостей, зменшення розривів з'єднання та направлення покриття серверів туди, де це найбільше потрібно."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
             "value" : "Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it's needed most."
           }
         }
@@ -21837,9 +22109,99 @@
     "privacyData.anonymousStats.subtitle2" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Only network performance data is shared – never your browsing activity or personal data."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Only network performance data is shared – never your browsing activity or personal data."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Only network performance data is shared – never your browsing activity or personal data."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Only network performance data is shared – never your browsing activity or personal data."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Only network performance data is shared – never your browsing activity or personal data."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Only network performance data is shared – never your browsing activity or personal data."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Only network performance data is shared – never your browsing activity or personal data."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Only network performance data is shared – never your browsing activity or personal data."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Only network performance data is shared – never your browsing activity or personal data."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Only network performance data is shared – never your browsing activity or personal data."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Only network performance data is shared – never your browsing activity or personal data."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Передаются лишь данные о работе сети – при этом ваша активность в интернете и личные данные остаются конфиденциальными."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Only network performance data is shared – never your browsing activity or personal data."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тільки дані про продуктивність мережі діляться - ніколи не ваше веб-серфінг або особисті дані."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Only network performance data is shared – never your browsing activity or personal data."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
             "value" : "Only network performance data is shared – never your browsing activity or personal data."
           }
         }
@@ -21848,9 +22210,99 @@
     "privacyData.anonymousStats.subtitle3" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Learn exactly what's shared"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Learn exactly what's shared"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Learn exactly what's shared"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Learn exactly what's shared"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Learn exactly what's shared"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Learn exactly what's shared"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Learn exactly what's shared"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Learn exactly what's shared"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Learn exactly what's shared"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Learn exactly what's shared"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Learn exactly what's shared"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Узнайте точно, какие данные передаются"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Learn exactly what's shared"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дізнайтеся, чим саме ділились"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Learn exactly what's shared"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
             "value" : "Learn exactly what's shared"
           }
         }
@@ -21859,9 +22311,99 @@
     "privacyData.errorCrashReports" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Error & crash reports"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Error & crash reports"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Error & crash reports"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Error & crash reports"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Error & crash reports"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Error & crash reports"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Error & crash reports"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Error & crash reports"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Error & crash reports"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Error & crash reports"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Error & crash reports"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчёты об ошибках и сбоях"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Error & crash reports"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Звіти про помилки та збої"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Error & crash reports"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
             "value" : "Error & crash reports"
           }
         }
@@ -21870,10 +22412,100 @@
     "privacyData.errorCrashReports.subtitle1" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Send crash info to help us fix bugs faster. Reports go through Sentry’s secure system and include technical debugging data only."
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отправить информацию о сбоях, чтобы помочь нам быстрее исправлять ошибки. Отчеты передаются через безопасную систему Sentry и содержат только технические данные для отладки."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Надсилайте інформацію про збої, щоб допомогти нам швидше виправляти помилки. Звіти проходять через захищену систему Sentry та містять лише технічні дані для налагодження."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Send crash info to help us fix bugs faster.\u2028Reports go through Sentry’s secure system and include technical debugging data only."
           }
         }
       }
@@ -21881,9 +22513,99 @@
     "privacyData.errorCrashReports.subtitle2" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Sentry Privacy Policy"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Sentry Privacy Policy"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "View Sentry Privacy Policy"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Sentry Privacy Policy"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Sentry Privacy Policy"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Sentry Privacy Policy"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Sentry Privacy Policy"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Sentry Privacy Policy"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Sentry Privacy Policy"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Sentry Privacy Policy"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Sentry Privacy Policy"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Посмотреть политику конфиденциальности Sentry"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Sentry Privacy Policy"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переглянути політику конфіденційності Sentry"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Sentry Privacy Policy"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
             "value" : "View Sentry Privacy Policy"
           }
         }
@@ -21960,8 +22682,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "You're now fully protected"
+            "state" : "translated",
+            "value" : "Теперь вы полностью защищены"
           }
         },
         "tr" : {
@@ -22263,8 +22985,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Select a plan now to activate your protection"
+            "state" : "translated",
+            "value" : "Выберите тариф сейчас, чтобы активировать защиту"
           }
         },
         "tr" : {
@@ -22364,8 +23086,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Your upcoming payment cannot be linked to your future browsing activity"
+            "state" : "translated",
+            "value" : "Ваш предстоящий платеж не может быть связан с вашей будущей активностью в сети"
           }
         },
         "tr" : {
@@ -22465,8 +23187,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Choose your protection level 🛡️"
+            "state" : "translated",
+            "value" : "Выберите ваш уровень защиты 🛡️"
           }
         },
         "tr" : {
@@ -22566,8 +23288,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Welcome to true privacy 🎉"
+            "state" : "translated",
+            "value" : "Добро пожаловать в настоящую приватность 🎉"
           }
         },
         "tr" : {
@@ -25661,8 +26383,8 @@
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Disable to only use IPv4"
+            "state" : "translated",
+            "value" : "Désactivez pour utiliser uniquement IPv4"
           }
         },
         "hi" : {
@@ -25697,8 +26419,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Disable to only use IPv4"
+            "state" : "translated",
+            "value" : "Отключить, чтобы использовать только IPv4"
           }
         },
         "tr" : {
@@ -25762,8 +26484,8 @@
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "IPv6 traffic tunneling"
+            "state" : "translated",
+            "value" : "Mise en tunnel du trafic IPv6"
           }
         },
         "hi" : {
@@ -25798,8 +26520,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "IPv6 traffic tunneling"
+            "state" : "translated",
+            "value" : "Туннелирование трафика IPv6"
           }
         },
         "tr" : {
@@ -26538,9 +27260,99 @@
     "settings.privacyAndData" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privacy & data"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privacy & data"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Privacy & data"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privacy & data"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privacy & data"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privacy & data"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privacy & data"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privacy & data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privacy & data"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privacy & data"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privacy & data"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Конфиденциальность & данные"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privacy & data"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Конфіденційність і дані"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privacy & data"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
             "value" : "Privacy & data"
           }
         }
@@ -27187,8 +27999,8 @@
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Subscription expired"
+            "state" : "translated",
+            "value" : "Souscription expirée"
           }
         },
         "hi" : {
@@ -27223,8 +28035,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Subscription expired"
+            "state" : "translated",
+            "value" : "Истек срок действия подписки"
           }
         },
         "tr" : {
@@ -27628,7 +28440,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Получите анонимный просмотр прямо сейчас"
+            "value" : "Начните анонимно пользоваться интернетом прямо сейчас"
           }
         },
         "tr" : {
