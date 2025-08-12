@@ -78,7 +78,6 @@
     <string name="two_hop">2跳</string>
     <string name="error_reporting_alert">错误报告的更改在重新启动应用程序后才生效。</string>
     <string name="feature_in_progress">该功能仍在开发中。</string>
-    <string name="logs_saved">日志保存到下载文件夹</string>
     <string name="sentry_url">https://sentry.io</string>
     <string name="anonymous_analytics">匿名分析</string>
     <string name="anonymous_analytics_description">帮助我们改进 NymVPN</string>
@@ -108,6 +107,7 @@
     <string name="notifications">通知</string>
     <string name="allow_permissions">允许权限</string>
     <string name="notification_permission_message">需要在应用程序关闭时保持 VPN 服务运行。</string>
+    <string name="notification_permission_required">请为适当的应用功能启用通知权限</string>
     <string name="error_gateway_lookup">查找 Nym 网关失败，请检查网络连接并重试。</string>
     <string name="error_bad_peer_cert">"所选网关的对等证书有问题。请重试连接其他网关。 "</string>
     <string name="error_no_hostname_address">网关缺少主机名地址。请重试连接其他网关。</string>
@@ -140,11 +140,13 @@
     <string name="vpn_settings">VPN 系统设置</string>
     <string name="try_again">并尝试重新连接</string>
     <string name="share">分享</string>
+    <string name="download">Download</string>
     <string name="delete">删除</string>
     <string name="delete_logs_title">您确定要删除所有日志吗？</string>
     <string name="delete_logs_description">日志一旦删除，将无法恢复。</string>
     <string name="no">否</string>
     <string name="yes">是</string>
+    <string name="logs_saved">日志保存到下载文件夹</string>
     <string name="out_of_bandwidth_error">已达到凭证带宽限制。</string>
     <string name="gateway_error">连接网关失败。 请重试或选择新的网关位置。</string>
     <string name="network_error">出现网络连接问题。 请检查网络连接并重试。</string>
@@ -218,7 +220,7 @@
     <string name="log_out_title">确定要退出登录吗？</string>
     <string name="log_out_body">您需要助记词才能重新登录。</string>
     <string name="cancel">取消</string>
-    <string name="subscription_expired_error">The subscription for this account has expired. Upgrade your subscription to continue use.</string>
+    <string name="subscription_expired_error">该帐号的订阅已到期。请升级您的订阅以继续使用。</string>
     <string name="remove_device">从您的账户中移除设备，然后重试。</string>
     <string name="gateway_score">网关得分</string>
     <string name="info">信息</string>
@@ -244,4 +246,30 @@
     <string name="telegram_url">https://nym.com/go/telegram</string>
     <string name="join_telegram">加入Telegram</string>
     <string name="device_time_out_of_sync">同步设备时间</string>
+    <string name="create_mixnet_storage">创建凭据存储失败</string>
+    <string name="ipv6_unavailable">Ipv6 不可用</string>
+    <!-- Battery optimization -->
+    <string name="battery_opt_title">最佳连接方式</string>
+    <string name="battery_opt_descr">禁用 NymVPN 电池优化以获得更稳定的 VPN 连接。</string>
+    <string name="skip">跳过</string>
+    <string name="battery_opt">电池优化</string>
+    <string name="battery_opt_settings_text">应用程序设置中可以随时更改电池优化设置。</string>
+    <!-- Data & Privacy screen -->
+    <string name="data_privacy">Data &amp; Privacy</string>
+    <string name="title_anonymous_stats">Anonymous network stats</string>
+    <string name="descr_anonymous_stats">Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it\'s needed most. \n\nOnly network performance data is shared – never your browsing activity or personal data.</string>
+    <string name="link_anonymous_stats_text">Learn exactly what\'s shared</string>
+    <string name="link_anonymous_stats">https://nym.com/anonymous-stats</string>
+    <string name="title_error_reports">Error &amp; crash reports</string>
+    <string name="descr_error_reports">Send crash info to help us fix bugs faster. Reports go through Sentry’s secure system and include technical debugging data only.</string>
+    <string name="link_error_reports_text">View Sentry Privacy Policy</string>
+    <string name="link_error_reports">https://sentry.io/privacy/</string>
+    <string name="restart_error_reports">Changes will apply after app restart.</string>
+    <string name="modal_network_stats_title">Upgrade your experience</string>
+    <string name="modal_network_stats_descr">Help improve NymVPN by sharing anonymous network stats from your region. \n\nYour data stays private and secure.</string>
+    <string name="modal_network_stats_enable_button">Enable network stats</string>
+    <string name="modal_network_stats_not_now_button">Not now</string>
+    <string name="notification_improve_title">Help improve \nyour connection speed</string>
+    <string name="notification_improve_button">Improve now</string>
+    <string name="notification_stats_enabled">Stats enabled! Your anonymous data helps optimize our network.</string>
 </resources>

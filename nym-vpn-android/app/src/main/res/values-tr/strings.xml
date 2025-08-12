@@ -78,7 +78,6 @@
     <string name="two_hop">2-hop</string>
     <string name="error_reporting_alert">Hata raporlama ayarlarındaki değişiklikler, uygulama yeniden başlatılana kadar tam olarak etkili olmayacaktır.</string>
     <string name="feature_in_progress">Bu özellik hala geliştirilmektedir.</string>
-    <string name="logs_saved">Günlükler, indirilenler klasörüne kaydedildi</string>
     <string name="sentry_url">https://sentry.io</string>
     <string name="anonymous_analytics">Anonim analizler</string>
     <string name="anonymous_analytics_description">NymVPN\'i geliştirmemize yardımcı olun</string>
@@ -108,6 +107,7 @@
     <string name="notifications">Bildirimler</string>
     <string name="allow_permissions">İzinleri kabul et</string>
     <string name="notification_permission_message">Uygulama kapalıyken VPN hizmetlerinin çalışması sağlanmalıdır.</string>
+    <string name="notification_permission_required">Uygulamanın düzgün çalışması için bildirim izinlerini  etkinleştirin</string>
     <string name="error_gateway_lookup">Nym gateway\'leri bulunamadı. Lütfen ağ bağlantınızı kontrol edip yeniden deneyin.</string>
     <string name="error_bad_peer_cert">"Seçilen gateway'in kötü bir peer sertifikası var. Lütfen başka bir gateway'e yeniden bağlanmayı deneyin "</string>
     <string name="error_no_hostname_address">Gateway\'in hostname\'i eksik. Lütfen farklı bir gateway\'e yeniden bağlanmayı deneyin.</string>
@@ -140,11 +140,13 @@
     <string name="vpn_settings">VPN sistem ayarları</string>
     <string name="try_again">ve yeniden bağlanmayı deneyin</string>
     <string name="share">Paylaş</string>
+    <string name="download">İndir</string>
     <string name="delete">Sil</string>
     <string name="delete_logs_title">Tüm günlükleri silmek istediğinizden emin misiniz?</string>
     <string name="delete_logs_description">Silindikten sonra, günlükler geri alınamaz.</string>
     <string name="no">Hayır</string>
     <string name="yes">Evet</string>
+    <string name="logs_saved">Günlükler, indirilenler klasörüne kaydedildi</string>
     <string name="out_of_bandwidth_error">Yetkilendirme bant genişliği limiti aşıldı.</string>
     <string name="gateway_error">Gateway\'e bağlanılamadı. Tekrar deneyin veya yeni bir gateway konumu seçin.</string>
     <string name="network_error">Bir ağ bağlantı hatası oluştu. Lütfen ağ bağlantınızı kontrol edin ve tekrar deneyin.</string>
@@ -218,7 +220,7 @@
     <string name="log_out_title">Çıkış yapmak istediğinizden emin misiniz?</string>
     <string name="log_out_body">Tekrar giriş yapabilmek için kurtarma cümlenize ihtiyacınız olacak.</string>
     <string name="cancel">Iptal et</string>
-    <string name="subscription_expired_error">The subscription for this account has expired. Upgrade your subscription to continue use.</string>
+    <string name="subscription_expired_error">Bu hesabın aboneliği sona erdi. Kullanıma devam etmek için aboneliğinizi yükseltin.</string>
     <string name="remove_device">Hesabınızdan bir cihazı kaldırın ve tekrar deneyin.</string>
     <string name="gateway_score">Gateway skoru</string>
     <string name="info">Bilgi</string>
@@ -244,4 +246,30 @@
     <string name="telegram_url">https://nym.com/go/telegram</string>
     <string name="join_telegram">Telegram\'da bize katılın</string>
     <string name="device_time_out_of_sync">Cihaz saati senkronize değil</string>
+    <string name="create_mixnet_storage">Kimlik bilgileri depolama yapılamadı</string>
+    <string name="ipv6_unavailable">Ipv6 Kullanılamıyor</string>
+    <!-- Battery optimization -->
+    <string name="battery_opt_title">En iyi bağlantı için</string>
+    <string name="battery_opt_descr">Daha kararlı VPN bağlantıları için NymVPN’in pil optimizasyonlarını devre dışı bırakın.</string>
+    <string name="skip">Atla</string>
+    <string name="battery_opt">Pil optimizasyonu</string>
+    <string name="battery_opt_settings_text">Pil optimizasyonu ayarı, uygulama ayarlarından istediğiniz zaman değiştirilebilir.</string>
+    <!-- Data & Privacy screen -->
+    <string name="data_privacy">Data &amp; Privacy</string>
+    <string name="title_anonymous_stats">Anonymous network stats</string>
+    <string name="descr_anonymous_stats">Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it\'s needed most. \n\nOnly network performance data is shared – never your browsing activity or personal data.</string>
+    <string name="link_anonymous_stats_text">Learn exactly what\'s shared</string>
+    <string name="link_anonymous_stats">https://nym.com/anonymous-stats</string>
+    <string name="title_error_reports">Error &amp; crash reports</string>
+    <string name="descr_error_reports">Send crash info to help us fix bugs faster. Reports go through Sentry’s secure system and include technical debugging data only.</string>
+    <string name="link_error_reports_text">View Sentry Privacy Policy</string>
+    <string name="link_error_reports">https://sentry.io/privacy/</string>
+    <string name="restart_error_reports">Changes will apply after app restart.</string>
+    <string name="modal_network_stats_title">Upgrade your experience</string>
+    <string name="modal_network_stats_descr">Help improve NymVPN by sharing anonymous network stats from your region. \n\nYour data stays private and secure.</string>
+    <string name="modal_network_stats_enable_button">Enable network stats</string>
+    <string name="modal_network_stats_not_now_button">Not now</string>
+    <string name="notification_improve_title">Help improve \nyour connection speed</string>
+    <string name="notification_improve_button">Improve now</string>
+    <string name="notification_stats_enabled">Stats enabled! Your anonymous data helps optimize our network.</string>
 </resources>

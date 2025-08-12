@@ -78,7 +78,6 @@
     <string name="two_hop">2 sauts</string>
     <string name="error_reporting_alert">Le changement de préférence pour les rapports d\'erreur prendra effet au redémarrage de l\'application.</string>
     <string name="feature_in_progress">Cette fonctionnalité est encore en développement.</string>
-    <string name="logs_saved">Journaux enregistrés dans le dossier Téléchargements</string>
     <string name="sentry_url">https://sentry.io</string>
     <string name="anonymous_analytics">Rapports d\'analyse anonymes</string>
     <string name="anonymous_analytics_description">Aider nous à améliorer NymVPN</string>
@@ -108,6 +107,7 @@
     <string name="notifications">Notifications</string>
     <string name="allow_permissions">Accorder les permissions</string>
     <string name="notification_permission_message">Nécessaire pour que les services VPN continuent de fonctionner lorsque l\'application est fermée.</string>
+    <string name="notification_permission_required">Merci d\'autoriser l\'envoi de notification pour le bon fonctionnement de l\'application</string>
     <string name="error_gateway_lookup">Échec de la recherche des passerelles (gateways). Vérifiez votre connexion et réessayez.</string>
     <string name="error_bad_peer_cert">"La passerelle (gateway) sélectionnée a un certificat invalide. Essayez de vous connecter à une autre passerelle. "</string>
     <string name="error_no_hostname_address">L\'adresse du nom d\'hôte de la passerelle est manquante. Veuillez réessayer de vous connecter à une autre passerelle.</string>
@@ -140,11 +140,13 @@
     <string name="vpn_settings">Paramètres du système VPN</string>
     <string name="try_again">et essayez de vous reconnecter</string>
     <string name="share">Partager</string>
+    <string name="download">Télécharger</string>
     <string name="delete">Supprimez</string>
     <string name="delete_logs_title">Êtes-vous sûr de vouloir supprimer tous les logs ?</string>
     <string name="delete_logs_description">Une fois supprimés, les logs ne seront pas récupérables.</string>
     <string name="no">Non</string>
     <string name="yes">Oui</string>
+    <string name="logs_saved">Journaux enregistrés dans le dossier Téléchargements</string>
     <string name="out_of_bandwidth_error">Limitation de bande passante des identifiants atteinte.</string>
     <string name="gateway_error">Impossible de se connecter à la passerelle. Réessayez ou sélectionnez un nouvel emplacement de passerelle.</string>
     <string name="network_error">Un problème de connexion réseau est survenu. Veuillez vérifier votre connexion réseau et réessayer.</string>
@@ -220,7 +222,7 @@
     <string name="log_out_title">Êtes-vous sûr de vouloir vous déconnecter ?</string>
     <string name="log_out_body">Vous aurez besoin de votre phrase de récupération pour vous reconnecter.</string>
     <string name="cancel">Abandonner</string>
-    <string name="subscription_expired_error">The subscription for this account has expired. Upgrade your subscription to continue use.</string>
+    <string name="subscription_expired_error">L\'abonnement à ce compte a expiré. Mettez à niveau votre abonnement pour continuer à l\'utiliser.</string>
     <string name="remove_device">Retirez un appareil de votre compte et réessayez.</string>
     <string name="gateway_score">Score de la passerelle</string>
     <string name="info">Infos</string>
@@ -245,5 +247,31 @@
     <string name="get_help">Obtenir de l\'aide</string>
     <string name="telegram_url">https://nym.com/go/telegram</string>
     <string name="join_telegram">Rejoignez-nous sur Telegram</string>
-    <string name="device_time_out_of_sync">Device time out of sync</string>
+    <string name="device_time_out_of_sync">L\'heure de l\'appareil n\'est pas synchronisée</string>
+    <string name="create_mixnet_storage">Échec de la création du stockage des informations d\'identification</string>
+    <string name="ipv6_unavailable">IPv6 non disponible</string>
+    <!-- Battery optimization -->
+    <string name="battery_opt_title">Pour une meilleure connexion</string>
+    <string name="battery_opt_descr">Désactiver les optimisations de batterie pour NymVPN afin de permettre des connexions VPN plus stables.</string>
+    <string name="skip">Ignorer</string>
+    <string name="battery_opt">Optimisation de la batterie</string>
+    <string name="battery_opt_settings_text">Le paramètre d\'optimisation de la batterie peut être changé à tout moment dans les paramètres de l\'application.</string>
+    <!-- Data & Privacy screen -->
+    <string name="data_privacy">Data &amp; Privacy</string>
+    <string name="title_anonymous_stats">Anonymous network stats</string>
+    <string name="descr_anonymous_stats">Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it\'s needed most. \n\nOnly network performance data is shared – never your browsing activity or personal data.</string>
+    <string name="link_anonymous_stats_text">Learn exactly what\'s shared</string>
+    <string name="link_anonymous_stats">https://nym.com/anonymous-stats</string>
+    <string name="title_error_reports">Error &amp; crash reports</string>
+    <string name="descr_error_reports">Send crash info to help us fix bugs faster. Reports go through Sentry’s secure system and include technical debugging data only.</string>
+    <string name="link_error_reports_text">View Sentry Privacy Policy</string>
+    <string name="link_error_reports">https://sentry.io/privacy/</string>
+    <string name="restart_error_reports">Changes will apply after app restart.</string>
+    <string name="modal_network_stats_title">Upgrade your experience</string>
+    <string name="modal_network_stats_descr">Help improve NymVPN by sharing anonymous network stats from your region. \n\nYour data stays private and secure.</string>
+    <string name="modal_network_stats_enable_button">Enable network stats</string>
+    <string name="modal_network_stats_not_now_button">Not now</string>
+    <string name="notification_improve_title">Help improve \nyour connection speed</string>
+    <string name="notification_improve_button">Improve now</string>
+    <string name="notification_stats_enabled">Stats enabled! Your anonymous data helps optimize our network.</string>
 </resources>

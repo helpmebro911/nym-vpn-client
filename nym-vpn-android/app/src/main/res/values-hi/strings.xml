@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">NymVPN</string>
+    <string name="app_name">NymVPNmo</string>
     <string name="settings">सेटिंग्स</string>
     <string name="connected">कनेक्शन सफल हुआ</string>
     <string name="disconnected">डिस्कनेक्टेड</string>
@@ -78,7 +78,6 @@
     <string name="two_hop">2-हॉप</string>
     <string name="error_reporting_alert">त्रुटि रिपोर्टिंग में किए गए परिवर्तन पूरी तरह से प्रभावी नहीं होंगे जब तक कि ऐप को पुनः शुरू नहीं किया जाता।</string>
     <string name="feature_in_progress">यह सुविधा अभी भी प्रगति में है।</string>
-    <string name="logs_saved">लॉग्स डाउनलोड्स फोल्डर में सहेजे गए</string>
     <string name="sentry_url">https://sentry.io</string>
     <string name="anonymous_analytics">अनाम विश्लेषण</string>
     <string name="anonymous_analytics_description">हमें NymVPN में सुधार करने में मदद करें</string>
@@ -108,6 +107,7 @@
     <string name="notifications">सूचनाएँ</string>
     <string name="allow_permissions">अनुमतियाँ अनुमति दें</string>
     <string name="notification_permission_message">ऐप बंद होने के दौरान VPN सेवाओं को चालू रखने के लिए आवश्यक है।</string>
+    <string name="notification_permission_required">Please enable notification permission for proper app functionality</string>
     <string name="error_gateway_lookup">Nym गेटवे की खोज करने में विफल। कृपया अपने नेटवर्क कनेक्शन की जाँच करें और फिर से प्रयास करें।</string>
     <string name="error_bad_peer_cert">"चयनित गेटवे का पीयर सर्टिफिकेट खराब है। कृपया एक अलग गेटवे से कनेक्ट करने का प्रयास करें। "</string>
     <string name="error_no_hostname_address">गेटवे का होस्टनेम पता गायब है। कृपया एक अलग गेटवे से कनेक्ट करने का प्रयास करें।</string>
@@ -140,11 +140,13 @@
     <string name="vpn_settings">VPN सिस्टम सेटिंग्स</string>
     <string name="try_again">और पुनः कनेक्ट करने का प्रयास करें</string>
     <string name="share">साझा करें</string>
+    <string name="download">Download</string>
     <string name="delete">हटाएं</string>
     <string name="delete_logs_title">क्या आप निश्चित हैं कि आप सभी लॉग्स हटाना चाहते हैं?</string>
     <string name="delete_logs_description">क बार डिलीट करने के बाद, इन लॉग्स को फिर से प्राप्त (रिकवर) नहीं किया जा सकेगा।</string>
     <string name="no">नहीं</string>
     <string name="yes">हाँ</string>
+    <string name="logs_saved">लॉग्स डाउनलोड्स फोल्डर में सहेजे गए</string>
     <string name="out_of_bandwidth_error">क्रेडेंशियल बैंडविड्थ की लिमिट पूरी हो गई है।</string>
     <string name="gateway_error">गेटवे से जुड़ने में विफलता हुई। कृपया पुनः प्रयास करें या नया गेटवे स्थान चुनें।</string>
     <string name="network_error">नेटवर्क कनेक्शन में समस्या हुई। कृपया अपना नेटवर्क कनेक्शन जाँचें और फिर से प्रयास करें।</string>
@@ -201,7 +203,7 @@
     <string name="two_hop_explanation">सबसे अधिक गति का लाभ 2-सर्वर से पाएं। यह मोड AmneziaWG का उपयोग करता है, जो WireGuard का सेंसरशिप-प्रतिरोधी संस्करण है - जो तेज़ ब्राउज़िंग, स्ट्रीमिंग और फ़ाइल साझाकरण के लिए आदर्श है।</string>
     <string name="two_hop_title">तेज़ (WireGuard<small>*</small>)</string>
     <string name="disabled_while_connecting">VPN से जुड़ते समय अक्षम</string>
-    <string name="exit">बाहर निकलें</string>
+    <string name="exit">आखरी स्थान</string>
     <string name="entry">उद्भव स्थान</string>
     <string name="no_results_found">कोई परिणाम नहीं मिला।</string>
     <string name="how_to_run_gateway">गेटवे को कैसे चलाएँ।</string>
@@ -218,7 +220,7 @@
     <string name="log_out_title">क्या आप सुनिश्चित हैं कि आप लॉग आउट करना चाहते हैं?</string>
     <string name="log_out_body">आपको फिर से लॉग इन करने के लिए अपनी रिकवरी फ़्रेज़ की आवश्यकता होगी।</string>
     <string name="cancel">कैंसल</string>
-    <string name="subscription_expired_error">The subscription for this account has expired. Upgrade your subscription to continue use.</string>
+    <string name="subscription_expired_error">इस खाते की सदस्यता समाप्त हो गई है। NymVPN इस्तेमाल जारी रखने के लिए अपनी सदस्यता अपग्रेड करें।</string>
     <string name="remove_device">अपने खाते से एक उपकरण हटा दें और फिर से प्रयास करें।</string>
     <string name="gateway_score">गेटवे स्कोर</string>
     <string name="info">सूचना</string>
@@ -243,5 +245,31 @@
     <string name="get_help">मदद् लें</string>
     <string name="telegram_url">https://nym.com/go/telegram</string>
     <string name="join_telegram">Telegram पर हमसे जुड़ें</string>
-    <string name="device_time_out_of_sync">Device time out of sync</string>
+    <string name="device_time_out_of_sync">डिवाइस समय समन्वयित नहीं है</string>
+    <string name="create_mixnet_storage">Failed to create credential storage</string>
+    <string name="ipv6_unavailable">Ipv6 Unavailable</string>
+    <!-- Battery optimization -->
+    <string name="battery_opt_title">For best connection</string>
+    <string name="battery_opt_descr">Disable NymVPN battery optimizations for more stable VPN connections.</string>
+    <string name="skip">Skip</string>
+    <string name="battery_opt">Battery optimization</string>
+    <string name="battery_opt_settings_text">Battery optimization setting can be changed anytime in app settings.</string>
+    <!-- Data & Privacy screen -->
+    <string name="data_privacy">Data &amp; Privacy</string>
+    <string name="title_anonymous_stats">Anonymous network stats</string>
+    <string name="descr_anonymous_stats">Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it\'s needed most. \n\nOnly network performance data is shared – never your browsing activity or personal data.</string>
+    <string name="link_anonymous_stats_text">Learn exactly what\'s shared</string>
+    <string name="link_anonymous_stats">https://nym.com/anonymous-stats</string>
+    <string name="title_error_reports">Error &amp; crash reports</string>
+    <string name="descr_error_reports">Send crash info to help us fix bugs faster. Reports go through Sentry’s secure system and include technical debugging data only.</string>
+    <string name="link_error_reports_text">View Sentry Privacy Policy</string>
+    <string name="link_error_reports">https://sentry.io/privacy/</string>
+    <string name="restart_error_reports">Changes will apply after app restart.</string>
+    <string name="modal_network_stats_title">Upgrade your experience</string>
+    <string name="modal_network_stats_descr">Help improve NymVPN by sharing anonymous network stats from your region. \n\nYour data stays private and secure.</string>
+    <string name="modal_network_stats_enable_button">Enable network stats</string>
+    <string name="modal_network_stats_not_now_button">Not now</string>
+    <string name="notification_improve_title">Help improve \nyour connection speed</string>
+    <string name="notification_improve_button">Improve now</string>
+    <string name="notification_stats_enabled">Stats enabled! Your anonymous data helps optimize our network.</string>
 </resources>

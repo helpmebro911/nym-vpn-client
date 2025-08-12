@@ -78,7 +78,6 @@
     <string name="two_hop">2-ланки</string>
     <string name="error_reporting_alert">Зміни про помилку наберуть чинності після перезавантаження додатку.</string>
     <string name="feature_in_progress">Ця функція в процесі розробки.</string>
-    <string name="logs_saved">Логи збережені в папці завантажень</string>
     <string name="sentry_url">https://sentry.io</string>
     <string name="anonymous_analytics">Анонімна аналітика</string>
     <string name="anonymous_analytics_description">Допоможіть нам покращити NymVPN</string>
@@ -108,6 +107,7 @@
     <string name="notifications">Сповіщення</string>
     <string name="allow_permissions">Дозволити доступ</string>
     <string name="notification_permission_message">Потрібно для того, щоб VPN-сервіси працювали, коли програма закрита.</string>
+    <string name="notification_permission_required">Будь ласка, увімкніть дозвіл на сповіщення для правильної роботи програми</string>
     <string name="error_gateway_lookup">Не вдалося знайти шлюзи Nym. Будь ласка, перевірте підключення до мережі та спробуйте ще раз.</string>
     <string name="error_bad_peer_cert">"Вибраний шлюз має поганий сертифікат. Будь ласка, спробуйте підключитися до іншого шлюзу. "</string>
     <string name="error_no_hostname_address">Шлюзу не вистачає адреси хоста. Будь ласка, спробуйте підключитися до іншого шлюзу.</string>
@@ -140,11 +140,13 @@
     <string name="vpn_settings">Налаштуваннях системи VPN</string>
     <string name="try_again">і спробуйте відновити підключення</string>
     <string name="share">Поділіться</string>
+    <string name="download">Завантажити</string>
     <string name="delete">Видалити</string>
     <string name="delete_logs_title">Ви впевнені, що хочете видалити всі журнали?</string>
     <string name="delete_logs_description">Після видалення журнали не підлягають відновленню.</string>
     <string name="no">Ні</string>
     <string name="yes">Так</string>
+    <string name="logs_saved">Логи збережені в папці завантажень</string>
     <string name="out_of_bandwidth_error">Досягнуто обмеження пропускної здатності облікового запису.</string>
     <string name="gateway_error">Не вдалося підключитися до шлюзу. Спробуйте ще раз або виберіть нове розташування шлюзу.</string>
     <string name="network_error">Виникла проблема з підключенням до мережі. Будь ласка, перевірте підключення до мережі та спробуйте ще раз.</string>
@@ -218,7 +220,7 @@
     <string name="log_out_title">Ви впевнені, що хочете вийти з системи?</string>
     <string name="log_out_body">Для повторного входу вам знадобиться фраза відновлення.</string>
     <string name="cancel">Скасувати</string>
-    <string name="subscription_expired_error">The subscription for this account has expired. Upgrade your subscription to continue use.</string>
+    <string name="subscription_expired_error">Підписка для цього облікового запису закінчилася. Оновіть свою підписку, щоб продовжити використання.</string>
     <string name="remove_device">Видаліть пристрій зі свого акаунта і спробуйте ще раз.</string>
     <string name="gateway_score">Оцінка шлюзу</string>
     <string name="info">Інформація</string>
@@ -244,4 +246,30 @@
     <string name="telegram_url">https://nym.com/go/telegram</string>
     <string name="join_telegram">Приєднуйтесь до нас у Telegram</string>
     <string name="device_time_out_of_sync">Час пристрою не синхронізовано</string>
+    <string name="create_mixnet_storage">Не вдалося створити базу даних облікових даних</string>
+    <string name="ipv6_unavailable">Ipv6 недоступний</string>
+    <!-- Battery optimization -->
+    <string name="battery_opt_title">Для кращого з\'єднання</string>
+    <string name="battery_opt_descr">Вимкніть оптимізацію заряду батареї NymVPN для більш стабільних VPN-з\'єднань.</string>
+    <string name="skip">Пропустити</string>
+    <string name="battery_opt">Оптимізація батареї</string>
+    <string name="battery_opt_settings_text">Налаштування оптимізації батареї можна змінювати в будь-який час у налаштуваннях програми.</string>
+    <!-- Data & Privacy screen -->
+    <string name="data_privacy">Дані &amp; Конфіденційність</string>
+    <string name="title_anonymous_stats">Анонімна статистика мережі</string>
+    <string name="descr_anonymous_stats">Допоможіть нам створити швидшу мережу, поділившись анонімними даними про продуктивність у вашому регіоні. Ми використовуємо ці дані для оптимізації швидкості, зменшення кількості розривів з\'єднання та спрямування покриття сервера туди, де це найбільш потрібно. \n\nМи ділимося лише даними про продуктивність мережі – ніколи вашою активністю в Інтернеті чи особистими даними.</string>
+    <string name="link_anonymous_stats_text">Дізнайтеся, чим саме ділились</string>
+    <string name="link_anonymous_stats">https://nym.com/anonymous-stats</string>
+    <string name="title_error_reports">Звіти про помилки та збої</string>
+    <string name="descr_error_reports">Надсилайте інформацію про збої, щоб допомогти нам швидше виправляти помилки. Звіти проходять через захищену систему Sentry та містять лише технічні дані для налагодження.</string>
+    <string name="link_error_reports_text">Переглянути політику конфіденційності Sentry</string>
+    <string name="link_error_reports">https://sentry.io/privacy/</string>
+    <string name="restart_error_reports">Зміни набудуть чинності після перезавантаження програми.</string>
+    <string name="modal_network_stats_title">Покращте свій досвід</string>
+    <string name="modal_network_stats_descr">Допоможіть покращити NymVPN, поділившись анонімними статистичними даними про мережу з вашого регіону. \n\nВаші дані залишаються приватними та безпечними.</string>
+    <string name="modal_network_stats_enable_button">Увімкнути статистику мережі</string>
+    <string name="modal_network_stats_not_now_button">Не зараз</string>
+    <string name="notification_improve_title">Допоможіть покращити \nвашу швидкість з\'єднання</string>
+    <string name="notification_improve_button">Покращити зараз</string>
+    <string name="notification_stats_enabled">Статистика увімкнена! Ваші анонімні дані допомагають оптимізувати нашу мережу.</string>
 </resources>

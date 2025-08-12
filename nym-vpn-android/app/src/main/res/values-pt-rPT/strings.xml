@@ -78,7 +78,6 @@
     <string name="two_hop">2-saltos</string>
     <string name="error_reporting_alert">s alterações à partilha de erros só terão efeito total após reiniciar a aplicação</string>
     <string name="feature_in_progress">Esta funcionalidade ainda sejassenvolvimento.</string>
-    <string name="logs_saved">Logs guardados na pasta de transferências</string>
     <string name="sentry_url">https://sentry.io</string>
     <string name="anonymous_analytics">Análises anónimas</string>
     <string name="anonymous_analytics_description">Ajude-nos a melhorar a NymVPN</string>
@@ -108,6 +107,7 @@
     <string name="notifications">Notificações</string>
     <string name="allow_permissions">Permitir permissões</string>
     <string name="notification_permission_message">Necessário para manter os serviços VPN a funcionar enquanto a aplicação está fechada.</string>
+    <string name="notification_permission_required">Please enable notification permission for proper app functionality</string>
     <string name="error_gateway_lookup">Falha na pesquisa de gateways Nym. Verifique a sua ligação de rede e tente novamente.</string>
     <string name="error_bad_peer_cert">"O gateway selecionado tem um certificado de par incorreto. Por favor, tente novamente conectar a um gateway diferente. "</string>
     <string name="error_no_hostname_address">Endereço de hostname faltando no gateway. Tente novamente para conectar a um gateway diferente.</string>
@@ -140,11 +140,13 @@
     <string name="vpn_settings">Definições do sistema VPN</string>
     <string name="try_again">e tentar restabelecer a ligação</string>
     <string name="share">Partilhar</string>
+    <string name="download">Download</string>
     <string name="delete">Apagar</string>
     <string name="delete_logs_title">Tem a certeza de que pretende apagar todos os logs?</string>
     <string name="delete_logs_description">Uma vez eliminados, os logs não poderão ser recuperados.</string>
     <string name="no">Não</string>
     <string name="yes">Sim</string>
+    <string name="logs_saved">Logs guardados na pasta de transferências</string>
     <string name="out_of_bandwidth_error">Limite de banda larga de credenciais atingido.</string>
     <string name="gateway_error">Falha na ligação ao gateway. Tente novamente ou selecione uma nova localização de gateway.</string>
     <string name="network_error">Ocorreu um problema de ligação de rede. Verifique a sua ligação de rede e tente novamente.</string>
@@ -246,4 +248,30 @@
     <string name="telegram_url">https://nym.com/go/telegram</string>
     <string name="join_telegram">Junte-se a nós no Telegram</string>
     <string name="device_time_out_of_sync">Device time out of sync</string>
+    <string name="create_mixnet_storage">Failed to create credential storage</string>
+    <string name="ipv6_unavailable">Ipv6 Unavailable</string>
+    <!-- Battery optimization -->
+    <string name="battery_opt_title">For best connection</string>
+    <string name="battery_opt_descr">Disable NymVPN battery optimizations for more stable VPN connections.</string>
+    <string name="skip">Skip</string>
+    <string name="battery_opt">Battery optimization</string>
+    <string name="battery_opt_settings_text">Battery optimization setting can be changed anytime in app settings.</string>
+    <!-- Data & Privacy screen -->
+    <string name="data_privacy">Data &amp; Privacy</string>
+    <string name="title_anonymous_stats">Anonymous network stats</string>
+    <string name="descr_anonymous_stats">Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it\'s needed most. \n\nOnly network performance data is shared – never your browsing activity or personal data.</string>
+    <string name="link_anonymous_stats_text">Learn exactly what\'s shared</string>
+    <string name="link_anonymous_stats">https://nym.com/anonymous-stats</string>
+    <string name="title_error_reports">Error &amp; crash reports</string>
+    <string name="descr_error_reports">Send crash info to help us fix bugs faster. Reports go through Sentry’s secure system and include technical debugging data only.</string>
+    <string name="link_error_reports_text">View Sentry Privacy Policy</string>
+    <string name="link_error_reports">https://sentry.io/privacy/</string>
+    <string name="restart_error_reports">Changes will apply after app restart.</string>
+    <string name="modal_network_stats_title">Upgrade your experience</string>
+    <string name="modal_network_stats_descr">Help improve NymVPN by sharing anonymous network stats from your region. \n\nYour data stays private and secure.</string>
+    <string name="modal_network_stats_enable_button">Enable network stats</string>
+    <string name="modal_network_stats_not_now_button">Not now</string>
+    <string name="notification_improve_title">Help improve \nyour connection speed</string>
+    <string name="notification_improve_button">Improve now</string>
+    <string name="notification_stats_enabled">Stats enabled! Your anonymous data helps optimize our network.</string>
 </resources>

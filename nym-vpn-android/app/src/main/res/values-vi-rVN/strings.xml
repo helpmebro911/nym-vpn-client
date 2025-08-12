@@ -78,7 +78,6 @@
     <string name="two_hop">2 bước nhảy</string>
     <string name="error_reporting_alert">Các thay đổi về báo cáo lỗi sẽ không có hiệu lực hoàn toàn cho đến khi ứng dụng được khởi động lại.</string>
     <string name="feature_in_progress">Tính năng này vẫn đang được hoàn thiện.</string>
-    <string name="logs_saved">Nhật ký được lưu vào thư mục tải xuống</string>
     <string name="sentry_url">https://sentry.io</string>
     <string name="anonymous_analytics">Phân tích ẩn danh</string>
     <string name="anonymous_analytics_description">Hãy giúp chúng tôi cải thiện NymVPN</string>
@@ -108,6 +107,7 @@
     <string name="notifications">Thông báo</string>
     <string name="allow_permissions">Cấp quyền</string>
     <string name="notification_permission_message">Cần thiết để duy trì dịch vụ VPN hoạt động ngay cả khi ứng dụng bị đóng.</string>
+    <string name="notification_permission_required">Vui lòng bật quyền thông báo để ứng dụng hoạt động bình thường</string>
     <string name="error_gateway_lookup">Không thể tra cứu các gateway của Nym. Vui lòng kiểm tra kết nối mạng của bạn và thử lại.</string>
     <string name="error_bad_peer_cert">"Cổng đã chọn có chứng chỉ ngang hàng không hợp lệ. Vui lòng thử kết nối với một cổng khác. "</string>
     <string name="error_no_hostname_address">Cổng thiếu địa chỉ tên miền. Vui lòng thử kết nối với một cổng khác.</string>
@@ -140,11 +140,13 @@
     <string name="vpn_settings">Cài đặt hệ thống VPN</string>
     <string name="try_again">và cố gắng kết nối lại</string>
     <string name="share">Chia sẻ</string>
+    <string name="download">Download</string>
     <string name="delete">Xóa</string>
     <string name="delete_logs_title">Bạn có chắc chắn muốn xóa tất cả nhật ký không?</string>
     <string name="delete_logs_description">Sau khi xóa, nhật ký sẽ không thể phục hồi được.</string>
     <string name="no">Không</string>
     <string name="yes">Có</string>
+    <string name="logs_saved">Nhật ký được lưu vào thư mục tải xuống</string>
     <string name="out_of_bandwidth_error">Đã đạt đến giới hạn băng thông thông tin đăng nhập.</string>
     <string name="gateway_error">Không kết nối được với cổng. Hãy thử lại hoặc chọn vị trí cổng.</string>
     <string name="network_error">Đã xảy ra sự cố kết nối mạng. Vui lòng kiểm tra kết nối mạng của bạn và thử lại.</string>
@@ -219,7 +221,7 @@ không phải Ví Nym.</string>
     <string name="log_out_title">Bạn có chắc chắn muốn đăng xuất?</string>
     <string name="log_out_body">Bạn sẽ cần cụm từ khôi phục của mình để đăng nhập lại.</string>
     <string name="cancel">Hủy</string>
-    <string name="subscription_expired_error">The subscription for this account has expired. Upgrade your subscription to continue use.</string>
+    <string name="subscription_expired_error">Thời gian sử dụng đăng ký cho tài khoản này đã hết. Nâng cấp đăng ký của bạn để tiếp tục sử dụng.</string>
     <string name="remove_device">Xóa một thiết bị khỏi tài khoản của bạn và thử lại.</string>
     <string name="gateway_score">Điểm của cổng</string>
     <string name="info">Thông tin</string>
@@ -245,4 +247,30 @@ không phải Ví Nym.</string>
     <string name="telegram_url">https://nym.com/go/telegram</string>
     <string name="join_telegram">Tham gia Telegram của chúng tôi</string>
     <string name="device_time_out_of_sync">Thời gian thiết bị không đồng bộ</string>
+    <string name="create_mixnet_storage">Không thể tạo bộ lưu trữ thông tin xác thực</string>
+    <string name="ipv6_unavailable">Ipv6 Unavailable</string>
+    <!-- Battery optimization -->
+    <string name="battery_opt_title">For best connection</string>
+    <string name="battery_opt_descr">Disable NymVPN battery optimizations for more stable VPN connections.</string>
+    <string name="skip">Skip</string>
+    <string name="battery_opt">Battery optimization</string>
+    <string name="battery_opt_settings_text">Battery optimization setting can be changed anytime in app settings.</string>
+    <!-- Data & Privacy screen -->
+    <string name="data_privacy">Data &amp; Privacy</string>
+    <string name="title_anonymous_stats">Anonymous network stats</string>
+    <string name="descr_anonymous_stats">Help us build a faster network by sharing anonymous performance data from your region. We use this to optimize speeds, reduce disconnections, and steer server coverage where it\'s needed most. \n\nOnly network performance data is shared – never your browsing activity or personal data.</string>
+    <string name="link_anonymous_stats_text">Learn exactly what\'s shared</string>
+    <string name="link_anonymous_stats">https://nym.com/anonymous-stats</string>
+    <string name="title_error_reports">Error &amp; crash reports</string>
+    <string name="descr_error_reports">Send crash info to help us fix bugs faster. Reports go through Sentry’s secure system and include technical debugging data only.</string>
+    <string name="link_error_reports_text">View Sentry Privacy Policy</string>
+    <string name="link_error_reports">https://sentry.io/privacy/</string>
+    <string name="restart_error_reports">Changes will apply after app restart.</string>
+    <string name="modal_network_stats_title">Upgrade your experience</string>
+    <string name="modal_network_stats_descr">Help improve NymVPN by sharing anonymous network stats from your region. \n\nYour data stays private and secure.</string>
+    <string name="modal_network_stats_enable_button">Enable network stats</string>
+    <string name="modal_network_stats_not_now_button">Not now</string>
+    <string name="notification_improve_title">Help improve \nyour connection speed</string>
+    <string name="notification_improve_button">Improve now</string>
+    <string name="notification_stats_enabled">Stats enabled! Your anonymous data helps optimize our network.</string>
 </resources>

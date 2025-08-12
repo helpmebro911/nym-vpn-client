@@ -78,7 +78,6 @@
     <string name="two_hop">2-ступенчатый</string>
     <string name="error_reporting_alert">Изменения в разделе \"Отчеты об ошибках\" не вступят в силу до тех пор, пока приложение не будет перезапущено.</string>
     <string name="feature_in_progress">Эта функция все ещё находится в разработке.</string>
-    <string name="logs_saved">Логи сохранены в загрузки</string>
     <string name="sentry_url">https://sentry.io</string>
     <string name="anonymous_analytics">Анонимная аналитика</string>
     <string name="anonymous_analytics_description">Помогите нам улучшить NymVPN</string>
@@ -108,6 +107,7 @@
     <string name="notifications">Уведомления</string>
     <string name="allow_permissions">Дать разрешения</string>
     <string name="notification_permission_message">Требуется для обеспечения работы VPN-сервиса даже при закрытом приложении.</string>
+    <string name="notification_permission_required">Пожалуйста, разрешите отправку уведомлений для корректной работы приложения</string>
     <string name="error_gateway_lookup">Не удалось найти шлюзы Nym. Пожалуйста, проверьте свое сетевое подключение и повторите попытку.</string>
     <string name="error_bad_peer_cert">"Выбранный шлюз имеет неверный одноранговый сертификат. Пожалуйста, повторите попытку подключения к другому шлюзу. "</string>
     <string name="error_no_hostname_address">У шлюза отсутствует адрес с именем хоста. Пожалуйста, повторите попытку подключения к другому шлюзу.</string>
@@ -140,11 +140,13 @@
     <string name="vpn_settings">Настройки системы VPN</string>
     <string name="try_again">попробуйте переподключиться</string>
     <string name="share">Поделиться</string>
+    <string name="download">Скачать</string>
     <string name="delete">Удалить</string>
     <string name="delete_logs_title">Вы уверены что хотите удалить логи?</string>
     <string name="delete_logs_description">После удаления логи будет невозможно восстановить.</string>
     <string name="no">Нет</string>
     <string name="yes">Да</string>
+    <string name="logs_saved">Логи сохранены в загрузки\"</string>
     <string name="out_of_bandwidth_error">Достигнуто ограничение пропускной способности учетных данных.</string>
     <string name="gateway_error">Не удалось подключиться к шлюзу. Повторите попытку или выберите новое местоположение шлюза.</string>
     <string name="network_error">Возникла проблема с сетевым подключением. Пожалуйста, проверьте ваше сетевое подключение и повторите попытку.</string>
@@ -189,7 +191,7 @@
     <string name="get_access_code">Получить Код Доступа</string>
     <string name="access_code">Кодовая фраза из 24 слов</string>
     <string name="support_and_feedback"><![CDATA[Поддержка и отзывы]]></string>
-    <string name="get_in_touch">Связаться с нами</string>
+    <string name="get_in_touch">Связаться с поддержкой</string>
     <string name="same_entry_exit_message">NymVPN обеспечивает конфиденциальность, разделяя шлюзы для входа и выхода. Переподключитесь или выберите другие локации.</string>
     <string name="device_id">ID устройства:</string>
     <string name="unexpected_error">Произошла непредвиденная ошибка:</string>
@@ -220,7 +222,7 @@
     <string name="log_out_title">Вы уверены, что хотите выйти?</string>
     <string name="log_out_body">Для повторного входа вам понадобится ваша фраза восстановления.</string>
     <string name="cancel">Отмена</string>
-    <string name="subscription_expired_error">The subscription for this account has expired. Upgrade your subscription to continue use.</string>
+    <string name="subscription_expired_error">Подписка на этот аккаунт истекла. Обновите подписку, чтобы продолжить использование.</string>
     <string name="remove_device">Удалите устройство из вашего аккаунта и попробуйте снова.</string>
     <string name="gateway_score">Оценка шлюза</string>
     <string name="info">Информация</string>
@@ -245,5 +247,31 @@
     <string name="get_help">Получить помощь</string>
     <string name="telegram_url">https://nym.com/go/telegram</string>
     <string name="join_telegram">Присоединяйтесь к нам в Telegram</string>
-    <string name="device_time_out_of_sync">Время устройства не синхронизировано</string>
+    <string name="device_time_out_of_sync">Время на устройстве не синхронизировано</string>
+    <string name="create_mixnet_storage">Не удалось создать хранилище учетных данных</string>
+    <string name="ipv6_unavailable">Ipv6 недоступен</string>
+    <!-- Battery optimization -->
+    <string name="battery_opt_title">Для лучшего соединения</string>
+    <string name="battery_opt_descr">Отключите оптимизацию энергопотребления для NymVPN, чтобы обеспечить более стабильное подключение VPN.</string>
+    <string name="skip">Пропустить</string>
+    <string name="battery_opt">Экономия заряда батареи</string>
+    <string name="battery_opt_settings_text">Настройки оптимизации батареи можно изменить в любое время в настройках приложения.</string>
+    <!-- Data & Privacy screen -->
+    <string name="data_privacy">Данные &amp; Конфиденциальность</string>
+    <string name="title_anonymous_stats">Анонимная статистика сети</string>
+    <string name="descr_anonymous_stats">Помогите нам создать более быструю сеть, делясь анонимными данными о производительности из вашего региона. Мы используем эту информацию для оптимизации скорости, уменьшения разрывов соединения и улучшения покрытия серверов там, где это необходимо больше всего. \n\nТолько данные о производительности сети передаются - никогда не передаются ваши действия в интернете или персональные данные.</string>
+    <string name="link_anonymous_stats_text">Узнайте точно, какие данные передаются</string>
+    <string name="link_anonymous_stats">https://nym.com/anonymous-stats</string>
+    <string name="title_error_reports">Отчёты об ошибках &amp; сбоях</string>
+    <string name="descr_error_reports">Отправить информацию о сбоях, чтобы помочь нам быстрее исправлять ошибки. Отчеты передаются через безопасную систему Sentry и содержат только технические данные для отладки.</string>
+    <string name="link_error_reports_text">Посмотреть политику конфиденциальности Sentry</string>
+    <string name="link_error_reports">https://sentry.io/privacy/</string>
+    <string name="restart_error_reports">Изменения вступят в силу после перезапуска приложения.</string>
+    <string name="modal_network_stats_title">Улучшите свой опыт</string>
+    <string name="modal_network_stats_descr">Помогите улучшить NymVPN, поделившись анонимной статистикой сети из вашего региона. \n\nВаши данные остаются приватными и защищенными.</string>
+    <string name="modal_network_stats_enable_button">Включить статистику сети</string>
+    <string name="modal_network_stats_not_now_button">Не сейчас</string>
+    <string name="notification_improve_title">Помочь улучшить \nвашу скорость подключения</string>
+    <string name="notification_improve_button">Улучшить сейчас</string>
+    <string name="notification_stats_enabled">Статистика включена! Ваши анонимные данные помогают оптимизировать нашу сеть.</string>
 </resources>
